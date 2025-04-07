@@ -1,4 +1,6 @@
 import json
+import glob
+import os
 
 def load_json(filepath):
     with open(filepath, "r", encoding="utf-8") as file:
@@ -15,3 +17,7 @@ def get_data(contest_name):
         return json_data["abilities"], json_data["responses"]
     else:
         raise ValueError("Invalid JSON")
+
+def emuerate_contest_names():
+    filepaths = glob.glob("./input/*.json")
+    return [os.path.splitext(os.path.basename(filepath))[0] for filepath in filepaths]
