@@ -11,4 +11,4 @@ for contest_name in contest_names:
         difficulties = irt_1pl.estimate(abilities, responses)
         difficulty_dict[contest_name] = difficulties
 
-json_io.save_json(difficulty_dict, indent=4)
+json_io.save_json(difficulty_dict, output_filepath, indent=4)
