@@ -2,10 +2,10 @@ import numpy as np
 
 _discrimination = np.log(6) / 400.0
 
-def irt_1pl(ability, difficulty):
+def irt_1pl(ability: float, difficulty: float) -> float:
     return 1.0 / (1.0 + np.exp(-_discrimination * (ability - difficulty)))
 
-def estimate(abilities, responses):
+def estimate(abilities: list[float], responses: list[float]) -> list[float]:
     difficulties = []
     for problem_index in range(len(responses)):
         num_acs = sum(responses[problem_index])

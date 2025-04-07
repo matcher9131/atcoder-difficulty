@@ -2,7 +2,7 @@ import os
 import glob
 from json_io import load_json, save_json
 
-def contest_json_to_data(contest_json):
+def contest_json_to_data(contest_json) -> tuple[list[float], list[list[float]]]:
     problems = [element["TaskScreenName"] for element in contest_json["TaskInfo"]]
     players = [player for player in contest_json["StandingsData"] if player["OldRating"] != 0]
     abilities = [player["OldRating"] for player in players]
