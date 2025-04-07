@@ -1,3 +1,5 @@
 *.txt
 data/**
+input/**
 output/**
+__pycache__/**
