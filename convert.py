@@ -20,11 +20,13 @@ def contest_json_to_data(contest_json) -> tuple[list[float], list[list[float]]]:
     ]
     return abilities, responses
 
+forces_update = True
+
 contest_files = glob.glob("input/*.json")
 for contest_filepath in contest_files:
     contest_name = os.path.splitext(os.path.basename(contest_filepath))[0]
     data_filepath = f"data/{contest_name}.json"
-    if not os.path.isfile(data_filepath):
+    if forces_update or not os.path.isfile(data_filepath):
         contest_json = load_json(contest_filepath)
         abilities, responses = contest_json_to_data(contest_json)
         save_json({ "abilities": abilities, "responses": responses }, data_filepath)
