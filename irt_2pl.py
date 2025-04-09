@@ -1,6 +1,7 @@
 from scipy.optimize import minimize
-from json_io import get_data
 import numpy as np
+import numpy.typing as npt
+from contest import get_abilities_and_responses, load_contest
 
 def irt_2pl(ability: float, discrimination: float, difficulty: float) -> float:
     return 1.0 / (1.0 + np.exp(-discrimination * (ability - difficulty)))
@@ -13,7 +14,7 @@ def neg_log_likelihood(params: tuple[float, float], responses: list[float], abil
         likelihood += np.log(probability) if response else np.log(1 - probability)
     return -likelihood
 
-def estimate(abilities: list[float], responses: list[list[float]]) -> list[tuple[float, float] | str]:
+def estimate(abilities: npt.NDArray[np.float64], responses: list[list[int]]) -> list[tuple[float, float]]:
     results = []
     mean = np.mean(abilities)
     stddev = np.std(abilities)
@@ -27,11 +28,13 @@ def estimate(abilities: list[float], responses: list[list[float]]) -> list[tuple
         )
         if minimize_result.success:
             discrimination, difficulty = minimize_result.x
-            results.append([float(discrimination), float(difficulty * stddev + mean)])
+            results.append((float(discrimination), float(difficulty * stddev + mean)))
         else:
-            results.append([f"ERROR: {minimize_result.message}"])
+            print(f"ERROR: {minimize_result.message}")
+            results.append((float("nan"), float("nan")))
     return results
 
 contest_name = "abc396"
-abilities, responses = get_data(contest_name)
-print(estimate(abilities, responses))
+contest = load_contest(contest_name)
+abilities, responses = get_abilities_and_responses(contest)
+print(estimate(np.array(abilities), responses))

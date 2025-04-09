@@ -1,5 +1,5 @@
 *.txt
-data/**
 input/**
 output/**
 __pycache__/**
+.vscode/**
