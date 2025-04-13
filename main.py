@@ -1,8 +1,9 @@
 import irt_1pl
 import json_io
 from contest import get_abilities_and_responses, load_contest
+import sys
 
-forces_update = True
+forces_update = len(sys.argv) > 1 and sys.argv[1] == "-f"
 
 output_filepath = "output/difficulties.json"
 difficulty_dict = json_io.load_json(output_filepath)
