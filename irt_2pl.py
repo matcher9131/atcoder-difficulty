@@ -1,7 +1,7 @@
 from scipy.optimize import minimize
 import numpy as np
 import numpy.typing as npt
-from contest import get_abilities_and_responses, load_contest
+from models.contest import get_abilities_and_responses, load_contest
 
 def irt_2pl(ability: float, discrimination: float, difficulty: float) -> float:
     return 1.0 / (1.0 + np.exp(-discrimination * (ability - difficulty)))

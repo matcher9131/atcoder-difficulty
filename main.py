@@ -1,6 +1,6 @@
 import irt_1pl
 import json_io
-from contest import get_abilities_and_responses, load_contest
+from models.contest import get_abilities_and_responses, load_contest
 import sys
 
 forces_update = len(sys.argv) > 1 and sys.argv[1] == "-f"
