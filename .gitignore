@@ -1,6 +1,6 @@
 *.txt
-input/**
-output/**
-**/__pycache__/**
-.vscode/**
-temp/**
+/input/
+/output/
+__pycache__/
+/.vscode/
+/temp/
