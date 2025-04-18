@@ -1,6 +1,6 @@
 from typing import TypedDict
 from models.player import Player
-from json_io import load_json
+from util.json_io import load_json
 from functions.rating import get_raw_rating
 
 class Contest(TypedDict):

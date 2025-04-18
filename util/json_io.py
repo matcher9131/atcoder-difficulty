@@ -10,6 +10,6 @@ def save_json(data, filepath: str, indent: int | None = None) -> None:
     with open(filepath, "w", encoding="utf-8") as file:
         file.write(json.dumps(data, indent=indent))
 
-def emuerate_contest_names() -> list[str]:
+def enumerate_contest_names() -> list[str]:
     filepaths = glob.glob("./input/*.json")
     return [os.path.splitext(os.path.basename(filepath))[0] for filepath in filepaths]
