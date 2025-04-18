@@ -1,4 +1,5 @@
 import numpy as np
+from util import adjust_low_rating
 
 _discrimination = np.log(6) / 400.0
 
@@ -20,5 +21,6 @@ def estimate(abilities: list[float], responses: list[list[int]]) -> list[int]:
                 right = mid
             else:
                 left = mid
-        difficulties.append(left)
+        difficulty = int(adjust_low_rating(left))
+        difficulties.append(difficulty)
     return difficulties
