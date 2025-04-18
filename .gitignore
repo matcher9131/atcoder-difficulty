@@ -1,6 +1,8 @@
+.vscode/
+__pycache__/
+.mypy_cache/
 *.txt
 /input/
 /output/
-__pycache__/
-/.vscode/
 /temp/
+/temp.py
