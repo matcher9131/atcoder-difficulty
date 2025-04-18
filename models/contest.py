@@ -1,7 +1,7 @@
 from typing import TypedDict
-from .player import Player
+from models.player import Player
 from json_io import load_json
-from util import get_raw_rating
+from functions.rating import get_raw_rating
 
 class Contest(TypedDict):
     problems: list[str]

@@ -1,5 +1,5 @@
 import numpy as np
-from util import adjust_low_rating
+from functions.rating import adjust_low_rating
 
 _discrimination = np.log(6) / 400.0
 
