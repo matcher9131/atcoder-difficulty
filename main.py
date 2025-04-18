@@ -1,19 +1,16 @@
-from functions.irt_1pl import estimate
-import util.json_io as json_io
-from models.contest import get_abilities_and_responses, load_contest
 import sys
+from operations.estimate_difficulties import estimate_difficulties
 
-forces_update = len(sys.argv) > 1 and sys.argv[1] == "-f"
+if (len(sys.argv) == 1):
+    print("This program should be called with commandline arguments. Call with '-h' to show details.")
+    sys.exit(0)
 
-output_filepath = "output/difficulties.json"
-difficulty_dict = json_io.load_json(output_filepath)
-
-contest_names = json_io.enumerate_contest_names()
-for contest_name in contest_names:
-    if forces_update or not contest_name in difficulty_dict:
-        contest = load_contest(contest_name)
-        abilities, responses = get_abilities_and_responses(contest)
-        difficulties = estimate(abilities, responses)
-        difficulty_dict[contest_name] = difficulties
-
-json_io.save_json(difficulty_dict, output_filepath, indent=4)
+mode = sys.argv[1]
+if (mode == "-h"):
+    print("You can select modes by the first of arguments:")
+    print("'-h': Show help")
+    print("'-d': Estimate difficulties. You can set options below by following arguments.")
+    print("    '-f': Force update")
+elif (mode == "-d"):
+    forces_update = "-f" in sys.argv[1:]
+    estimate_difficulties(forces_update)
