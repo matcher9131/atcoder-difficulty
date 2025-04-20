@@ -12,6 +12,7 @@ def load_contest(contest_name: str) -> Contest:
     problems: list[str] = [element["TaskScreenName"] for element in contest_json["TaskInfo"]]
     players: list[Player] = [
         {
+            "name": player["UserScreenName"],
             "rating": get_raw_rating(player["OldRating"], player["Competitions"]),
             "isRated": player["IsRated"],
             "responses": [1 if problem in player["TaskResults"] and player["TaskResults"][problem]["SubmissionID"] > 0 else 0 for problem in problems] 
