@@ -1,4 +1,6 @@
+import os
 import requests
+from dotenv import load_dotenv
 from html.parser import HTMLParser
 
 class CsrfExtractor(HTMLParser):
@@ -23,7 +25,15 @@ def extract_csrf(response_text: str):
     extractor = CsrfExtractor()
     return extractor.extract(response_text)
 
-def login(user_id: str, password: str) -> requests.Session :
+def login() -> requests.Session:
+    load_dotenv(".env")
+    user_id = os.getenv("USER_ID")
+    if user_id is None:
+        raise ValueError("Invalid USER_ID")
+    password = os.getenv("PASSWORD")
+    if password is None:
+        raise ValueError("Invalid PASSWORD")
+    
     session = requests.Session()
     response_get = session.get("https://atcoder.jp/login")
     csrf = extract_csrf(response_get.text)

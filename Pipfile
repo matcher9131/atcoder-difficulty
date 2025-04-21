@@ -9,6 +9,7 @@ scipy = "*"
 matplotlib = "*"
 requests = "*"
 "html.parser" = "*"
+dotenv = "*"
 
 [dev-packages]
 
