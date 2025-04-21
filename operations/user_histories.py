@@ -5,8 +5,6 @@ from models.contest_entry import ContestEntry
 from util.fetch import fetch
 from util.json_io import load_json, save_json
 
-is_cancelling = False
-
 def _get_contest_name(contest_name: str) -> str:
     index = contest_name.find(".")
     return contest_name[:index] if index > -1 else contest_name
@@ -18,7 +16,7 @@ def get_user_history(session: requests.Session, user_name: str) -> list[ContestE
         return [
             {
                 "contest": _get_contest_name(contest["ContestScreenName"]),
-                "rating": contest["OldRating"]
+                "isRated": contest["IsRated"]
             } for contest in json_data
         ]
     else:
@@ -36,9 +34,10 @@ def save_user_histories(session: requests.Session, contest_name: str) -> None:
             print(f"Getting history of '{player_name}'")
             player_history = get_user_history(session, player_name)
             saved_histories[player_name] = player_history
-            time.sleep(5)
+            time.sleep(2)
     except KeyboardInterrupt:
         print("Stopping process...")
         save_json(saved_histories, output_path)
         return
     save_json(saved_histories, output_path)
+    print("Finish getting all user histories")
