@@ -11,5 +11,5 @@ def save_json(data, filepath: str, indent: int | None = None) -> None:
         file.write(json.dumps(data, indent=indent))
 
 def enumerate_contest_names() -> list[str]:
-    filepaths = glob.glob("./input/*.json")
+    filepaths = glob.glob("./input/contests/*.json")
     return [os.path.splitext(os.path.basename(filepath))[0] for filepath in filepaths]
