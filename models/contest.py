@@ -8,7 +8,7 @@ class Contest(TypedDict):
     players: list[Player]
 
 def load_contest(contest_name: str) -> Contest:
-    contest_json = load_json(f"input/{contest_name}.json")
+    contest_json = load_json(f"input/contests/{contest_name}.json")
     problems: list[str] = [element["TaskScreenName"] for element in contest_json["TaskInfo"]]
     players: list[Player] = [
         {

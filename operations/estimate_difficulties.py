@@ -41,7 +41,7 @@ def estimate_difficulties(contest_names: list[str], forces_update: bool):
     difficulty_dict = load_json(output_filepath)
 
     contests_with_invalid_player_num_contest = get_contests_with_invalid_player_num_contest()
-    user_histories = load_json("output/user_histories.json")
+    player_histories = load_json("output/histories.json")
 
     if (len(contest_names) == 0):
         contest_names = enumerate_contest_names()
@@ -49,7 +49,7 @@ def estimate_difficulties(contest_names: list[str], forces_update: bool):
         if forces_update or not contest_name in difficulty_dict:
             try:
                 contest = load_contest(contest_name)
-                abilities, responses = get_abilities_and_responses(contest, user_histories if contest_name in contests_with_invalid_player_num_contest else None)
+                abilities, responses = get_abilities_and_responses(contest, player_histories if contest_name in contests_with_invalid_player_num_contest else None)
                 difficulties = estimate(abilities, responses)
                 difficulty_dict[contest_name] = difficulties
             except FileNotFoundError:
