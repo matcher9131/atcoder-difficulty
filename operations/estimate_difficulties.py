@@ -36,19 +36,23 @@ def get_abilities_and_responses(contest: Contest, user_histories: None | dict[st
                 responses[problem_index].append(response)
     return abilities, responses
 
-def estimate_difficulties(forces_update: bool):
+def estimate_difficulties(contest_names: list[str], forces_update: bool):
     output_filepath = "output/difficulties.json"
     difficulty_dict = load_json(output_filepath)
 
     contests_with_invalid_player_num_contest = get_contests_with_invalid_player_num_contest()
     user_histories = load_json("output/user_histories.json")
 
-    contest_names = enumerate_contest_names()
+    if (len(contest_names) == 0):
+        contest_names = enumerate_contest_names()
     for contest_name in contest_names:
         if forces_update or not contest_name in difficulty_dict:
-            contest = load_contest(contest_name)
-            abilities, responses = get_abilities_and_responses(contest, user_histories if contest_name in contests_with_invalid_player_num_contest else None)
-            difficulties = estimate(abilities, responses)
-            difficulty_dict[contest_name] = difficulties
+            try:
+                contest = load_contest(contest_name)
+                abilities, responses = get_abilities_and_responses(contest, user_histories if contest_name in contests_with_invalid_player_num_contest else None)
+                difficulties = estimate(abilities, responses)
+                difficulty_dict[contest_name] = difficulties
+            except FileNotFoundError:
+                print(f"Contest {contest_name} is not found.")
 
     save_json(difficulty_dict, output_filepath, indent=4)

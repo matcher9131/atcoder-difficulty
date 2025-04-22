@@ -9,15 +9,31 @@ if (len(sys.argv) == 1):
 
 mode = sys.argv[1]
 if (mode == "-h"):
-    print("You can select modes by the first of arguments:")
-    print("'-h': Show help")
-    print("'-d': Estimate difficulties. You can set options below by following arguments.")
-    print("    '-f': Force update")
-    print("'-u': Get user histories. You should give another argument to specify the contest. eg: '-u abc400'")
+    print("You can select modes by arguments. '*' means any string is acceptable, and '[]' means it is optional.")
+    print("'-h' :")
+    print("  Show help.")
+    print("'-d [*] [-f]' : ")
+    print("  Estimate difficulties.")
+    print("    *: Contests to estimate. You can specify multiple contests by separating with commas.")
+    print("         All contests are estimated if not given.")
+    print("    -f: Force update.")
+    print("'-p *' :")
+    print("  Get player histories. ")
+    print("    *: A contest in which you want to get the history of players who participated.")
 elif (mode == "-d"):
-    forces_update = "-f" in sys.argv[1:]
-    estimate_difficulties(forces_update)
-elif (mode == "-u"):
+    if len(sys.argv) == 2:
+        estimate_difficulties([], False)
+    elif len(sys.argv) == 3:
+        if (sys.argv[2] == "-f"):
+            estimate_difficulties([], True)
+        else:
+            estimate_difficulties(sys.argv[2].split(","), False)
+    else:
+        if (sys.argv[3] == "-f"):
+            estimate_difficulties(sys.argv[2].split(","), True)
+        else:
+            print(f"Invalid argument: {sys.argv[3]}")
+elif (mode == "-p"):
     if (len(sys.argv) <= 2):
         print("Missing argument: contest_name")
         sys.exit(0)
