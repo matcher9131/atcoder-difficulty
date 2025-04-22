@@ -9,7 +9,7 @@ if (len(sys.argv) == 1):
 
 mode = sys.argv[1]
 if (mode == "-h"):
-    print("You can select modes by arguments. '*' means any string is acceptable, and '[]' means it is optional.")
+    print("You can select modes below by arguments. '*' means any string is acceptable, and '[]' means it is optional.")
     print("'-h' :")
     print("  Show help.")
     print("'-d [*] [-f]' : ")
@@ -40,3 +40,5 @@ elif (mode == "-p"):
     contest_name = sys.argv[2]
     session = login()
     save_player_histories(session, contest_name)
+else:
+    print(f"Invalid argument: {sys.argv[1]}")
