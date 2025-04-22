@@ -20,13 +20,3 @@ def load_contest(contest_name: str) -> Contest:
         } for player in contest_json["StandingsData"] if player["TotalResult"]["Count"] > 0
     ]
     return { "name": contest_name, "problems": problems, "players": players }
-
-def get_abilities_and_responses(contest: Contest, excludes_unrated: bool = False) -> tuple[list[float], list[list[int]]]:
-    abilities: list[float] = []
-    responses: list[list[int]] = [[] for _ in contest["problems"]]
-    for player in contest["players"]:
-        if player["isRated"] or not excludes_unrated:
-            abilities.append(player["rating"])
-            for problem_index, response in enumerate(player["responses"]):
-                responses[problem_index].append(response)
-    return abilities, responses
