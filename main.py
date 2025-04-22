@@ -1,6 +1,6 @@
 import sys
 from operations.estimate_difficulties import estimate_difficulties
-from operations.user_histories import save_user_histories
+from operations.player_histories import save_player_histories
 from util.login import login
 
 if (len(sys.argv) == 1):
@@ -39,4 +39,4 @@ elif (mode == "-p"):
         sys.exit(0)
     contest_name = sys.argv[2]
     session = login()
-    save_user_histories(session, contest_name)
+    save_player_histories(session, contest_name)
