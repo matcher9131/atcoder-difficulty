@@ -1,10 +1,10 @@
 from numpy import exp, log, sqrt
 
 def inverse_adjustment_low_rating(rating: float) -> float:
-    return 400.0 * (1 - log(400.0 / rating)) if rating < 400 else rating
+    return float(400.0 * (1 - log(400.0 / rating))) if rating < 400 else rating
 
 def adjust_low_rating(rating: float) -> float:
-    return 400.0 / exp((400.0 - rating) / 400.0)  if rating < 400 else rating
+    return float(400.0 / exp((400.0 - rating) / 400.0)) if rating < 400 else rating
 
 def get_raw_rating(rating: float, num_contests: int) -> float:
     rating = inverse_adjustment_low_rating(rating)
