@@ -1,4 +1,4 @@
-from functions.irt_1pl import estimate
+from functions.irt_2pl import estimate
 from functions.rating import get_raw_rating
 from models.contest import Contest, load_contest
 from models.contest_entry import ContestEntry
@@ -17,14 +17,14 @@ def get_num_contests(entries: list[ContestEntry], contest_name: str) -> int | No
             i += 1
     return None
 
-def get_abilities_and_responses(contest: Contest, user_histories: None | dict[str, list[ContestEntry]], excludes_unrated: bool = False):
+def get_abilities_and_responses(contest: Contest, player_histories: None | dict[str, list[ContestEntry]], excludes_unrated: bool = False):
     abilities: list[float] = []
     responses: list[list[int]] = [[] for _ in contest["problems"]]
     for player in contest["players"]:
         if player["isRated"] or not excludes_unrated:
             if player["rating"] <= 0:
                 continue
-            num_contests = player["numContests"] - 1 if user_histories is None else get_num_contests(user_histories.get(player["name"]) or [], contest["name"])
+            num_contests = player["numContests"] - 1 if player_histories is None else get_num_contests(player_histories.get(player["name"]) or [], contest["name"])
             if num_contests is None:
                 print(f"Entry not found: contest_name = {contest['name']}, player = {player['name']}")
                 continue
@@ -36,7 +36,11 @@ def get_abilities_and_responses(contest: Contest, user_histories: None | dict[st
                 responses[problem_index].append(response)
     return abilities, responses
 
-def estimate_difficulties(contest_names: list[str], forces_update: bool):
+def estimate_difficulties(contest: Contest, player_histories: None | dict[str, list[ContestEntry]]) -> list[tuple[float, float]]:
+    abilities, responses = get_abilities_and_responses(contest, player_histories)
+    return estimate(abilities, responses)
+
+def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool):
     output_filepath = "output/difficulties.json"
     difficulty_dict = load_json(output_filepath)
 
@@ -48,10 +52,10 @@ def estimate_difficulties(contest_names: list[str], forces_update: bool):
     for contest_name in contest_names:
         if forces_update or not contest_name in difficulty_dict:
             try:
-                contest = load_contest(contest_name)
-                abilities, responses = get_abilities_and_responses(contest, player_histories if contest_name in contests_with_invalid_player_num_contest else None)
-                difficulties = estimate(abilities, responses)
-                difficulty_dict[contest_name] = difficulties
+                contest: Contest = load_contest(contest_name)
+                difficulties = estimate_difficulties(contest, player_histories if contest_name in contests_with_invalid_player_num_contest else None)
+                if (len(difficulties) > 0):
+                    difficulty_dict[contest_name] = difficulties
             except FileNotFoundError:
                 print(f"Contest {contest_name} is not found.")
 
