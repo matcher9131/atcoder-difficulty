@@ -1,7 +1,10 @@
-from scipy.optimize import minimize
 import numpy as np
 import numpy.typing as npt
-from models.contest import get_abilities_and_responses, load_contest
+from scipy.optimize import minimize
+from functions.rating import adjust_low_rating
+from models.contest import load_contest
+from operations.estimate_difficulties import get_abilities_and_responses, get_contests_with_invalid_player_num_contest
+from util.json_io import load_json
 
 def irt_2pl(ability: float, discrimination: float, difficulty: float) -> float:
     return 1.0 / (1.0 + np.exp(-discrimination * (ability - difficulty)))
@@ -28,13 +31,19 @@ def estimate(abilities: npt.NDArray[np.float64], responses: list[list[int]]) -> 
         )
         if minimize_result.success:
             discrimination, difficulty = minimize_result.x
-            results.append((float(discrimination), float(difficulty * stddev + mean)))
+            results.append((float(discrimination), adjust_low_rating(float(difficulty * stddev + mean))))
         else:
             print(f"ERROR: {minimize_result.message}")
             results.append((float("nan"), float("nan")))
     return results
 
-contest_name = "abc396"
-contest = load_contest(contest_name)
-abilities, responses = get_abilities_and_responses(contest)
-print(estimate(np.array(abilities), responses))
+def estimate_difficulties(contest_name: str):
+    contests_with_invalid_player_num_contest = get_contests_with_invalid_player_num_contest()
+    player_histories = load_json("output/histories.json")
+    try:
+        contest = load_contest(contest_name)
+        abilities, responses = get_abilities_and_responses(contest, player_histories if contest_name in contests_with_invalid_player_num_contest else None)
+        difficulties = estimate(np.array(abilities), responses)
+        print(difficulties)
+    except FileNotFoundError:
+        print(f"Contest {contest_name} is not found.")
