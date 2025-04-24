@@ -1,5 +1,5 @@
 import sys
-from operations.estimate_difficulties import estimate_difficulties
+from operations.estimate_difficulties import estimate_and_save_difficulties
 from operations.player_histories import save_player_histories
 from util.login import login
 
@@ -22,15 +22,15 @@ if (mode == "-h"):
     print("    *: A contest in which you want to get the history of players who participated.")
 elif (mode == "-d"):
     if len(sys.argv) == 2:
-        estimate_difficulties([], False)
+        estimate_and_save_difficulties([], False)
     elif len(sys.argv) == 3:
         if (sys.argv[2] == "-f"):
-            estimate_difficulties([], True)
+            estimate_and_save_difficulties([], True)
         else:
-            estimate_difficulties(sys.argv[2].split(","), False)
+            estimate_and_save_difficulties(sys.argv[2].split(","), False)
     else:
         if (sys.argv[3] == "-f"):
-            estimate_difficulties(sys.argv[2].split(","), True)
+            estimate_and_save_difficulties(sys.argv[2].split(","), True)
         else:
             print(f"Invalid argument: {sys.argv[3]}")
 elif (mode == "-p"):

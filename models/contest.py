@@ -16,7 +16,12 @@ def load_contest(contest_name: str) -> Contest:
             "rating": player["OldRating"],
             "numContests": player["Competitions"],
             "isRated": player["IsRated"],
-            "responses": [1 if problem in player["TaskResults"] and player["TaskResults"][problem]["SubmissionID"] > 0 else 0 for problem in problems] 
+            "responses": [
+                -1 if problem not in player["TaskResults"]
+                else 1 if player["TaskResults"][problem]["SubmissionID"] > 0
+                else -1
+                for problem in problems
+            ]
         } for player in contest_json["StandingsData"] if player["TotalResult"]["Count"] > 0
     ]
     return { "name": contest_name, "problems": problems, "players": players }
