@@ -9,17 +9,17 @@ if (len(sys.argv) == 1):
 
 mode = sys.argv[1]
 if (mode == "-h"):
-    print("You can select modes below by arguments. '*' means any string is acceptable, and '[]' means it is optional.")
+    print("You can select modes below by arguments. '<>' means any string is acceptable, and '[]' means it is optional.")
     print("'-h' :")
     print("  Show help.")
-    print("'-d [*] [-f]' : ")
+    print("'-d <contests> [-f]' : ")
     print("  Estimate difficulties.")
-    print("    *: Contests to estimate. You can specify multiple contests by separating with commas.")
+    print("    <contests>: Contests to estimate. You can specify multiple contests by separating with commas.")
     print("         All contests are estimated if not given.")
     print("    -f: Force update.")
-    print("'-p *' :")
+    print("'-p <contest>' :")
     print("  Get player histories. ")
-    print("    *: A contest in which you want to get the history of players who participated.")
+    print("    <contest>: A contest in which you want to get the history of players who participated.")
 elif (mode == "-d"):
     if len(sys.argv) == 2:
         estimate_and_save_difficulties([], False)
