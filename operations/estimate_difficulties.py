@@ -1,3 +1,4 @@
+from numpy import isnan
 from typing import cast, Literal
 from functions.irt_2pl import estimate_problem_difficulty
 from functions.rating import get_raw_rating
@@ -39,7 +40,8 @@ def get_abilities_and_responses(
         if player["rating"] <= 0:
             continue
         if player_histories is None:
-            num_contests = player["numContests"] - 1
+            # "numContests" includes this contest, so rated player's value must be reduced by 1.
+            num_contests = player["numContests"] - (1 if player["isRated"] else 0)
         else:
             history = player_histories.get(player["name"])
             if history is None or len(history) == 0:
@@ -73,7 +75,7 @@ def estimate_contest_difficulties(contest: Contest, player_histories: None | dic
 
 def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool):
     output_filepath = "output/difficulties.json"
-    difficulty_dict = load_json(output_filepath)
+    difficulty_dict: dict[str, list[tuple[float, float]]] = load_json(output_filepath)
 
     invalid_player_num_contests = load_invalid_player_num_contests()
     player_histories = load_json("output/histories.json")
@@ -91,4 +93,13 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
         except FileNotFoundError:
             print(f"Contest {contest_name} is not found.")
 
-    save_json(difficulty_dict, output_filepath)
+    save_json(
+        {
+            key: [
+                difficulty_tuple if not any(isnan(difficulty_tuple))
+                else ("NaN", "NaN")
+                for difficulty_tuple in value
+            ] for key, value in difficulty_dict.items()
+        },
+        output_filepath
+    )
