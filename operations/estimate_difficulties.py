@@ -1,12 +1,22 @@
+from typing import cast, Literal
 from functions.irt_2pl import estimate_problem_difficulty
 from functions.rating import get_raw_rating
 from models.contest import Contest, load_contest
 from models.contest_entry import ContestEntry
+from models.contest_info import InvalidPlayerNumContests, load_invalid_player_num_contests
 from util.json_io import load_json, save_json, enumerate_contest_names
 
-def get_contests_with_invalid_player_num_contest() -> list[str]:
-    contest_info = load_json("input/contest_info.json")
-    return contest_info["invalidPlayerNumContests"]
+def player_num_contests_is_invalid(invalid_player_num_contests: InvalidPlayerNumContests, contest_name: str) -> bool:
+    if contest_name.startswith("abc") or contest_name.startswith("arc") or contest_name.startswith("agc"):
+        try:
+            type = cast(Literal["abc", "arc", "agc"], contest_name[0:3])
+            num = int(contest_name[3:], 10)
+            return num <= invalid_player_num_contests[type]
+        except ValueError:
+            return False
+    else:
+        # TODO: Implementation for non-regular contests
+        return True
 
 def get_num_contests(entries: list[ContestEntry], contest_name: str) -> int:
     i = 0
@@ -65,19 +75,20 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
     output_filepath = "output/difficulties.json"
     difficulty_dict = load_json(output_filepath)
 
-    contests_with_invalid_player_num_contest = get_contests_with_invalid_player_num_contest()
+    invalid_player_num_contests = load_invalid_player_num_contests()
     player_histories = load_json("output/histories.json")
 
     if (len(contest_names) == 0):
         contest_names = enumerate_contest_names()
     for contest_name in contest_names:
-        if forces_update or not contest_name in difficulty_dict:
-            try:
-                contest: Contest = load_contest(contest_name)
-                difficulties = estimate_contest_difficulties(contest, player_histories if contest_name in contests_with_invalid_player_num_contest else None)
-                if (len(difficulties) > 0):
-                    difficulty_dict[contest_name] = difficulties
-            except FileNotFoundError:
-                print(f"Contest {contest_name} is not found.")
+        if contest_name in difficulty_dict and not forces_update:
+            continue
+        try:
+            contest: Contest = load_contest(contest_name)
+            difficulties = estimate_contest_difficulties(contest, player_histories if player_num_contests_is_invalid(invalid_player_num_contests, contest_name) else None)
+            if (len(difficulties) > 0):
+                difficulty_dict[contest_name] = difficulties
+        except FileNotFoundError:
+            print(f"Contest {contest_name} is not found.")
 
-    save_json(difficulty_dict, output_filepath, indent=4)
+    save_json(difficulty_dict, output_filepath)
