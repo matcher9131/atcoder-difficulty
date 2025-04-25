@@ -4,15 +4,15 @@ from functions.irt_2pl import estimate_problem_difficulty
 from functions.rating import get_raw_rating
 from models.contest import Contest, load_contest
 from models.contest_entry import ContestEntry
-from models.contest_info import InvalidPlayerNumContests, load_invalid_player_num_contests
+from models.contest_info import ContestsNeedingHistory, load_contests_needing_history
 from util.json_io import load_json, save_json, enumerate_contest_names
 
-def player_num_contests_is_invalid(invalid_player_num_contests: InvalidPlayerNumContests, contest_name: str) -> bool:
+def contest_needs_history(contests_needing_history: ContestsNeedingHistory, contest_name: str) -> bool:
     if contest_name.startswith("abc") or contest_name.startswith("arc") or contest_name.startswith("agc"):
         try:
             type = cast(Literal["abc", "arc", "agc"], contest_name[0:3])
             num = int(contest_name[3:], 10)
-            return num <= invalid_player_num_contests[type]
+            return num <= contests_needing_history[type]
         except ValueError:
             return False
     else:
@@ -77,7 +77,7 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
     output_filepath = "output/difficulties.json"
     difficulty_dict: dict[str, list[tuple[float, float]]] = load_json(output_filepath)
 
-    invalid_player_num_contests = load_invalid_player_num_contests()
+    invalid_player_num_contests = load_contests_needing_history()
     player_histories = load_json("output/histories.json")
 
     if (len(contest_names) == 0):
@@ -89,7 +89,8 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
             contest: Contest = load_contest(contest_name)
             difficulties = estimate_contest_difficulties(
                 contest,
-                player_histories if player_num_contests_is_invalid(invalid_player_num_contests, contest_name) else None,
+                # TODO: historiesが必要ないコンテストでもhistory使おうとしてない？
+                player_histories if contest_needs_history(invalid_player_num_contests, contest_name) else None,
                 [0, 1] if contest_name.startswith("abc") else []
             )
             if (len(difficulties) > 0):
