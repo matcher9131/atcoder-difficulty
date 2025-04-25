@@ -10,6 +10,7 @@ matplotlib = "*"
 requests = "*"
 "html.parser" = "*"
 dotenv = "*"
+pytest = "*"
 
 [dev-packages]
 
