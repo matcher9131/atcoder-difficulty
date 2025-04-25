@@ -42,15 +42,18 @@ def get_abilities_and_responses(
         if player_histories is None:
             # "numContests" includes this contest, so rated player's value must be reduced by 1.
             num_contests = player["numContests"] - (1 if player["isRated"] else 0)
+            if num_contests == -1:
+                # "numContests" can be -1 for rated and deleted players
+                continue
         else:
             history = player_histories.get(player["name"])
             if history is None or len(history) == 0:
                 continue
             num_contests = get_num_contests(history, contest["name"])
-        if num_contests == -1:
-            print(f"Entry not found: contest_name = {contest['name']}, player = {player['name']}")
-            continue
-        elif num_contests == 0:
+            if num_contests == -1:
+                print(f"Entry not found: contest_name = {contest['name']}, player = {player['name']}")
+                continue
+        if num_contests == 0:
             # Ignore newbies because their raw rating are all 1200 regardless their skills.
             continue
         abilities.append(get_raw_rating(player["rating"], num_contests))
@@ -89,7 +92,6 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
             contest: Contest = load_contest(contest_name)
             difficulties = estimate_contest_difficulties(
                 contest,
-                # TODO: historiesが必要ないコンテストでもhistory使おうとしてない？
                 player_histories if contest_needs_history(invalid_player_num_contests, contest_name) else None,
                 [0, 1] if contest_name.startswith("abc") else []
             )
