@@ -87,7 +87,11 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
             continue
         try:
             contest: Contest = load_contest(contest_name)
-            difficulties = estimate_contest_difficulties(contest, player_histories if player_num_contests_is_invalid(invalid_player_num_contests, contest_name) else None)
+            difficulties = estimate_contest_difficulties(
+                contest,
+                player_histories if player_num_contests_is_invalid(invalid_player_num_contests, contest_name) else None,
+                [0, 1] if contest_name.startswith("abc") else []
+            )
             if (len(difficulties) > 0):
                 difficulty_dict[contest_name] = difficulties
         except FileNotFoundError:
