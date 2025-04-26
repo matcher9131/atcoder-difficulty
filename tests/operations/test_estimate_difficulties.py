@@ -3,7 +3,18 @@ import pytest
 
 from models.contest_entry import ContestEntry
 from models.contest_info import ContestsNeedingHistory
-from operations.estimate_difficulties import contest_needs_history, get_num_contests
+from operations.estimate_difficulties import contest_needs_history, get_num_contests, is_nan_tuple
+
+
+@pytest.mark.parametrize(("x", "expected"), [
+    ([42, 42], False),
+    ([42, float("nan")], True),
+    ([float("nan"), float("nan")], True),
+    (["42", "42"], True),
+    ([42, "42"], True)
+])
+def test_is_nan_tuple(x: tuple[float, float] | tuple[str, str], expected: bool):
+    assert is_nan_tuple(x) == expected
 
 
 @pytest.mark.parametrize(("contest_name", "expected"), [
@@ -19,6 +30,7 @@ from operations.estimate_difficulties import contest_needs_history, get_num_cont
 def test_contest_needs_history(contest_name: str, expected: bool):
     contests_needing_history: ContestsNeedingHistory = { "abc": 399, "arc": 196, "agc": 71 }
     assert contest_needs_history(contests_needing_history, contest_name) == expected
+
 
 @pytest.mark.parametrize(("contest_name", "expected"), [
     ("abc001", 0),
