@@ -1,11 +1,17 @@
 from numpy import isnan
-from typing import cast, Literal
+from typing import Sequence, cast, Literal
 from functions.irt_2pl import estimate_problem_difficulty
 from functions.rating import get_raw_rating
 from models.contest import Contest, load_contest
 from models.contest_entry import ContestEntry
 from models.contest_info import ContestsNeedingHistory, load_contests_needing_history
 from util.json_io import load_json, save_json, enumerate_contest_names
+
+def is_nan_tuple(x: tuple[float, float] | tuple[str, str]) -> bool:
+    for xi in x:
+        if isinstance(xi, str) or isnan(xi):
+            return True
+    return False
 
 def contest_needs_history(contests_needing_history: ContestsNeedingHistory, contest_name: str) -> bool:
     if contest_name.startswith("abc") or contest_name.startswith("arc") or contest_name.startswith("agc"):
@@ -63,7 +69,7 @@ def get_abilities_and_responses(
         is_target_of_easy_problems.append(any([player["responses"][easy_problem_index] != -1 for easy_problem_index in easy_problem_indices]))
     return abilities, responses, is_target_of_easy_problems
 
-def estimate_contest_difficulties(contest: Contest, player_histories: None | dict[str, list[ContestEntry]], easy_problem_indices: list[int] = []) -> list[tuple[float, float]]:
+def estimate_contest_difficulties(contest: Contest, player_histories: None | dict[str, list[ContestEntry]], easy_problem_indices: list[int] = []) -> Sequence[tuple[float, float]]:
     result = []
     abilities, responses, is_target_of_easy_problems = get_abilities_and_responses(contest, player_histories, easy_problem_indices)
     for problem_index in range(len(contest["problems"])):
@@ -76,14 +82,14 @@ def estimate_contest_difficulties(contest: Contest, player_histories: None | dic
             result.append(estimate_problem_difficulty(abilities, responses[problem_index]))
     return result
 
-def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool):
+def estimate_and_save_difficulties(contest_names: Sequence[str], forces_update: bool):
     output_filepath = "output/difficulties.json"
-    difficulty_dict: dict[str, list[tuple[float, float]]] = load_json(output_filepath)
+    difficulty_dict: dict[str, Sequence[tuple[float, float] | tuple[str, str]]] = load_json(output_filepath)
 
     invalid_player_num_contests = load_contests_needing_history()
     player_histories = load_json("output/histories.json")
 
-    if (len(contest_names) == 0):
+    if (not contest_names):
         contest_names = enumerate_contest_names()
     for contest_name in contest_names:
         if contest_name in difficulty_dict and not forces_update:
@@ -95,7 +101,7 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
                 player_histories if contest_needs_history(invalid_player_num_contests, contest_name) else None,
                 [0, 1] if contest_name.startswith("abc") else []
             )
-            if (len(difficulties) > 0):
+            if (difficulties):
                 difficulty_dict[contest_name] = difficulties
         except FileNotFoundError:
             print(f"Contest {contest_name} is not found.")
@@ -103,7 +109,7 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
     save_json(
         {
             key: [
-                difficulty_tuple if not any(isnan(difficulty_tuple))
+                difficulty_tuple if not is_nan_tuple(difficulty_tuple)
                 else ("NaN", "NaN")
                 for difficulty_tuple in value
             ] for key, value in difficulty_dict.items()
