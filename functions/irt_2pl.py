@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
 from functions.rating import adjust_low_rating
+from util.safe_math import safe_log
 
 def irt_2pl(ability: float, discrimination: float, difficulty: float) -> float:
     return 1.0 / (1.0 + np.exp(-discrimination * (ability - difficulty)))
@@ -10,7 +11,7 @@ def neg_log_likelihood(params: tuple[float, float], responses: list[float], abil
     likelihood = 0.0
     for ability, response in zip(abilities, responses):
         probability = irt_2pl(ability, discrimination, difficulty)
-        likelihood += np.log(probability) if response == 1 else np.log(1 - probability)
+        likelihood += safe_log(probability) if response == 1 else safe_log(1 - probability)
     return -likelihood
 
 def estimate_problem_difficulty(abilities: list[float], responses: list[int]) -> tuple[float, float]:
