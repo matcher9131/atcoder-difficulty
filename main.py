@@ -18,4 +18,4 @@ else:
     if (contest_name is None):
         print("Missing argument: contest")
         sys.exit(0)
-    estimate_and_save_difficulties(contest_name, forces_update)
+    estimate_and_save_difficulties([contest_name], forces_update)

@@ -71,7 +71,7 @@ def estimate_contest_difficulties(contest: Contest, player_histories: None | dic
             result.append(estimate_problem_difficulty(abilities, responses[problem_index]))
     return result
 
-def estimate_and_save_difficulties(contest_names: Sequence[str], forces_update: bool):
+def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool):
     output_filepath = "output/difficulties.json"
     difficulty_dict: dict[str, Sequence[tuple[float, float] | tuple[str, str]]] = load_json(output_filepath)
 
