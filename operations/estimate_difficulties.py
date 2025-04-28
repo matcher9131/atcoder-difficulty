@@ -79,28 +79,33 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
 
     if (not contest_names):
         contest_names = enumerate_contest_names()
-    for contest_name in contest_names:
-        if contest_name in difficulty_dict and not forces_update:
-            continue
-        try:
-            contest: Contest = load_contest(contest_name)
-            difficulties = estimate_contest_difficulties(
-                contest,
-                player_histories if contest_needs_history(contest_name) else None,
-                [0, 1] if contest_name.startswith("abc") else []
-            )
-            if (difficulties):
-                difficulty_dict[contest_name] = difficulties
-        except FileNotFoundError:
-            print(f"Contest {contest_name} is not found.")
 
-    save_json(
-        {
-            key: [
-                difficulty_tuple if not is_nan_tuple(difficulty_tuple)
-                else ("NaN", "NaN")
-                for difficulty_tuple in value
-            ] for key, value in difficulty_dict.items()
-        },
-        output_filepath
-    )
+    try:
+        for contest_name in contest_names:
+            if contest_name in difficulty_dict and not forces_update:
+                continue
+            try:
+                contest: Contest = load_contest(contest_name)
+                print(f"Estimating difficulties of {contest_name}")
+                difficulties = estimate_contest_difficulties(
+                    contest,
+                    player_histories if contest_needs_history(contest_name) else None,
+                    [0, 1] if contest_name.startswith("abc") else []
+                )
+                if (difficulties):
+                    difficulty_dict[contest_name] = difficulties
+            except FileNotFoundError:
+                print(f"Contest {contest_name} is not found.")
+    except KeyboardInterrupt:
+        print(f"Stopping process...")
+    finally:
+        save_json(
+            {
+                key: [
+                    difficulty_tuple if not is_nan_tuple(difficulty_tuple)
+                    else ("NaN", "NaN")
+                    for difficulty_tuple in value
+                ] for key, value in difficulty_dict.items()
+            },
+            output_filepath
+        )
