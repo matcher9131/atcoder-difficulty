@@ -7,12 +7,11 @@ from operations.estimate_difficulties import get_num_contests, is_nan_tuple
 
 @pytest.mark.parametrize(("x", "expected"), [
     ([42, 42], False),
-    ([42, float("nan")], True),
-    ([float("nan"), float("nan")], True),
-    (["42", "42"], True),
-    ([42, "42"], True)
+    ([42, None], True),
+    ([None, None], True),
+    ([None, 42], True)
 ])
-def test_is_nan_tuple(x: tuple[float, float] | tuple[str, str], expected: bool):
+def test_is_nan_tuple(x: tuple[float, float] | tuple[None, None], expected: bool):
     assert is_nan_tuple(x) == expected
 
 

@@ -7,9 +7,9 @@ from models.contest_entry import ContestEntry
 from models.contest_info import contest_needs_history
 from util.json_io import load_json, save_json, enumerate_contest_names
 
-def is_nan_tuple(x: tuple[float, float] | tuple[str, str]) -> bool:
+def is_nan_tuple(x: tuple[float, float] | tuple[None, None]) -> bool:
     for xi in x:
-        if isinstance(xi, str) or isnan(xi):
+        if xi is None or isnan(xi):
             return True
     return False
 
@@ -73,7 +73,7 @@ def estimate_contest_difficulties(contest: Contest, player_histories: None | dic
 
 def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool):
     output_filepath = "output/difficulties.json"
-    difficulty_dict: dict[str, Sequence[tuple[float, float] | tuple[str, str]]] = load_json(output_filepath)
+    difficulty_dict: dict[str, Sequence[tuple[float, float] | tuple[None, None]]] = load_json(output_filepath)
 
     player_histories = load_json("output/histories.json")
 
@@ -103,7 +103,7 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
             {
                 key: [
                     difficulty_tuple if not is_nan_tuple(difficulty_tuple)
-                    else ("NaN", "NaN")
+                    else (None, None)
                     for difficulty_tuple in value
                 ] for key, value in difficulty_dict.items()
             },
