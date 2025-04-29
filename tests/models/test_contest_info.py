@@ -1,6 +1,6 @@
 import pytest
 
-from models.contest_info import contest_needs_history
+from models.estimation_settings import contest_needs_history
 
 
 @pytest.mark.parametrize(("contest_name", "expected"), [

@@ -4,7 +4,7 @@ from functions.irt_2pl import estimate_problem_difficulty
 from functions.rating import get_raw_rating
 from models.contest import Contest, load_contest
 from models.contest_entry import ContestEntry
-from models.contest_info import contest_needs_history
+from models.estimation_settings import contest_needs_history
 from util.json_io import load_json, save_json, enumerate_contest_names
 
 def is_nan_tuple(x: tuple[float, float] | tuple[None, None]) -> bool:

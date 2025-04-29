@@ -9,12 +9,12 @@ class ContestsNeedingHistory(TypedDict):
     agc: int
 
 
-class ContestInfo(TypedDict):
+class EstimationSettings(TypedDict):
     contestsNeedingHistory: ContestsNeedingHistory
 
 
 def contest_needs_history(contest_name: str) -> bool:
-    contests_needing_history = load_json("input/contest_info.json")["contestsNeedingHistory"]
+    contests_needing_history = load_json("input/estimation_settings.json")["contestsNeedingHistory"]
     if contest_name.startswith("abc") or contest_name.startswith("arc") or contest_name.startswith("agc"):
         try:
             type = cast(Literal["abc", "arc", "agc"], contest_name[0:3])
