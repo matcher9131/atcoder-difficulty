@@ -4,12 +4,13 @@ from util.json_io import load_json
 
 class Contest(TypedDict):
     name: str
-    problems: list[str]
+    # ID, DisplayName
+    problems: dict[str, str]
     players: list[Player]
 
 def load_contest(contest_name: str) -> Contest:
     contest_json = load_json(f"input/contests/{contest_name}.json")
-    problems: list[str] = [element["TaskScreenName"] for element in contest_json["TaskInfo"]]
+    problems: dict[str, str] = { element["TaskScreenName"]: element["TaskName"] for element in contest_json["TaskInfo"] }
     players: list[Player] = [
         {
             "name": player["UserScreenName"],
