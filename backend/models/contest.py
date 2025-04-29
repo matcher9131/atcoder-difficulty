@@ -4,7 +4,7 @@ from util.json_io import load_json
 
 class Contest(TypedDict):
     name: str
-    # ID, DisplayName
+    # ID, display name
     problems: dict[str, str]
     players: list[Player]
 

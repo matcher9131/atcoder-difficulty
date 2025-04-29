@@ -1,10 +1,10 @@
 from numpy import isnan
-from typing import Sequence
 from functions.irt_2pl import estimate_problem_difficulty
 from functions.rating import get_raw_rating
 from models.contest import Contest, load_contest
 from models.contest_entry import ContestEntry
 from models.estimation_settings import contest_needs_history
+from models.problem import Problem
 from util.json_io import load_json, save_json, enumerate_contest_names
 
 def is_nan_tuple(x: tuple[float, float] | tuple[None, None]) -> bool:
@@ -22,6 +22,7 @@ def get_num_contests(entries: list[ContestEntry], contest_name: str) -> int:
         if entry["isRated"]:
             i += 1
     return -1
+
 
 def get_abilities_and_responses(
     contest: Contest,
@@ -58,7 +59,8 @@ def get_abilities_and_responses(
         is_target_of_easy_problems.append(any([player["responses"][easy_problem_index] != -1 for easy_problem_index in easy_problem_indices]))
     return abilities, responses, is_target_of_easy_problems
 
-def estimate_contest_difficulties(contest: Contest, player_histories: None | dict[str, list[ContestEntry]], easy_problem_indices: list[int] = []) -> Sequence[tuple[float, float]]:
+
+def estimate_contest_difficulties(contest: Contest, player_histories: None | dict[str, list[ContestEntry]], easy_problem_indices: list[int] = []) -> list[tuple[float, float]]:
     result = []
     abilities, responses, is_target_of_easy_problems = get_abilities_and_responses(contest, player_histories, easy_problem_indices)
     for problem_index in range(len(contest["problems"])):
@@ -71,9 +73,10 @@ def estimate_contest_difficulties(contest: Contest, player_histories: None | dic
             result.append(estimate_problem_difficulty(abilities, responses[problem_index]))
     return result
 
+
 def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool):
-    output_filepath = "output/difficulties.json"
-    difficulty_dict: dict[str, Sequence[tuple[float, float] | tuple[None, None]]] = load_json(output_filepath)
+    output_filepath = "output/problems.json"
+    problem_dict: dict[str, Problem] = load_json(output_filepath)
 
     player_histories = load_json("output/histories.json")
 
@@ -82,30 +85,22 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
 
     try:
         for contest_name in contest_names:
-            if contest_name in difficulty_dict and not forces_update:
-                continue
             try:
                 contest: Contest = load_contest(contest_name)
+                if (not forces_update and all(problem_id in problem_dict for problem_id in contest["problems"])):
+                    continue
                 print(f"Estimating difficulties of {contest_name}")
-                difficulties = estimate_contest_difficulties(
+                raw_difficulties = estimate_contest_difficulties(
                     contest,
                     player_histories if contest_needs_history(contest_name) else None,
                     [0, 1] if contest_name.startswith("abc") else []
                 )
-                if (difficulties):
-                    difficulty_dict[contest_name] = difficulties
+                difficulties = [None if is_nan_tuple(difficulty_tuple) else difficulty_tuple for difficulty_tuple in raw_difficulties]
+                for problem_id, difficulty_tuple in zip(contest["problems"], difficulties):
+                    problem_dict[problem_id] = { "n": contest["problems"][problem_id], "d": difficulty_tuple }
             except FileNotFoundError:
                 print(f"Contest {contest_name} is not found.")
     except KeyboardInterrupt:
         print(f"Stopping process...")
     finally:
-        save_json(
-            {
-                key: [
-                    difficulty_tuple if not is_nan_tuple(difficulty_tuple)
-                    else (None, None)
-                    for difficulty_tuple in value
-                ] for key, value in difficulty_dict.items()
-            },
-            output_filepath
-        )
+        save_json(problem_dict, output_filepath)
