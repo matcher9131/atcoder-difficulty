@@ -1,9 +1,1 @@
 .vscode/
-__pycache__/
-.mypy_cache/
-*.txt
-/input/
-/output/
-/temp/
-/temp.py
-.env
