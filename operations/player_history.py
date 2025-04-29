@@ -2,14 +2,15 @@ from datetime import datetime
 from typing import cast
 
 from models.contest_entry import ContestEntry
+from models.contest_info import load_contest_info
 from util.json_io import load_json, save_json
 
-
+contest_info = load_contest_info()
 contests: list[str] = [
     contest_name
     for contest_name, _ in sorted([
-        (cast(str, contest_name), datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f%z"))
-        for contest_name, date_str in load_json("input/contest_date.json").items()
+        (contest_name, datetime.strptime(info["date"], "%Y-%m-%dT%H:%M:%S.%f%z"))
+        for contest_name, info in contest_info.items()
     ], key = lambda x: x[1])
 ]
 
