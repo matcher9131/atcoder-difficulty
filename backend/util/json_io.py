@@ -8,7 +8,7 @@ def load_json(filepath: str):
 
 def save_json(data, filepath: str, indent: int | None = None) -> None:
     with open(filepath, "w", encoding="utf-8") as file:
-        file.write(json.dumps(data, indent=indent))
+        file.write(json.dumps(data, indent=indent, ensure_ascii=False))
 
 def enumerate_contest_names() -> list[str]:
     filepaths = glob.glob("./input/contests/*.json")

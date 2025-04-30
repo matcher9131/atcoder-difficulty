@@ -95,7 +95,13 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
                     player_histories if contest_needs_history(contest_name) else None,
                     [0, 1] if contest_name.startswith("abc") else []
                 )
-                difficulties = [None if is_nan_tuple(difficulty_tuple) else difficulty_tuple for difficulty_tuple in raw_difficulties]
+                difficulties = [
+                    None if is_nan_tuple(difficulty_tuple)
+                    # None where discrimination of problem is negative
+                    else None if difficulty_tuple[0] < 0
+                    else (round(difficulty_tuple[0], 3), int(round(difficulty_tuple[1], 0)))
+                    for difficulty_tuple in raw_difficulties
+                ]
                 for problem_id, difficulty_tuple in zip(contest["problems"], difficulties):
                     problem_dict[problem_id] = { "n": contest["problems"][problem_id], "d": difficulty_tuple }
             except FileNotFoundError:
