@@ -1,4 +1,5 @@
 from numpy import isnan
+import shutil
 from functions.irt_2pl import estimate_problem_difficulty
 from functions.rating import get_raw_rating
 from models.contest import Contest, load_contest
@@ -110,3 +111,5 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
         print(f"Stopping process...")
     finally:
         save_json(problem_dict, output_filepath)
+        shutil.copy2("/output/problems.json", "../public/problems.json")
+
