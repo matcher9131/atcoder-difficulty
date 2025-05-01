@@ -1,9 +1,9 @@
 import { useAtom } from "jotai";
 import { problemSelector } from "../dict/problems";
 import { getFillColor, getTextColor } from "./functions";
-import type { ProblemViewProps } from "./ProblemView";
+import type { ProblemCellProps } from "./ProblemCell";
 
-export const useProblemView = (problemId: string): ProblemViewProps => {
+export const useProblemView = (problemId: string): ProblemCellProps => {
     const [problem] = useAtom(problemSelector(problemId));
     const { difficulty, displayName } = problem;
     const level =

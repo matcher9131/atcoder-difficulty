@@ -1,9 +1,9 @@
-import { ProblemView } from "./features/problem/components/ProblemView";
+import { ProblemCell } from "./features/problem/components/ProblemCell";
 
 const App = () => {
     return (
         <div className="border w-60">
-            <ProblemView
+            <ProblemCell
                 fillColor="fill-rating-1200"
                 iconHref="/resources/up_arrow_3.svg#up_arrow_3"
                 difficulty={1234}

@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 
-export type ProblemViewProps = {
+export type ProblemCellProps = {
     readonly iconHref: string;
     readonly fillColor: string;
     readonly difficulty: number;
@@ -10,14 +10,14 @@ export type ProblemViewProps = {
     readonly linkHref: string;
 };
 
-export const ProblemView = ({
+export const ProblemCell = ({
     fillColor,
     iconHref,
     difficulty,
     displayName,
     textColor,
     linkHref,
-}: ProblemViewProps): ReactNode => {
+}: ProblemCellProps): ReactNode => {
     return (
         <div className="flex items-baseline px-3 py-6 gap-x-1">
             <span className="relative">
