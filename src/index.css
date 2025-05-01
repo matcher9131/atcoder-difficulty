@@ -1,2 +1,13 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+@theme {
+    --color-rating-0: #808080;
+    --color-rating-400: #804000;
+    --color-rating-800: #008000;
+    --color-rating-1200: #00c0c0;
+    --color-rating-1600: #0000ff;
+    --color-rating-2000: #c0c000;
+    --color-rating-2400: #ff8000;
+    --color-rating-2800: #ff0000;
+}
