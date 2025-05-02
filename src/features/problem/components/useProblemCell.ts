@@ -3,7 +3,7 @@ import { problemSelector } from "../dict/problems";
 import { getFillColor, getTextColor } from "./functions";
 import type { ProblemCellProps } from "./ProblemCell";
 
-export const useProblemView = (problemId: string): ProblemCellProps => {
+export const useProblemCell = (problemId: string): ProblemCellProps => {
     const [problem] = useAtom(problemSelector(problemId));
     const { difficulty, displayName } = problem;
     const level =
