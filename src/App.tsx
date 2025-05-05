@@ -1,5 +1,5 @@
 import { ContestHeaderCell } from "./features/contest/components/ContestHeaderCell";
-import { ProblemCell } from "./features/problem/components/ProblemCell";
+import { ProblemCell } from "./features/problem/components/problemCell/ProblemCell";
 
 const App = () => {
     return (

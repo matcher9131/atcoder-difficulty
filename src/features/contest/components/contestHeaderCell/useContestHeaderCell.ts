@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import type { ContestHeaderCellProps } from "./ContestHeaderCell";
-import { contestMaxRatingAtom } from "../dict/contests";
+import { contestMaxRatingAtom } from "../../dict/contests";
 import { getTextColor } from "./functions";
 
 export const useContestHeaderCell = (

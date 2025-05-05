@@ -14,3 +14,15 @@ const problemsAtom = atom(await loadProblems());
 export const problemSelector = atomFamily((problemId: string) =>
     atom((get) => get(problemsAtom)[problemId]),
 );
+
+const allProblemIdsAtom = atom((get) => Object.keys(get(problemsAtom)));
+
+export const contestProblemIdsAtom = atomFamily((contestId: string) =>
+    atom((get) =>
+        get(allProblemIdsAtom).filter(
+            (problemId) =>
+                problemId.substring(0, problemId.lastIndexOf("_")) ===
+                contestId,
+        ),
+    ),
+);

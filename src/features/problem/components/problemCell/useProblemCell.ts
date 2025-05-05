@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { problemSelector } from "../dict/problems";
+import { problemSelector } from "../../dict/problems";
 import { getFillColor, getTextColor } from "./functions";
 import type { ProblemCellProps } from "./ProblemCell";
 
