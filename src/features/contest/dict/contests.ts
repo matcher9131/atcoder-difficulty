@@ -1,6 +1,7 @@
 import { atom } from "jotai";
 import type { Contests } from "../types/contest";
 import { atomFamily } from "jotai/utils";
+import type { ContestType } from "../types/contestType";
 
 const loadContets = async (): Promise<Contests> => {
     const response = await fetch("/contests.json");
@@ -15,7 +16,7 @@ export const contestMaxRatingAtom = atomFamily((contestId: string) =>
     atom((get) => get(contestsAtom)[contestId]),
 );
 
-export const abcLikeContestIdsAtom = atom((get) => {
+const abcLikeContestIdsAtom = atom((get) => {
     const contests = get(contestsAtom);
     return Object.keys(contests).filter((id) => {
         const maxRating = contests[id];
@@ -23,7 +24,7 @@ export const abcLikeContestIdsAtom = atom((get) => {
     });
 });
 
-export const arcLikeContestIdsAtom = atom((get) => {
+const arcLikeContestIdsAtom = atom((get) => {
     const contests = get(contestsAtom);
     return Object.keys(contests).filter((id) => {
         const maxRating = contests[id];
@@ -31,10 +32,27 @@ export const arcLikeContestIdsAtom = atom((get) => {
     });
 });
 
-export const agcLikeContestIdsAtom = atom((get) => {
+const agcLikeContestIdsAtom = atom((get) => {
     const contests = get(contestsAtom);
     return Object.keys(contests).filter((id) => {
         const maxRating = contests[id];
         return maxRating === "inf";
     });
 });
+
+export const contestIdsByTypeAtom = atomFamily((contestType: ContestType) =>
+    atom((get) => {
+        switch (contestType) {
+            case "abc":
+                return get(abcLikeContestIdsAtom);
+            case "arc":
+                return get(arcLikeContestIdsAtom);
+            case "agc":
+                return get(agcLikeContestIdsAtom);
+            default:
+                throw new Error(
+                    `Unknown value: ${(contestType as { type: "__invalid__" }).type}`,
+                );
+        }
+    }),
+);

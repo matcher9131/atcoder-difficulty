@@ -5,19 +5,18 @@ import type { ProblemCellProps } from "./ProblemCell";
 
 export const useProblemCell = (problemId: string): ProblemCellProps => {
     const [problem] = useAtom(problemSelector(problemId));
-    const { difficulty, displayName } = problem;
-    const level =
-        difficulty >= 3200 ? 4 : (Math.floor(difficulty / 50) % 4) + 1;
+    const [, difficulty] = problem.d ?? [null];
+    const level = difficulty != null ? (difficulty >= 3200 ? 4 : (Math.floor(difficulty / 50) % 4) + 1) : 0;
     const iconHref = `/resources/up_arrow_${level}.svg#up_arrow_${level}`;
-    const fillColor = getFillColor(difficulty);
-    const textColor = getTextColor(difficulty);
+    const fillColor = difficulty != null ? getFillColor(difficulty) : "";
+    const textColor = difficulty != null ? getTextColor(difficulty) : "";
     const contestName = problemId.substring(0, problemId.lastIndexOf("_"));
     const linkHref = `https://atcoder.jp/contests/${contestName}/tasks/${problemId}`;
     return {
         fillColor,
         iconHref,
-        difficulty,
-        displayName,
+        difficulty: difficulty != null ? `${difficulty}` : "NaN",
+        displayName: problem.n,
         textColor,
         linkHref,
     };
