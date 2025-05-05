@@ -19,18 +19,16 @@ export const ProblemCell = ({
     linkHref,
 }: ProblemCellProps): ReactNode => {
     return (
-        <td className="px-3 py-6 gap-x-1">
-            <div className="flex items-baseline">
-                <span className="relative">
-                    <svg role="img" aria-label="難易度アイコン" className={clsx("w-6", "h-4", fillColor)}>
-                        <use href={iconHref} />
-                    </svg>
-                    <div className="absolute top-4 w-6 text-center text-[.5em]">{difficulty}</div>
-                </span>
-                <a href={linkHref} target="_blank" rel="noreferrer" className={clsx("truncate", textColor)}>
-                    {displayName}
-                </a>
-            </div>
+        <td className="flex px-3 py-6 items-baseline">
+            <span className="relative">
+                <svg role="img" aria-label="難易度アイコン" className={clsx("w-6", "h-4", fillColor)}>
+                    <use href={iconHref} />
+                </svg>
+                <div className="absolute top-4 w-6 text-center text-[.7em]">{difficulty}</div>
+            </span>
+            <a href={linkHref} target="_blank" rel="noreferrer" className={clsx("truncate", textColor)}>
+                {displayName}
+            </a>
         </td>
     );
 };

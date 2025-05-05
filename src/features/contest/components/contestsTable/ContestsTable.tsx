@@ -8,9 +8,9 @@ export type ContestsTableProps = {
 
 export const ContestsTable = ({ numProblems, contestRows }: ContestsTableProps): ReactNode => {
     return (
-        <table className="w-full table-fixed">
+        <table className="w-full grid grid-cols-9">
             <ContestsTableHeader numProblems={numProblems} />
-            <tbody>{contestRows}</tbody>
+            <tbody className="contents">{contestRows}</tbody>
         </table>
     );
 };

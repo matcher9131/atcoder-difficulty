@@ -6,16 +6,10 @@ export type ContestRowProps = {
     readonly problemCells: readonly ReactNode[];
 };
 
-export const ContestRow = ({
-    numProblems,
-    headerCell,
-    problemCells,
-}: ContestRowProps): ReactNode => {
-    const blankCells = new Array(numProblems - problemCells.length)
-        .fill(0)
-        .map((_, i) => <td key={`${i}`}></td>);
+export const ContestRow = ({ numProblems, headerCell, problemCells }: ContestRowProps): ReactNode => {
+    const blankCells = new Array(numProblems - problemCells.length).fill(0).map((_, i) => <td key={`${i}`}></td>);
     return (
-        <tr>
+        <tr className="contents">
             {headerCell}
             {problemCells}
             {blankCells}
