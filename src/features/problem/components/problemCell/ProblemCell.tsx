@@ -19,7 +19,7 @@ export const ProblemCell = ({
     linkHref,
 }: ProblemCellProps): ReactNode => {
     return (
-        <div className="flex items-baseline px-3 py-6 gap-x-1">
+        <td className="flex items-baseline px-3 py-6 gap-x-1">
             <span className="relative">
                 <svg
                     role="img"
@@ -40,6 +40,6 @@ export const ProblemCell = ({
             >
                 {displayName}
             </a>
-        </div>
+        </td>
     );
 };

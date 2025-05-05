@@ -12,7 +12,7 @@ export const ContestHeaderCell = ({
     linkHref,
 }: ContestHeaderCellProps): ReactNode => {
     return (
-        <div className="flex items-baseline px-3 py-6 gap-x-1">
+        <td className="flex items-baseline px-3 py-6 gap-x-1">
             <span className={textColor}>◉</span>
             <a
                 href={linkHref}
@@ -22,6 +22,6 @@ export const ContestHeaderCell = ({
             >
                 {displayName}
             </a>
-        </div>
+        </td>
     );
 };
