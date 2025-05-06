@@ -12,9 +12,7 @@ const loadContets = async (): Promise<Contests> => {
 
 const contestsAtom = atom(await loadContets());
 
-export const contestMaxRatingAtom = atomFamily((contestId: string) =>
-    atom((get) => get(contestsAtom)[contestId]),
-);
+export const contestMaxRatingAtom = atomFamily((contestId: string) => atom((get) => get(contestsAtom)[contestId]));
 
 const abcLikeContestIdsAtom = atom((get) => {
     const contests = get(contestsAtom);
@@ -40,19 +38,15 @@ const agcLikeContestIdsAtom = atom((get) => {
     });
 });
 
-export const contestIdsByTypeAtom = atomFamily((contestType: ContestType) =>
-    atom((get) => {
-        switch (contestType) {
-            case "abc":
-                return get(abcLikeContestIdsAtom);
-            case "arc":
-                return get(arcLikeContestIdsAtom);
-            case "agc":
-                return get(agcLikeContestIdsAtom);
-            default:
-                throw new Error(
-                    `Unknown value: ${(contestType as { type: "__invalid__" }).type}`,
-                );
-        }
-    }),
-);
+export const contestIdsByTypeAtom = (contestType: ContestType) => {
+    switch (contestType) {
+        case "abc":
+            return abcLikeContestIdsAtom;
+        case "arc":
+            return arcLikeContestIdsAtom;
+        case "agc":
+            return agcLikeContestIdsAtom;
+        default:
+            throw new Error(`Unknown value: ${(contestType as { type: "__invalid__" }).type}`);
+    }
+};
