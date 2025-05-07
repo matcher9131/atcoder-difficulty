@@ -9,8 +9,19 @@ export const getNumProblems = (contestType: ContestType): number => {
         case "agc":
             return 10;
         default:
-            throw new Error(
-                `Unknown value: ${(contestType as { type: "__invalid__" }).type}`,
-            );
+            throw new Error(`Unknown value: ${(contestType as { type: "__invalid__" }).type}`);
+    }
+};
+
+export const getGridColsClassName = (contestType: ContestType): string => {
+    switch (contestType) {
+        case "abc":
+            return "grid-cols-9";
+        case "arc":
+            return "grid-cols-8";
+        case "agc":
+            return "grid-cols-11";
+        default:
+            throw new Error(`Unknown value: ${(contestType as { type: "__invalid__" }).type}`);
     }
 };

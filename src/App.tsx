@@ -1,11 +1,9 @@
-import { ContestsTableContainer } from "./features/contest/components/contestsTable";
-import { PaginationBarContainer } from "./features/pagination/components/paginationBar";
+import { ProblemsTab } from "./features/tabs/components/problemsTab/";
 
 const App = () => {
     return (
         <div>
-            <PaginationBarContainer stateKey={"abc"} />
-            <ContestsTableContainer contestType={"abc"} />
+            <ProblemsTab />
         </div>
     );
 };
