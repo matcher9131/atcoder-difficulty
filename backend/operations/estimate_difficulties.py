@@ -111,5 +111,5 @@ def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool
         print(f"Stopping process...")
     finally:
         save_json(problem_dict, output_filepath)
-        shutil.copy2("/output/problems.json", "../public/problems.json")
+        shutil.copy2("output/problems.json", "../public/problems.json")
 
