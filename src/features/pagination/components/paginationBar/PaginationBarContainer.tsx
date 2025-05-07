@@ -4,7 +4,7 @@ import type { PaginationKey } from "../../types/paginationKey";
 import { PaginationBar } from "./PaginationBar";
 
 type PaginationBarContainerProps = {
-    stateKey: PaginationKey;
+    readonly stateKey: PaginationKey;
 };
 
 export const PaginationBarContainer = ({ stateKey }: PaginationBarContainerProps): ReactNode => {
