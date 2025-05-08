@@ -1,28 +1,24 @@
 import { atom } from "jotai";
-import type { Problems } from "../types/problems";
 import { atomFamily } from "jotai/utils";
+import type { Problem } from "../types/problem";
 
-const loadProblems = async (): Promise<Problems> => {
+const loadProblems = async (): Promise<readonly Problem[]> => {
     const response = await fetch("/problems.json");
     if (!response.ok) throw new Error("Failed loading problems.");
-    const json = await response.json();
-    return json as Problems;
+    const json: Record<string, Omit<Problem, "id">> = await response.json();
+    return Object.entries(json).map(([id, rest]) => ({ id, ...rest }));
 };
 
-const problemsAtom = atom(await loadProblems());
+export const problemsAtom = atom(await loadProblems());
 
 export const problemSelector = atomFamily((problemId: string) =>
-    atom((get) => get(problemsAtom)[problemId]),
+    atom((get) => get(problemsAtom).find((problem) => problem.id === problemId)),
 );
 
-const allProblemIdsAtom = atom((get) => Object.keys(get(problemsAtom)));
+const allProblemIdsAtom = atom((get) => get(problemsAtom).map(({ id }) => id));
 
 export const contestProblemIdsAtom = atomFamily((contestId: string) =>
     atom((get) =>
-        get(allProblemIdsAtom).filter(
-            (problemId) =>
-                problemId.substring(0, problemId.lastIndexOf("_")) ===
-                contestId,
-        ),
+        get(allProblemIdsAtom).filter((problemId) => problemId.substring(0, problemId.lastIndexOf("_")) === contestId),
     ),
 );
