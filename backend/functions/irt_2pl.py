@@ -16,13 +16,16 @@ def neg_log_likelihood(params: tuple[float, float], responses: list[float], abil
 
 def estimate_problem_difficulty(abilities: list[float], responses: list[int]) -> tuple[float, float]:
     mean = np.mean(abilities)
-    stddev = np.std(abilities)
+    # Fix stddev for solve probability
+    # stddev = np.std(abilities)
+    stddev = 600.0
     scaled_abilities = (np.array(abilities) - mean) / stddev
     minimize_result = minimize(
         neg_log_likelihood,
         [np.log(6), 0.0],
         args=(responses, scaled_abilities),
-        method='Nelder-Mead'
+        method='Nelder-Mead',
+        options={"maxiter": 1000}
     )
     if minimize_result.success:
         discrimination, difficulty = minimize_result.x
