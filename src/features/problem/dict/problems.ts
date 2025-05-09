@@ -15,6 +15,8 @@ export const problemSelector = atomFamily((problemId: string) =>
     atom((get) => get(problemsAtom).find((problem) => problem.id === problemId)),
 );
 
+export const numProblemsAtom = atom((get) => get(problemsAtom).length);
+
 const allProblemIdsAtom = atom((get) => get(problemsAtom).map(({ id }) => id));
 
 export const contestProblemIdsAtom = atomFamily((contestId: string) =>

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { ContestHeaderCellContainer } from "../../../contest/components/contestHeaderCell";
-import { ProblemCellContainer } from "../problemCell";
+import { ProblemCellContainer } from "../../../problem/components/problemCell";
 
 export type ProblemSolveProbabilityRowProps = {
     readonly contestId: string;

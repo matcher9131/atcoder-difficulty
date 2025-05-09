@@ -1,6 +1,8 @@
 import { atom, type Atom } from "jotai";
 import { contestIdsByTypeAtom } from "../../contest/dict/contests";
 import type { PaginationKey } from "../types/paginationKey";
+import { problemSolveProbabilitiesMiddleIndexAtom } from "../../solveProbability/models/problemSolveProbabilities";
+import { numProblemsAtom } from "../../problem/dict/problems";
 
 const abcPaginationValueAtom = atom(0);
 const arcPaginationValueAtom = atom(0);
@@ -35,3 +37,13 @@ export const paginationMaxValueAtom = (key: PaginationKey): Atom<number> => {
             throw new Error(`Unknown key: ${(key as { type: "__invalid__" }).type}`);
     }
 };
+
+export const solveProbabilityPaginationValueAtom = atom(0);
+export const solveProbabilityPaginationMinValueAtom = atom((get) => {
+    const l = get(problemSolveProbabilitiesMiddleIndexAtom) - 50;
+    return -Math.ceil(l / 100);
+});
+export const solveProbabilityPaginationMaxValueAtom = atom((get) => {
+    const r = get(problemSolveProbabilitiesMiddleIndexAtom) + 50;
+    return Math.ceil((get(numProblemsAtom) - r) / 100) + 1;
+});

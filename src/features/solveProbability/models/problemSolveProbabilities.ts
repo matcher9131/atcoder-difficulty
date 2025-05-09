@@ -4,6 +4,7 @@ import { rawRatingAtom } from "../../rating/models/rating";
 import { compareSolveProbability, irt2pl } from "./functions";
 import { inverseAdjustmentOfLowRating } from "../../rating/models/functions";
 import { binarySearch } from "../../../utils/array";
+import { solveProbabilityPaginationValueAtom } from "../../pagination/model/paginations";
 
 const problemSolveProbabilitiesAtom = atom((get) => {
     const rating = get(rawRatingAtom);
@@ -17,11 +18,12 @@ const problemSolveProbabilitiesAtom = atom((get) => {
     return problems;
 });
 
-const problemSolveProbabilitiesMiddleIndexAtom = atom((get) => {
+export const problemSolveProbabilitiesMiddleIndexAtom = atom((get) => {
     return binarySearch(get(problemSolveProbabilitiesAtom), (problem) => problem.solveProbability, 0.5);
 });
 
 export const problemSolveProbabilitiesSlicedAtom = atom((get) => {
     const mid = get(problemSolveProbabilitiesMiddleIndexAtom);
-    return get(problemSolveProbabilitiesAtom).slice(mid - 50, mid + 50);
+    const pageIndex = get(solveProbabilityPaginationValueAtom);
+    return get(problemSolveProbabilitiesAtom).slice(mid - 50 + 100 * pageIndex, mid + 50 + 100 * pageIndex);
 });
