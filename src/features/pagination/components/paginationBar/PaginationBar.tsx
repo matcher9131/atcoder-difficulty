@@ -14,19 +14,19 @@ export type PaginationBarProps = {
 export const PaginationBar = ({ items, onClickDecrement, onClickIncrement }: PaginationBarProps): ReactNode => {
     return (
         <div className="join">
-            <button onClick={onClickDecrement} className="join-item btn btn-primary btn-outline">
+            <button onClick={onClickDecrement} className="join-item btn btn-sm btn-primary btn-outline">
                 ⮘
             </button>
-            {items.map(({ displayIndex, isSelected, onClick }) => (
+            {items.map((item) => (
                 <button
-                    key={displayIndex}
-                    onClick={onClick}
-                    className={clsx("join-item", "btn", "btn-primary", !isSelected && "btn-outline")}
+                    key={item.displayIndex}
+                    onClick={item.onClick}
+                    className={clsx("join-item", "btn", "btn-sm", "btn-primary", !item.isSelected && "btn-outline")}
                 >
-                    {displayIndex}
+                    {item.displayIndex}
                 </button>
             ))}
-            <button onClick={onClickIncrement} className="join-item btn btn-primary btn-outline">
+            <button onClick={onClickIncrement} className="join-item btn btn-sm btn-primary btn-outline">
                 ⮚
             </button>
         </div>

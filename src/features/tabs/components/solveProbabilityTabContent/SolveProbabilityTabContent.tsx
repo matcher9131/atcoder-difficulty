@@ -1,5 +1,6 @@
 import type { ChangeEventHandler, ReactNode, Ref } from "react";
 import { SolveProbabilityTableContainer } from "../../../solveProbability/components/solveProbabilityTable";
+import { PaginationBarContainer } from "../../../pagination/components/paginationBar";
 
 export type SolveProbabilityTabContentProps = {
     readonly ratingInputRef: Ref<HTMLInputElement>;
@@ -14,7 +15,6 @@ export const SolveProbabilityTabContent = ({
     numContestsInputRef,
     handleNumContestsChange,
 }: SolveProbabilityTabContentProps): ReactNode => {
-    // TODO: Add PaginationBarContainer
     return (
         <div className="tab-content bg-base-100 border-base-300 p-4 w-full text-center">
             <div className="text-left flex gap-x-2">
@@ -43,7 +43,9 @@ export const SolveProbabilityTabContent = ({
                     />
                 </label>
             </div>
+            <PaginationBarContainer stateKey="solveProbability" />
             <SolveProbabilityTableContainer />
+            <PaginationBarContainer stateKey="solveProbability" />
         </div>
     );
 };

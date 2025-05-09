@@ -1,25 +1,30 @@
 import { useAtom } from "jotai";
 import type { PaginationBarProps } from "./PaginationBar";
-import { paginationMaxValueAtom, paginationValueAtom } from "../../model/paginations";
+import { paginationMinMaxValueAtom, paginationValueAtom } from "../../model/paginations";
 import type { PaginationKey } from "../../types/paginationKey";
+import { range, thinnedRange } from "../../../../utils/array";
 
 export const usePaginationBar = (stateKey: PaginationKey): PaginationBarProps => {
     const [value, setValue] = useAtom(paginationValueAtom(stateKey));
-    const [maxValue] = useAtom(paginationMaxValueAtom(stateKey));
+    const [[min, max]] = useAtom(paginationMinMaxValueAtom(stateKey));
+
+    const usesNegativeIndex = min < 0;
+    const showsAll = max - min <= 10;
+    const pageIndices = showsAll ? range(min, max - min) : thinnedRange(min, value, max);
 
     return {
-        items: new Array(maxValue).fill(0).map((_, i) => ({
-            displayIndex: `${i + 1}`,
+        items: pageIndices.map((i) => ({
+            displayIndex: `${usesNegativeIndex ? i : i + 1}`,
             isSelected: value === i,
             onClick: () => {
                 setValue(i);
             },
         })),
         onClickDecrement: () => {
-            setValue((i) => (i > 0 ? i - 1 : i));
+            setValue((i) => (i > min ? i - 1 : i));
         },
         onClickIncrement: () => {
-            setValue((i) => (i < maxValue - 1 ? i + 1 : i));
+            setValue((i) => (i < max - 1 ? i + 1 : i));
         },
     };
 };

@@ -7,6 +7,7 @@ import { numProblemsAtom } from "../../problem/dict/problems";
 const abcPaginationValueAtom = atom(0);
 const arcPaginationValueAtom = atom(0);
 const agcPaginationValueAtom = atom(0);
+const solveProbabilityPaginationValueAtom = atom(0);
 
 export const paginationValueAtom = (key: PaginationKey): ReturnType<typeof atom<number>> => {
     switch (key) {
@@ -16,16 +17,28 @@ export const paginationValueAtom = (key: PaginationKey): ReturnType<typeof atom<
             return arcPaginationValueAtom;
         case "agc":
             return agcPaginationValueAtom;
+        case "solveProbability":
+            return solveProbabilityPaginationValueAtom;
         default:
             throw new Error(`Unknown key: ${(key as { type: "__invalid__" }).type}`);
     }
 };
 
-const abcPaginationMaxValueAtom = atom((get) => Math.ceil(get(contestIdsByTypeAtom("abc")).length / 100));
-const arcPaginationMaxValueAtom = atom((get) => Math.ceil(get(contestIdsByTypeAtom("arc")).length / 100));
-const agcPaginationMaxValueAtom = atom((get) => Math.ceil(get(contestIdsByTypeAtom("agc")).length / 100));
+const abcPaginationMaxValueAtom = atom(
+    (get) => [0 as number, Math.ceil(get(contestIdsByTypeAtom("abc")).length / 100)] as const,
+);
+const arcPaginationMaxValueAtom = atom(
+    (get) => [0 as number, Math.ceil(get(contestIdsByTypeAtom("arc")).length / 100)] as const,
+);
+const agcPaginationMaxValueAtom = atom(
+    (get) => [0 as number, Math.ceil(get(contestIdsByTypeAtom("agc")).length / 100)] as const,
+);
+const solveProbabilityPaginationMinMaxValueAtom = atom((get) => {
+    const mid = get(solveProbabilitiesMiddleIndexAtom);
+    return [-Math.ceil((mid - 50) / 100), Math.ceil((get(numProblemsAtom) - (mid + 50)) / 100) + 1] as const;
+});
 
-export const paginationMaxValueAtom = (key: PaginationKey): Atom<number> => {
+export const paginationMinMaxValueAtom = (key: PaginationKey): Atom<readonly [number, number]> => {
     switch (key) {
         case "abc":
             return abcPaginationMaxValueAtom;
@@ -33,17 +46,9 @@ export const paginationMaxValueAtom = (key: PaginationKey): Atom<number> => {
             return arcPaginationMaxValueAtom;
         case "agc":
             return agcPaginationMaxValueAtom;
+        case "solveProbability":
+            return solveProbabilityPaginationMinMaxValueAtom;
         default:
             throw new Error(`Unknown key: ${(key as { type: "__invalid__" }).type}`);
     }
 };
-
-export const solveProbabilityPaginationValueAtom = atom(0);
-export const solveProbabilityPaginationMinValueAtom = atom((get) => {
-    const l = get(solveProbabilitiesMiddleIndexAtom) - 50;
-    return -Math.ceil(l / 100);
-});
-export const solveProbabilityPaginationMaxValueAtom = atom((get) => {
-    const r = get(solveProbabilitiesMiddleIndexAtom) + 50;
-    return Math.ceil((get(numProblemsAtom) - r) / 100) + 1;
-});
