@@ -3,7 +3,7 @@ export const binarySearch = <T>(arr: readonly T[], selector: (x: T) => number, v
     let right = arr.length;
     while (right - left > 0) {
         const mid = Math.floor((left + right) / 2);
-        if (selector(arr[mid]) > value) {
+        if (selector(arr[mid]) < value) {
             left = mid + 1;
         } else {
             right = mid;
