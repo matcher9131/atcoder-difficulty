@@ -1,7 +1,7 @@
 import type { ProblemSolveProbability } from "../../types/problemSolveProbability";
-import type { ProblemSolveProbabilityRowProps } from "./ProblemSolveProbabilityRow";
+import type { SolveProbabilityRowProps } from "./SolveProbabilityRow";
 
-export const useProblemSolveProbabilityRow = (problem: ProblemSolveProbability): ProblemSolveProbabilityRowProps => {
+export const useSolveProbabilityRow = (problem: ProblemSolveProbability): SolveProbabilityRowProps => {
     // TODO: Implement converting problemId to contestId
     const contestId = "foo";
     const problemId = problem.id;

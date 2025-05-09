@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
-import { ProblemSolveProbabilityRowContainer } from "../problemSolveProbabilityRow";
 import type { ProblemSolveProbability } from "../../types/problemSolveProbability";
+import { SolveProbabilityRowContainer } from "../solveProbabilityRow/";
 
-export type ProblemSolveProbabilityTableProps = {
+export type SolveProbabilityTableProps = {
     readonly problems: readonly ProblemSolveProbability[];
 };
 
-export const ProblemSolveProbabilityTable = ({ problems }: ProblemSolveProbabilityTableProps): ReactNode => {
+export const SolveProbabilityTable = ({ problems }: SolveProbabilityTableProps): ReactNode => {
     return (
         <table>
             <thead>
@@ -17,7 +17,7 @@ export const ProblemSolveProbabilityTable = ({ problems }: ProblemSolveProbabili
             </thead>
             <tbody>
                 {problems.map((problem) => (
-                    <ProblemSolveProbabilityRowContainer key={problem.id} problem={problem} />
+                    <SolveProbabilityRowContainer key={problem.id} problem={problem} />
                 ))}
             </tbody>
         </table>

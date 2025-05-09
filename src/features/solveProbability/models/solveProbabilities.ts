@@ -6,7 +6,7 @@ import { inverseAdjustmentOfLowRating } from "../../rating/models/functions";
 import { binarySearch } from "../../../utils/array";
 import { solveProbabilityPaginationValueAtom } from "../../pagination/model/paginations";
 
-const problemSolveProbabilitiesAtom = atom((get) => {
+const solveProbabilitiesAtom = atom((get) => {
     const rating = get(rawRatingAtom);
     if (rating == null) return [];
     const problems = get(problemsAtom).map((problem) => ({
@@ -18,12 +18,12 @@ const problemSolveProbabilitiesAtom = atom((get) => {
     return problems;
 });
 
-export const problemSolveProbabilitiesMiddleIndexAtom = atom((get) => {
-    return binarySearch(get(problemSolveProbabilitiesAtom), (problem) => problem.solveProbability, 0.5);
+export const solveProbabilitiesMiddleIndexAtom = atom((get) => {
+    return binarySearch(get(solveProbabilitiesAtom), (problem) => problem.solveProbability, 0.5);
 });
 
-export const problemSolveProbabilitiesSlicedAtom = atom((get) => {
-    const mid = get(problemSolveProbabilitiesMiddleIndexAtom);
+export const solveProbabilitiesSlicedAtom = atom((get) => {
+    const mid = get(solveProbabilitiesMiddleIndexAtom);
     const pageIndex = get(solveProbabilityPaginationValueAtom);
-    return get(problemSolveProbabilitiesAtom).slice(mid - 50 + 100 * pageIndex, mid + 50 + 100 * pageIndex);
+    return get(solveProbabilitiesAtom).slice(mid - 50 + 100 * pageIndex, mid + 50 + 100 * pageIndex);
 });
