@@ -3,7 +3,7 @@ import { problemsAtom } from "../../problem/dict/problems";
 import { rawRatingAtom } from "../../rating/models/rating";
 import { compareSolveProbability, irt2pl } from "./functions";
 import { inverseAdjustmentOfLowRating } from "../../rating/models/functions";
-import { binarySearch } from "../../../utils/array";
+import { lowerBound } from "../../../utils/array";
 import { solveProbabilityPaginationValueAtom } from "../../pagination/model/paginations";
 
 const solveProbabilitiesAtom = atom((get) => {
@@ -19,7 +19,7 @@ const solveProbabilitiesAtom = atom((get) => {
 });
 
 export const solveProbabilitiesMiddleIndexAtom = atom((get) => {
-    return binarySearch(get(solveProbabilitiesAtom), (problem) => problem.solveProbability, 0.5);
+    return lowerBound(get(solveProbabilitiesAtom), (problem) => problem.solveProbability, 0.5);
 });
 
 export const solveProbabilitiesSlicedAtom = atom((get) => {

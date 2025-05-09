@@ -1,4 +1,4 @@
-export const binarySearch = <T>(arr: readonly T[], selector: (x: T) => number, value: number): number => {
+export const lowerBound = <T>(arr: readonly T[], selector: (x: T) => number, value: number): number => {
     let left = 0;
     let right = arr.length;
     while (right - left > 0) {
