@@ -16,7 +16,7 @@ export const SolveProbabilityRow = ({
     solveProbability,
 }: SolveProbabilityRowProps): ReactNode => {
     return (
-        <tr>
+        <tr className="contents">
             <ContestHeaderCellContainer contestId={contestId} />
             <ProblemCellContainer problemId={problemId} />
             <td className="px-3 py-6 text-right">{difficulty}</td>

@@ -13,7 +13,7 @@ export const useSolveProbabilityRow = (problem: ProblemSolveProbability): SolveP
               ? "99.9%"
               : problem.solveProbability < 0.001
                 ? "0.1%"
-                : `${Math.round(problem.solveProbability * 1000) / 10}%`;
+                : `${(problem.solveProbability * 100).toFixed(1)}%`;
     return {
         contestId,
         problemId,

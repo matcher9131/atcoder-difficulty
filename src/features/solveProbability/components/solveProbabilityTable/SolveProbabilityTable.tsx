@@ -8,14 +8,16 @@ export type SolveProbabilityTableProps = {
 
 export const SolveProbabilityTable = ({ problems }: SolveProbabilityTableProps): ReactNode => {
     return (
-        <table>
-            <thead>
-                <th>Contest</th>
-                <th>Problem</th>
-                <th>Difficulty</th>
-                <th>Solve Prob.</th>
+        <table className="grid grid-cols-4">
+            <thead className="contents">
+                <tr className="contents">
+                    <th>Contest</th>
+                    <th>Problem</th>
+                    <th>Difficulty</th>
+                    <th>Solve Probability</th>
+                </tr>
             </thead>
-            <tbody>
+            <tbody className="contents">
                 {problems.map((problem) => (
                     <SolveProbabilityRowContainer key={problem.id} problem={problem} />
                 ))}
