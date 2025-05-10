@@ -2,7 +2,12 @@ import { useAtom } from "jotai";
 import type { PaginationBarProps } from "./PaginationBar";
 import { paginationMinMaxValueAtom, paginationValueAtom } from "../../model/paginations";
 import type { PaginationKey } from "../../types/paginationKey";
-import { range, thinnedRange } from "../../../../utils/array";
+import { lowerBound, range, thinnedRange } from "../../../../utils/array";
+
+const toZeroInserted = (arr: number[]): number[] => {
+    const i = lowerBound(arr, (x) => x, 0);
+    return arr[i] === 0 ? [...arr] : arr.toSpliced(i, 0, 0);
+};
 
 export const usePaginationBar = (stateKey: PaginationKey): PaginationBarProps => {
     const [value, setValue] = useAtom(paginationValueAtom(stateKey));
@@ -10,7 +15,7 @@ export const usePaginationBar = (stateKey: PaginationKey): PaginationBarProps =>
 
     const usesNegativeIndex = min < 0;
     const showsAll = max - min <= 10;
-    const pageIndices = showsAll ? range(min, max - min) : thinnedRange(min, value, max);
+    const pageIndices = showsAll ? range(min, max - min) : toZeroInserted(thinnedRange(min, value, max));
 
     return {
         items: pageIndices.map((i) => ({
