@@ -1,12 +1,14 @@
-from models.player_histories import PlayerNumContestsDict, load_player_num_contests_dict
+from datetime import datetime
 from numpy import isnan
 import shutil
+
 from functions.irt_2pl import estimate_problem_difficulty
 from functions.rating import get_raw_rating
 from models.contest import Contest, load_contest
-from models.estimation_settings import contest_needs_history
+from models.contest_info import ContestInfo
+from models.player_histories import PlayerNumContestsDict, load_player_num_contests_dict
 from models.problem import Problem
-from util.json_io import load_json, save_json, enumerate_contest_names
+from util.json_io import load_json, save_json, enumerate_contest_ids
 
 def is_nan_tuple(x: tuple[float, float] | tuple[None, None]) -> bool:
     for xi in x:
@@ -49,55 +51,54 @@ def get_abilities_and_responses(
     return abilities, responses, is_target_of_easy_problems
 
 
-def estimate_contest_difficulties(contest: Contest, player_num_contests_dict: None | PlayerNumContestsDict, easy_problem_indices: list[int] = []) -> list[tuple[float, float]]:
-    result = []
+def estimate_contest_difficulties(contest: Contest, player_num_contests_dict: None | PlayerNumContestsDict, easy_problem_indices: list[int] = []) -> dict[str, Problem]:
+    print(f"Estimating difficulties of {contest['name']}")
+    result: dict[str, Problem] = {}
     abilities, responses, is_target_of_easy_problems = get_abilities_and_responses(contest, player_num_contests_dict, easy_problem_indices)
-    for problem_index in range(len(contest["problems"])):
-        if problem_index in easy_problem_indices:
-            result.append(estimate_problem_difficulty(
-                [ability for ability, is_target in zip(abilities, is_target_of_easy_problems) if is_target],
-                [response for response, is_target in zip(responses[problem_index], is_target_of_easy_problems) if is_target]
-            ))
-        else:
-            result.append(estimate_problem_difficulty(abilities, responses[problem_index]))
+    for problem_index, (problem_id, problem_display_name) in enumerate(contest["problems"].items()):
+        raw_difficulty_tuple = estimate_problem_difficulty(
+            [ability for ability, is_target in zip(abilities, is_target_of_easy_problems) if is_target],
+            [response for response, is_target in zip(responses[problem_index], is_target_of_easy_problems) if is_target]
+        ) if problem_index in easy_problem_indices else estimate_problem_difficulty(abilities, responses[problem_index])
+        #
+        print(f"problem_index = {problem_index}, problem_id = {problem_id}, raw_difficulty_tuple = {raw_difficulty_tuple}, sum_responses = {sum(responses[problem_index])}")
+        #
+        difficulty_tuple = None if is_nan_tuple(raw_difficulty_tuple) or raw_difficulty_tuple[0] < 0 else (round(raw_difficulty_tuple[0], 3), int(round(raw_difficulty_tuple[1], 0)))
+        result[problem_id] = { "n": problem_display_name, "d": difficulty_tuple }
     return result
 
 
-def estimate_and_save_difficulties(contest_names: list[str], forces_update: bool):
+def estimate_and_save_difficulties(contest_ids: list[str], forces_update: bool):
     output_filepath = "output/problems.json"
     problem_dict: dict[str, Problem] = load_json(output_filepath)
+    contest_info = ContestInfo()
 
+    if (not contest_ids):
+        contest_ids = enumerate_contest_ids()
+    
     player_num_contests_dict = load_player_num_contests_dict()
 
-    if (not contest_names):
-        contest_names = enumerate_contest_names()
+    needs_history_older_than_this = datetime.fromisoformat("2025-04-05T12:00:00.000Z")
 
-    try:
-        for contest_name in contest_names:
-            try:
-                contest: Contest = load_contest(contest_name)
-                if (not forces_update and all(problem_id in problem_dict for problem_id in contest["problems"])):
-                    continue
-                print(f"Estimating difficulties of {contest_name}")
-                raw_difficulties = estimate_contest_difficulties(
-                    contest,
-                    player_num_contests_dict if contest_needs_history(contest_name) else None,
-                    [0, 1] if contest_name.startswith("abc") else []
-                )
-                difficulties = [
-                    None if is_nan_tuple(difficulty_tuple)
-                    # None where discrimination of problem is negative
-                    else None if difficulty_tuple[0] < 0
-                    else (round(difficulty_tuple[0], 3), int(round(difficulty_tuple[1], 0)))
-                    for difficulty_tuple in raw_difficulties
-                ]
-                for problem_id, difficulty_tuple in zip(contest["problems"], difficulties):
-                    problem_dict[problem_id] = { "n": contest["problems"][problem_id], "d": difficulty_tuple }
-            except FileNotFoundError:
-                print(f"Contest {contest_name} is not found.")
-    except KeyboardInterrupt:
-        print(f"Stopping process...")
-    finally:
-        save_json(problem_dict, output_filepath)
-        # shutil.copy2("output/problems.json", "../public/problems.json")
+    contests: list[Contest] = []
+    player_num_contests_dicts: list[None | PlayerNumContestsDict] = []
+    easy_problem_indices_list: list[list[int]] = []
+    for contest_id in contest_ids:
+        try:
+            contest: Contest = load_contest(contest_id)
+            if (forces_update or any([problem_id not in problem_dict for problem_id in contest["problems"].keys()])):
+                contests.append(contest)
+                contest_date = contest_info.get_contest_date(contest_id)
+                player_num_contests_dicts.append(player_num_contests_dict if contest_date is None or contest_date < needs_history_older_than_this else None)
+                max_rating = contest_info.get_max_rating(contest_id)
+                easy_problem_indices_list.append([0, 1] if max_rating is not None and max_rating < 2000 else [])
+        except FileNotFoundError:
+            print(f"Contest {contest_id} is not found.")
+    
 
+    result = estimate_contest_difficulties(contests[0], player_num_contests_dicts[0], easy_problem_indices_list[0])
+    for pid, val in result.items():
+        problem_dict[pid] = val
+
+    save_json(problem_dict, output_filepath)
+    shutil.copy2("output/problems.json", "../public/problems.json")

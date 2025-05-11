@@ -1,7 +1,7 @@
 import sys
 
 from operations.estimate_difficulties import estimate_and_save_difficulties
-from util.json_io import enumerate_contest_names
+from util.json_io import enumerate_contest_ids
 
 
 if (len(sys.argv) == 1):
@@ -21,7 +21,7 @@ else:
     estimates_all = "-a" in sys.argv[1:]
     contest_name = next((arg for arg in sys.argv[1:] if arg != "-f" and arg != "-a"), None)
     if estimates_all:
-        estimate_and_save_difficulties(enumerate_contest_names(), forces_update)
+        estimate_and_save_difficulties(enumerate_contest_ids(), forces_update)
     elif contest_name is None:
         print("Missing argument: contest")
         sys.exit(0)
