@@ -5,9 +5,10 @@ import { PaginationBar } from "./PaginationBar";
 
 type PaginationBarContainerProps = {
     readonly stateKey: PaginationKey;
+    readonly scrollsToTop?: boolean;
 };
 
-export const PaginationBarContainer = ({ stateKey }: PaginationBarContainerProps): ReactNode => {
-    const props = usePaginationBar(stateKey);
+export const PaginationBarContainer = ({ stateKey, scrollsToTop }: PaginationBarContainerProps): ReactNode => {
+    const props = usePaginationBar(stateKey, scrollsToTop === true);
     return <PaginationBar {...props} />;
 };

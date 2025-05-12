@@ -35,7 +35,7 @@ export const useSolveProbabilityTabContent = (): SolveProbabilityTabContentProps
 
     const headerPaginationBar = <PaginationBarContainer stateKey="solveProbability" />;
     const solveProbabilityTable = <SolveProbabilityTableContainer />;
-    const footerPaginationBar = <PaginationBarContainer stateKey="solveProbability" />;
+    const footerPaginationBar = <PaginationBarContainer stateKey="solveProbability" scrollsToTop={true} />;
 
     return {
         ratingInputRef,

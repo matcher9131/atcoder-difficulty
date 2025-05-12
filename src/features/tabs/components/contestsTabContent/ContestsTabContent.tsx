@@ -12,7 +12,7 @@ export const ContestsTabContent = ({ contestType }: ContestsTabContentProps): Re
         <div className="tab-content bg-base-100 border-base-300 p-4 w-full text-center">
             <PaginationBarContainer stateKey={contestType} />
             <ContestsTableContainer contestType={contestType} />
-            <PaginationBarContainer stateKey={contestType} />
+            <PaginationBarContainer stateKey={contestType} scrollsToTop={true} />
         </div>
     );
 };
