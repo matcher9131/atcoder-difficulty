@@ -1,17 +1,20 @@
 import type { ReactNode } from "react";
-import { ContestsTableHeader } from "../contestsTableHeader";
 import clsx from "clsx";
 
 export type ContestsTableProps = {
-    readonly numProblems: number;
+    readonly contestsTableHeader: ReactNode;
     readonly gridColsClassName: string;
     readonly contestRows: readonly ReactNode[];
 };
 
-export const ContestsTable = ({ numProblems, gridColsClassName, contestRows }: ContestsTableProps): ReactNode => {
+export const ContestsTable = ({
+    contestsTableHeader,
+    gridColsClassName,
+    contestRows,
+}: ContestsTableProps): ReactNode => {
     return (
         <table className={clsx("w-full", "grid", gridColsClassName)}>
-            <ContestsTableHeader numProblems={numProblems} />
+            {contestsTableHeader}
             <tbody className="contents">{contestRows}</tbody>
         </table>
     );

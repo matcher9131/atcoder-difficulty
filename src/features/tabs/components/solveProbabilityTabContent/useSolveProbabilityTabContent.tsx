@@ -3,6 +3,8 @@ import { useRef, type ChangeEvent } from "react";
 import { numContestsAtom, ratingAtom } from "../../../rating/models/rating";
 import { parseIntOrNull } from "../../../../utils/number";
 import type { SolveProbabilityTabContentProps } from "./SolveProbabilityTabContent";
+import { PaginationBarContainer } from "../../../pagination/components/paginationBar";
+import { SolveProbabilityTableContainer } from "../../../solveProbability/components/solveProbabilityTable";
 
 export const useSolveProbabilityTabContent = (): SolveProbabilityTabContentProps => {
     const [, setRating] = useAtom(ratingAtom);
@@ -31,5 +33,17 @@ export const useSolveProbabilityTabContent = (): SolveProbabilityTabContentProps
         }, 200);
     };
 
-    return { ratingInputRef, handleRatingChange, numContestsInputRef, handleNumContestsChange };
+    const headerPaginationBar = <PaginationBarContainer stateKey="solveProbability" />;
+    const solveProbabilityTable = <SolveProbabilityTableContainer />;
+    const footerPaginationBar = <PaginationBarContainer stateKey="solveProbability" />;
+
+    return {
+        ratingInputRef,
+        handleRatingChange,
+        numContestsInputRef,
+        handleNumContestsChange,
+        headerPaginationBar,
+        solveProbabilityTable,
+        footerPaginationBar,
+    };
 };

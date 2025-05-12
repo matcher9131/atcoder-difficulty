@@ -1,12 +1,10 @@
 import type { ReactNode } from "react";
-import type { ProblemSolveProbability } from "../../types/problemSolveProbability";
-import { SolveProbabilityRowContainer } from "../solveProbabilityRow/";
 
 export type SolveProbabilityTableProps = {
-    readonly problems: readonly ProblemSolveProbability[];
+    readonly rows: readonly ReactNode[];
 };
 
-export const SolveProbabilityTable = ({ problems }: SolveProbabilityTableProps): ReactNode => {
+export const SolveProbabilityTable = ({ rows }: SolveProbabilityTableProps): ReactNode => {
     return (
         <table className="grid grid-cols-4">
             <thead className="contents">
@@ -17,11 +15,7 @@ export const SolveProbabilityTable = ({ problems }: SolveProbabilityTableProps):
                     <th>Solve Probability</th>
                 </tr>
             </thead>
-            <tbody className="contents">
-                {problems.map((problem) => (
-                    <SolveProbabilityRowContainer key={problem.id} problem={problem} />
-                ))}
-            </tbody>
+            <tbody className="contents">{rows}</tbody>
         </table>
     );
 };

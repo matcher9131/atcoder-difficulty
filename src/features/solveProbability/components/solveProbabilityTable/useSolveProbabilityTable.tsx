@@ -1,8 +1,10 @@
 import { useAtom } from "jotai";
 import { solveProbabilitiesSlicedAtom } from "../../models/solveProbabilities";
 import type { SolveProbabilityTableProps } from "./SolveProbabilityTable";
+import { SolveProbabilityRowContainer } from "../solveProbabilityRow";
 
 export const useSolveProbabilityTable = (): SolveProbabilityTableProps => {
     const [problems] = useAtom(solveProbabilitiesSlicedAtom);
-    return { problems };
+    const rows = problems.map((problem) => <SolveProbabilityRowContainer key={problem.id} problem={problem} />);
+    return { rows };
 };

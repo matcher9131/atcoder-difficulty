@@ -1,12 +1,13 @@
 import type { ChangeEventHandler, ReactNode, Ref } from "react";
-import { SolveProbabilityTableContainer } from "../../../solveProbability/components/solveProbabilityTable";
-import { PaginationBarContainer } from "../../../pagination/components/paginationBar";
 
 export type SolveProbabilityTabContentProps = {
     readonly ratingInputRef: Ref<HTMLInputElement>;
     readonly handleRatingChange: ChangeEventHandler<HTMLInputElement>;
     readonly numContestsInputRef: Ref<HTMLInputElement>;
     readonly handleNumContestsChange: ChangeEventHandler<HTMLInputElement>;
+    readonly headerPaginationBar: ReactNode;
+    readonly solveProbabilityTable: ReactNode;
+    readonly footerPaginationBar: ReactNode;
 };
 
 export const SolveProbabilityTabContent = ({
@@ -14,6 +15,9 @@ export const SolveProbabilityTabContent = ({
     handleRatingChange,
     numContestsInputRef,
     handleNumContestsChange,
+    headerPaginationBar,
+    solveProbabilityTable,
+    footerPaginationBar,
 }: SolveProbabilityTabContentProps): ReactNode => {
     return (
         <div className="tab-content bg-base-100 border-base-300 p-4 w-full text-center">
@@ -43,9 +47,9 @@ export const SolveProbabilityTabContent = ({
                     />
                 </label>
             </div>
-            <PaginationBarContainer stateKey="solveProbability" />
-            <SolveProbabilityTableContainer />
-            <PaginationBarContainer stateKey="solveProbability" />
+            {headerPaginationBar}
+            {solveProbabilityTable}
+            {footerPaginationBar}
         </div>
     );
 };
