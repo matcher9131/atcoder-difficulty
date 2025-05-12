@@ -8,6 +8,8 @@ export type ProblemCellProps = {
     readonly displayName: string;
     readonly textColor: string;
     readonly linkHref: string;
+    readonly showsParameters: boolean;
+    readonly problemIndex?: string;
 };
 
 export const ProblemCell = ({
@@ -17,6 +19,8 @@ export const ProblemCell = ({
     displayName,
     textColor,
     linkHref,
+    showsParameters,
+    problemIndex,
 }: ProblemCellProps): ReactNode => {
     return (
         <td className="flex px-3 py-6 items-baseline">
@@ -24,10 +28,10 @@ export const ProblemCell = ({
                 <svg role="img" aria-label="難易度アイコン" className={clsx("w-6", "h-4", fillColor)}>
                     <use href={iconHref} />
                 </svg>
-                <div className="absolute top-4 w-6 text-center text-[.7em]">{difficulty}</div>
+                {showsParameters && <div className="absolute -top-4 w-6 text-center text-[.7em]">{difficulty}</div>}
             </span>
             <a href={linkHref} target="_blank" rel="noreferrer" className={clsx("truncate", textColor)}>
-                {displayName}
+                {problemIndex != null ? `${problemIndex} - ${displayName}` : displayName}
             </a>
         </td>
     );

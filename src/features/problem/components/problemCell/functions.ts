@@ -1,3 +1,5 @@
+import { capitalize } from "../../../../utils/string";
+
 export const getFillColor = (rating: number): string => {
     switch (Math.floor(rating / 400)) {
         case 0:
@@ -38,4 +40,8 @@ export const getTextColor = (rating: number): string => {
         default:
             return "text-rating-2800";
     }
+};
+
+export const getProblemIndex = (problemId: string): string => {
+    return capitalize(problemId.substring(problemId.lastIndexOf("_") + 1));
 };

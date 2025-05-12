@@ -1,10 +1,14 @@
 import { useAtom } from "jotai";
 import { problemSelector } from "../../dict/problems";
-import { getFillColor, getTextColor } from "./functions";
+import { getFillColor, getProblemIndex, getTextColor } from "./functions";
 import type { ProblemCellProps } from "./ProblemCell";
 import { splitProblemId } from "../../functions/split";
 
-export const useProblemCell = (problemId: string): ProblemCellProps => {
+export const useProblemCell = (
+    problemId: string,
+    showsParameters: boolean,
+    showsProblemIndex: boolean,
+): ProblemCellProps => {
     const [problem] = useAtom(problemSelector(problemId));
     const [, difficulty] = problem?.d ?? [null];
     const level = difficulty != null ? (difficulty >= 3200 ? 4 : (Math.floor(difficulty / 100) % 4) + 1) : 0;
@@ -20,5 +24,7 @@ export const useProblemCell = (problemId: string): ProblemCellProps => {
         displayName: problem?.n ?? "",
         textColor,
         linkHref,
+        showsParameters,
+        ...(showsProblemIndex ? { problemIndex: getProblemIndex(problemId) } : {}),
     };
 };
