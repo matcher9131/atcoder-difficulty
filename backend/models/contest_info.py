@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 from util.json_io import load_json, save_json
 
@@ -36,3 +36,15 @@ class ContestInfo:
 
     def save(self):
         save_json(self._items, ContestInfo._filepath)
+
+    def get_all_contest_max_ratings(self) -> list[tuple[str, int | Literal["inf"]]] :
+        results: list[tuple[str, int | Literal["inf"]]] = [
+            (
+                contest_id,
+                "inf" if contest_info_item["rating"] is None
+                else "inf" if contest_info_item["rating"]["max"] is None
+                else contest_info_item["rating"]["max"]
+            ) for contest_id, contest_info_item in self._items.items()
+        ]
+        results.sort(reverse=True, key=lambda item: self._items[item[0]]["date"])
+        return results
