@@ -1,3 +1,4 @@
+from concurrent.futures import as_completed, ProcessPoolExecutor
 from datetime import datetime
 from numpy import isnan
 import shutil
@@ -60,9 +61,6 @@ def estimate_contest_difficulties(contest: Contest, player_num_contests_dict: No
             [ability for ability, is_target in zip(abilities, is_target_of_easy_problems) if is_target],
             [response for response, is_target in zip(responses[problem_index], is_target_of_easy_problems) if is_target]
         ) if problem_index in easy_problem_indices else estimate_problem_difficulty(abilities, responses[problem_index])
-        #
-        print(f"problem_index = {problem_index}, problem_id = {problem_id}, raw_difficulty_tuple = {raw_difficulty_tuple}, sum_responses = {sum(responses[problem_index])}")
-        #
         difficulty_tuple = None if is_nan_tuple(raw_difficulty_tuple) or raw_difficulty_tuple[0] < 0 else (round(raw_difficulty_tuple[0], 3), int(round(raw_difficulty_tuple[1], 0)))
         result[problem_id] = { "n": problem_display_name, "d": difficulty_tuple }
     return result
@@ -80,25 +78,30 @@ def estimate_and_save_difficulties(contest_ids: list[str], forces_update: bool):
 
     needs_history_older_than_this = datetime.fromisoformat("2025-04-05T12:00:00.000Z")
 
-    contests: list[Contest] = []
-    player_num_contests_dicts: list[None | PlayerNumContestsDict] = []
-    easy_problem_indices_list: list[list[int]] = []
-    for contest_id in contest_ids:
+    with ProcessPoolExecutor() as executor:
+        futures = []
+
+        for contest_id in contest_ids:
+            try:
+                contest: Contest = load_contest(contest_id)
+                if (forces_update or any([problem_id not in problem_dict for problem_id in contest["problems"].keys()])):
+                    contest_date = contest_info.get_contest_date(contest_id)
+                    max_rating = contest_info.get_max_rating(contest_id)
+                    futures.append(executor.submit(
+                        estimate_contest_difficulties,
+                        contest,
+                        player_num_contests_dict if contest_date is None or contest_date < needs_history_older_than_this else None,
+                        [0, 1] if max_rating is not None and max_rating < 2000 else []
+                    ))
+            except FileNotFoundError:
+                print(f"Contest {contest_id} is not found.")
+        
         try:
-            contest: Contest = load_contest(contest_id)
-            if (forces_update or any([problem_id not in problem_dict for problem_id in contest["problems"].keys()])):
-                contests.append(contest)
-                contest_date = contest_info.get_contest_date(contest_id)
-                player_num_contests_dicts.append(player_num_contests_dict if contest_date is None or contest_date < needs_history_older_than_this else None)
-                max_rating = contest_info.get_max_rating(contest_id)
-                easy_problem_indices_list.append([0, 1] if max_rating is not None and max_rating < 2000 else [])
-        except FileNotFoundError:
-            print(f"Contest {contest_id} is not found.")
-    
-
-    result = estimate_contest_difficulties(contests[0], player_num_contests_dicts[0], easy_problem_indices_list[0])
-    for pid, val in result.items():
-        problem_dict[pid] = val
-
-    save_json(problem_dict, output_filepath)
-    shutil.copy2("output/problems.json", "../public/problems.json")
+            for future in as_completed(futures):
+                problem_dict.update(future.result())
+        except KeyboardInterrupt:
+            print("Stopping process...")
+            executor.shutdown(wait=False)
+        finally:
+            save_json(problem_dict, output_filepath)
+            shutil.copy2("output/problems.json", "../public/problems.json")    
