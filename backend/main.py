@@ -1,6 +1,8 @@
 import sys
 
+from operations.create_contests_json import create_contests_json
 from operations.estimate_difficulties import estimate_and_save_difficulties
+from operations.update_contest_info import update_contest_info
 from util.json_io import enumerate_contest_ids
 
 if __name__ == "__main__":
@@ -10,20 +12,21 @@ if __name__ == "__main__":
 
     if sys.argv[1] == "-h":
         print("Usage:")
-        print("  python main.py <contest> [-f]")
-        print("  python main.py -a [-f]")
-        print("Options:")
-        print("  <contest>  A contest to estimate")
-        print("  -a         Estimates all the contest")
-        print("  -f         Forces update (optional)")
-    else:
-        forces_update = "-f" in sys.argv[1:]
-        estimates_all = "-a" in sys.argv[1:]
-        contest_name = next((arg for arg in sys.argv[1:] if arg != "-f" and arg != "-a"), None)
-        if estimates_all:
-            estimate_and_save_difficulties(enumerate_contest_ids(), forces_update)
-        elif contest_name is None:
-            print("Missing argument: contest")
-            sys.exit(0)
+        print("  python main.py -d [-f] [<contest> ...]")
+        print("    Estimate difficulty of problems.")
+        print("      Options:")
+        print("        -f         Forces update")
+        print("        <contest>  Contests to estimate. You can give multiple contests by separating them by space.")
+        print("                   Estimate all the contest if not given.")
+        print("  python main.py -c")
+        print("    Get contest info from AtCoder and create 'contests.json'")
+    elif sys.argv[1] == "-d":
+        forces_update = "-f" in sys.argv[2:]
+        contest_ids = [contest_id for contest_id in sys.argv[2:] if contest_id != "-f"]
+        if contest_ids:
+            estimate_and_save_difficulties(contest_ids, forces_update)
         else:
-            estimate_and_save_difficulties([contest_name], forces_update)
+            estimate_and_save_difficulties(enumerate_contest_ids(), forces_update)
+    elif sys.argv[1] == "-c":
+        update_contest_info()
+        create_contests_json()
