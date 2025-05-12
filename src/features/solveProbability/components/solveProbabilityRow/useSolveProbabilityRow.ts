@@ -1,9 +1,9 @@
+import { splitProblemId } from "../../../problem/functions/split";
 import type { ProblemSolveProbability } from "../../types/problemSolveProbability";
 import type { SolveProbabilityRowProps } from "./SolveProbabilityRow";
 
 export const useSolveProbabilityRow = (problem: ProblemSolveProbability): SolveProbabilityRowProps => {
-    // TODO: Implement converting problemId to contestId
-    const contestId = "foo";
+    const [contestId] = splitProblemId(problem.id);
     const problemId = problem.id;
     const difficulty = `${problem.d?.[1] ?? "NaN"}`;
     const solveProbability =
