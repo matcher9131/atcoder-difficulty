@@ -5,6 +5,7 @@ export type SolveProbabilityTabContentProps = {
     readonly handleRatingChange: ChangeEventHandler<HTMLInputElement>;
     readonly numContestsInputRef: Ref<HTMLInputElement>;
     readonly handleNumContestsChange: ChangeEventHandler<HTMLInputElement>;
+    readonly itemsPerPageSelector: ReactNode;
     readonly headerPaginationBar: ReactNode;
     readonly solveProbabilityTable: ReactNode;
     readonly footerPaginationBar: ReactNode;
@@ -15,6 +16,7 @@ export const SolveProbabilityTabContent = ({
     handleRatingChange,
     numContestsInputRef,
     handleNumContestsChange,
+    itemsPerPageSelector,
     headerPaginationBar,
     solveProbabilityTable,
     footerPaginationBar,
@@ -47,6 +49,7 @@ export const SolveProbabilityTabContent = ({
                     />
                 </label>
             </div>
+            {itemsPerPageSelector}
             {headerPaginationBar}
             {solveProbabilityTable}
             {footerPaginationBar}

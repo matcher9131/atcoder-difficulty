@@ -3,6 +3,7 @@ import { contestIdsByTypeAtom } from "../../contest/dict/contests";
 import type { PaginationKey } from "../types/paginationKey";
 import { solveProbabilitiesMiddleIndexAtom } from "../../solveProbability/models/solveProbabilities";
 import { numProblemsAtom } from "../../problem/dict/problems";
+import { itemsPerPageAtom } from "./itemsPerPage";
 
 const abcPaginationValueAtom = atom(0);
 const arcPaginationValueAtom = atom(0);
@@ -25,17 +26,21 @@ export const paginationValueAtom = (key: PaginationKey): ReturnType<typeof atom<
 };
 
 const abcPaginationMaxValueAtom = atom(
-    (get) => [0 as number, Math.ceil(get(contestIdsByTypeAtom("abc")).length / 100)] as const,
+    (get) => [0 as number, Math.ceil(get(contestIdsByTypeAtom("abc")).length / get(itemsPerPageAtom("abc")))] as const,
 );
 const arcPaginationMaxValueAtom = atom(
-    (get) => [0 as number, Math.ceil(get(contestIdsByTypeAtom("arc")).length / 100)] as const,
+    (get) => [0 as number, Math.ceil(get(contestIdsByTypeAtom("arc")).length / get(itemsPerPageAtom("arc")))] as const,
 );
 const agcPaginationMaxValueAtom = atom(
-    (get) => [0 as number, Math.ceil(get(contestIdsByTypeAtom("agc")).length / 100)] as const,
+    (get) => [0 as number, Math.ceil(get(contestIdsByTypeAtom("agc")).length / get(itemsPerPageAtom("agc")))] as const,
 );
 const solveProbabilityPaginationMinMaxValueAtom = atom((get) => {
+    const itemsPerPage = get(itemsPerPageAtom("solveProbability"));
     const mid = get(solveProbabilitiesMiddleIndexAtom);
-    return [-Math.ceil((mid - 50) / 100), Math.ceil((get(numProblemsAtom) - (mid + 50)) / 100) + 1] as const;
+    return [
+        -Math.ceil((mid - itemsPerPage / 2) / itemsPerPage),
+        Math.ceil((get(numProblemsAtom) - (mid + itemsPerPage / 2)) / itemsPerPage) + 1,
+    ] as const;
 });
 
 export const paginationMinMaxValueAtom = (key: PaginationKey): Atom<readonly [number, number]> => {

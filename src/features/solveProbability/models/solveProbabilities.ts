@@ -5,6 +5,7 @@ import { compareSolveProbability, irt2pl } from "./functions";
 import { inverseAdjustmentOfLowRating } from "../../rating/models/functions";
 import { lowerBound } from "../../../utils/array";
 import { paginationValueAtom } from "../../pagination/model/paginations";
+import { itemsPerPageAtom } from "../../pagination/model/itemsPerPage";
 
 const solveProbabilitiesAtom = atom((get) => {
     const rating = get(rawRatingAtom);
@@ -25,8 +26,9 @@ export const solveProbabilitiesMiddleIndexAtom = atom((get) => {
 export const solveProbabilitiesSlicedAtom = atom((get) => {
     const mid = get(solveProbabilitiesMiddleIndexAtom);
     const pageIndex = get(paginationValueAtom("solveProbability"));
-    //
-    console.log(`left = ${mid - 50 + 100 * pageIndex}, right = ${mid + 50 + 100 * pageIndex}`);
-    //
-    return get(solveProbabilitiesAtom).slice(Math.max(mid - 50 + 100 * pageIndex, 0), mid + 50 + 100 * pageIndex);
+    const itemsPerPage = get(itemsPerPageAtom("solveProbability"));
+    return get(solveProbabilitiesAtom).slice(
+        Math.max(mid - itemsPerPage / 2 + itemsPerPage * pageIndex, 0),
+        mid + itemsPerPage / 2 + itemsPerPage * pageIndex,
+    );
 });
