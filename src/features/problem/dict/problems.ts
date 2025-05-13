@@ -17,10 +17,6 @@ export const problemSelector = atomFamily((problemId: string) =>
 
 export const numProblemsAtom = atom((get) => get(problemsAtom).length);
 
-const allProblemIdsAtom = atom((get) => get(problemsAtom).map(({ id }) => id));
-
 export const contestProblemIdsAtom = atomFamily((contestId: string) =>
-    atom((get) =>
-        get(allProblemIdsAtom).filter((problemId) => problemId.substring(0, problemId.indexOf("/")) === contestId),
-    ),
+    atom((get) => get(problemsAtom).flatMap(({ id }) => (id.substring(0, id.indexOf("/")) === contestId ? [id] : []))),
 );
