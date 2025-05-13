@@ -2,7 +2,7 @@ export const getTextColor = (maxRating: number | "inf"): string => {
     if (maxRating == "inf") {
         return "text-rating-2800";
     } else if (maxRating >= 2800) {
-        return "bg-gradient-to-d from-rating-2800 to-rating-2400 text-transparent bg-clip-text";
+        return "bg-gradient-to-b from-rating-2800 from-50% to-rating-2400 to-50% text-transparent bg-clip-text";
     } else {
         switch (Math.floor(maxRating / 400)) {
             case 0:
