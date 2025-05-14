@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import type { ChangeEventHandler, ReactNode, Ref } from "react";
 
 export type RatingInputProps = {
@@ -5,6 +6,7 @@ export type RatingInputProps = {
     readonly handleRatingChange: ChangeEventHandler<HTMLInputElement>;
     readonly numContestsInputRef: Ref<HTMLInputElement>;
     readonly handleNumContestsChange: ChangeEventHandler<HTMLInputElement>;
+    readonly className?: string;
 };
 
 export const RatingInput = ({
@@ -12,9 +14,10 @@ export const RatingInput = ({
     handleRatingChange,
     numContestsInputRef,
     handleNumContestsChange,
+    className,
 }: RatingInputProps): ReactNode => {
     return (
-        <div className="text-left flex gap-x-2">
+        <div className={clsx("text-left", "flex", "gap-x-2", className)}>
             <label className="input input-lg validator w-48">
                 <span className="text-sm">Rating</span>
                 <input
