@@ -1,4 +1,5 @@
 import type { ChangeEventHandler, ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 export type ThemeSelectorProps = {
     readonly isDarkMode: boolean;
@@ -6,13 +7,14 @@ export type ThemeSelectorProps = {
 };
 
 export const ThemeSelector = ({ isDarkMode, onChange }: ThemeSelectorProps): ReactNode => {
+    const { t } = useTranslation();
     return (
         <label className="swap swap-rotate">
             <input type="checkbox" checked={isDarkMode} onChange={onChange} className="theme-controller" value="dark" />
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 role="img"
-                aria-label="Enable dark mode"
+                aria-label={t("themeSelector.uncheckedLabel")}
                 viewBox="0 -960 960 960"
                 className="swap-off h-10 w-10 fill-current"
             >
@@ -21,7 +23,7 @@ export const ThemeSelector = ({ isDarkMode, onChange }: ThemeSelectorProps): Rea
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 role="img"
-                aria-label="Disable dark mode"
+                aria-label={t("themeSelector.checkedLabel")}
                 viewBox="0 -960 960 960"
                 className="swap-on h-10 w-10 fill-current"
             >

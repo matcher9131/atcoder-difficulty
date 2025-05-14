@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import type { ChangeEventHandler, ReactNode, Ref } from "react";
+import { useTranslation } from "react-i18next";
 
 export type RatingInputProps = {
     readonly ratingInputRef: Ref<HTMLInputElement>;
@@ -16,26 +17,27 @@ export const RatingInput = ({
     handleNumContestsChange,
     className,
 }: RatingInputProps): ReactNode => {
+    const { t } = useTranslation();
     return (
         <div className={clsx("text-left", "flex", "gap-x-2", className)}>
             <label className="input input-lg validator w-48">
-                <span className="text-sm">Rating</span>
+                <span className="text-sm">{t("ratingInput.ratingLabel")}</span>
                 <input
                     type="text"
                     ref={ratingInputRef}
                     pattern="\d+"
-                    title="Must be an integer"
+                    title={t("ratingInput.validationMessage")}
                     onChange={handleRatingChange}
                     className="grow text-right"
                 />
             </label>
             <label className="input input-lg validator w-48">
-                <span className="text-sm">Num of matches</span>
+                <span className="text-sm">{t("ratingInput.numContestsLabel")}</span>
                 <input
                     type="text"
                     ref={numContestsInputRef}
                     pattern="\d+"
-                    title="Must be an integer"
+                    title={t("ratingInput.validationMessage")}
                     onChange={handleNumContestsChange}
                     className="grow text-right"
                 />

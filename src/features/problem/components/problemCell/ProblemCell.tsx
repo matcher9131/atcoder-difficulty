@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 export type ProblemCellProps = {
     readonly iconHref: string;
@@ -22,10 +23,15 @@ export const ProblemCell = ({
     linkHref,
     problemIndex,
 }: ProblemCellProps): ReactNode => {
+    const { t } = useTranslation();
     return (
         <td className="flex px-3 py-6 items-baseline">
             <span className="relative">
-                <svg role="img" aria-label="難易度アイコン" className={clsx("w-6", "h-4", fillColor)}>
+                <svg
+                    role="img"
+                    aria-label={t("problemCell.difficultyIconLabel")}
+                    className={clsx("w-6", "h-4", fillColor)}
+                >
                     <use href={iconHref} />
                 </svg>
                 {difficulty !== "" && <div className="absolute -top-4 w-6 text-center text-[.7em]">{difficulty}</div>}

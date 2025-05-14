@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { Language } from "../../types/language";
 import clsx from "clsx";
+import { useTranslation } from "react-i18next";
 
 export type LanguageSelectorProps = {
     readonly selectedLanguage: Language;
@@ -13,6 +14,7 @@ export const LanguageSelector = ({
     onClickEnglish,
     onClickJapanese,
 }: LanguageSelectorProps): ReactNode => {
+    const { t } = useTranslation();
     return (
         <div className="flex">
             <button
@@ -22,7 +24,7 @@ export const LanguageSelector = ({
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     role="img"
-                    aria-label="Enable dark mode"
+                    aria-label={t("languageSelector.label")}
                     viewBox="0 -960 960 960"
                     className="h-10 w-10 fill-current"
                 >

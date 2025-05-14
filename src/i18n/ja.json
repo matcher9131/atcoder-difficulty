@@ -1,0 +1,33 @@
+{
+    "contestsTableHeader": {
+        "contestLabel": "コンテスト",
+        "problemLabel": "問題"
+    },
+    "itemsPerPageSelector": {
+        "label": "1ページあたりの表示数"
+    },
+    "languageSelector": {
+        "label": "言語を選択する"
+    },
+    "problemCell": {
+        "difficultyIconLabel": "難易度アイコン"
+    },
+    "problemsTab": {
+        "solveProbabilityTabLabel": "解答確率一覧"
+    },
+    "ratingInput": {
+        "ratingLabel": "レーティング",
+        "numContestsLabel": "コンテスト回数",
+        "validationMessage": "整数を入力してください"
+    },
+    "sovleProbabilityTableHeader": {
+        "contestLabel": "コンテスト",
+        "problemLabel": "問題",
+        "difficultyLabel": "難易度",
+        "solveProbabilityLabel": "解答確率"
+    },
+    "themeSelector": {
+        "uncheckedLabel": "ダークモードを有効にする",
+        "checkedLabel": "ダークモードを無効にする"
+    }
+}

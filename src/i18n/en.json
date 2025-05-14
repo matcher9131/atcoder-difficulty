@@ -1,0 +1,33 @@
+{
+    "contestsTableHeader": {
+        "contestLabel": "Contest",
+        "problemLabel": "Problem "
+    },
+    "itemsPerPageSelector": {
+        "label": "Items per page"
+    },
+    "languageSelector": {
+        "label": "Select language"
+    },
+    "problemCell": {
+        "difficultyIconLabel": "Difficulty"
+    },
+    "problemsTab": {
+        "solveProbabilityTabLabel": "Solve Probability"
+    },
+    "ratingInput": {
+        "ratingLabel": "Rating",
+        "numContestsLabel": "Num of matches",
+        "validationMessage": "Must be an integer"
+    },
+    "sovleProbabilityTableHeader": {
+        "contestLabel": "Contest",
+        "problemLabel": "Problem",
+        "difficultyLabel": "Difficulty",
+        "solveProbabilityLabel": "Solve Probability"
+    },
+    "themeSelector": {
+        "uncheckedLabel": "Enable dark mode",
+        "checkedLabel": "Disable dark mode"
+    }
+}
