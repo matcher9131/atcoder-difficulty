@@ -61,7 +61,7 @@ def estimate_contest_difficulties(contest: Contest, player_num_contests_dict: No
             [ability for ability, is_target in zip(abilities, is_target_of_easy_problems) if is_target],
             [response for response, is_target in zip(responses[problem_index], is_target_of_easy_problems) if is_target]
         ) if problem_index in easy_problem_indices else estimate_problem_difficulty(abilities, responses[problem_index])
-        difficulty_tuple = None if is_nan_tuple(raw_difficulty_tuple) or raw_difficulty_tuple[0] < 0 else (round(raw_difficulty_tuple[0], 3), int(round(raw_difficulty_tuple[1], 0)))
+        difficulty_tuple = None if is_nan_tuple(raw_difficulty_tuple) or raw_difficulty_tuple[0] <= 0 else (round(raw_difficulty_tuple[0], 3), int(round(raw_difficulty_tuple[1], 0)))
         result[problem_id] = { "n": problem_display_name, "d": difficulty_tuple }
     return result
 
