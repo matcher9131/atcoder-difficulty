@@ -1,14 +1,8 @@
 import { useAtom } from "jotai";
-import { getFillColor, getProblemIndex, getTextColor } from "./functions";
+import { getFillColor, getProblemIndex, getTextColor, toPercent } from "./functions";
 import type { ProblemCellProps } from "./ProblemCell";
 import { splitProblemId } from "../../functions/split";
 import { problemWithSolveProbabilityAtom } from "../../../solveProbability/models/solveProbabilities";
-
-const solveProbabilityToPercent = (x: number): string => {
-    if (x > 1) return "";
-    if (x < 0) return "NaN";
-    return `${(100 * x).toFixed(1)}%`;
-};
 
 export const useProblemCell = (
     problemId: string,
@@ -28,7 +22,7 @@ export const useProblemCell = (
         fillColor,
         iconHref,
         difficulty: showsParameters ? `${difficulty ?? "NaN"}` : "",
-        solveProbability: showsParameters ? solveProbabilityToPercent(problem.solveProbability) : "",
+        solveProbability: showsParameters ? toPercent(problem.solveProbability) : "",
         displayName: problem.n,
         textColor,
         linkHref,
