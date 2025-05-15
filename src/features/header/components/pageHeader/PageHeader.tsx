@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { RatingInputContianer } from "../../../rating/components/ratingInput";
-import { ThemeSelectorContainer } from "../../../settings/components/themeSelector";
-import { LanguageSelectorContainer } from "../../../settings/components/languageSelector";
+import { ThemeSelectorContainer } from "../../../siteTheme/components/themeSelector";
+import { LanguageSelectorContainer } from "../../../i18n/components/languageSelector";
 
 export const PageHeader = (): ReactNode => {
     return (
