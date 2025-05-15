@@ -4,6 +4,9 @@ const adjustmentByNumContest = (n: number): number => {
 };
 
 export const inverseAdjustmentOfLowRating = (x: number): number => {
+    if (x === 0) {
+        x = 1e-6;
+    }
     return x >= 400 ? x : 400 * (1 - Math.log(400 / x));
 };
 
