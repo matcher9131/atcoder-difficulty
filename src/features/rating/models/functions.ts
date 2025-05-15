@@ -1,4 +1,5 @@
 const adjustmentByNumContest = (n: number): number => {
+    if (n === Infinity) return 0;
     return (1200 * (Math.sqrt(1 - 0.81 ** n) / (1 - 0.9 ** n) - 1)) / (Math.sqrt(19) - 1);
 };
 

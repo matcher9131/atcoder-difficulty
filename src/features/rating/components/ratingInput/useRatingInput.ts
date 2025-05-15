@@ -27,7 +27,7 @@ export const useRatingInput = (): RatingInputProps => {
         if (numContestsTimeoutRef.current != null) {
             clearTimeout(numContestsTimeoutRef.current);
         }
-        const value = parseIntOrNull(e.target.value);
+        const value = e.target.checkValidity() ? parseIntOrNull(e.target.value) : null;
         numContestsTimeoutRef.current = setTimeout(() => {
             setNumContests(value);
         }, delay);
