@@ -1,4 +1,7 @@
 {
+    "blankTabContent": {
+        "message": "Input \"Rating\" and \"Num of matches\" first!"
+    },
     "contestsTableHeader": {
         "contestLabel": "Contest",
         "problemLabel": "Problem "

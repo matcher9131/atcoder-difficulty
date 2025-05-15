@@ -1,4 +1,7 @@
 {
+    "blankTabContent": {
+        "message": "レーティングとコンテスト回数を入力してください。"
+    },
     "contestsTableHeader": {
         "contestLabel": "コンテスト",
         "problemLabel": "問題"

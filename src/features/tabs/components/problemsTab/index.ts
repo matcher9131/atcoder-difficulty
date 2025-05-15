@@ -1,1 +1,1 @@
-export { ProblemsTab } from "./ProblemsTab";
+export { ProblemsTabContainer } from "./ProblemsTabContainer";

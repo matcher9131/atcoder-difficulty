@@ -1,9 +1,12 @@
 import type { ReactNode } from "react";
 import { ContestsTabContent } from "../contestsTabContent";
-import { SolveProbabilityTabContentContainer } from "../solveProbabilityTabContent/";
 import { useTranslation } from "react-i18next";
 
-export const ProblemsTab = (): ReactNode => {
+export type ProblemsTabProps = {
+    readonly solveProbabilityTabContent: ReactNode;
+};
+
+export const ProblemsTab = ({ solveProbabilityTabContent }: ProblemsTabProps): ReactNode => {
     const { t } = useTranslation();
     return (
         <div className="tabs tabs-lift">
@@ -19,7 +22,7 @@ export const ProblemsTab = (): ReactNode => {
                 className="tab"
                 aria-label={t("problemsTab.solveProbabilityTabLabel")}
             />
-            <SolveProbabilityTabContentContainer />
+            {solveProbabilityTabContent}
         </div>
     );
 };
