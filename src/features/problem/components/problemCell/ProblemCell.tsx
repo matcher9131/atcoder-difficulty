@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { cellClassNames } from "../../../../common/cellClassNames";
 
 export type ProblemCellProps = {
     readonly iconHref: string;
@@ -25,7 +26,7 @@ export const ProblemCell = ({
 }: ProblemCellProps): ReactNode => {
     const { t } = useTranslation();
     return (
-        <td className="flex px-3 py-6 items-baseline">
+        <td className={cellClassNames}>
             <span className="relative">
                 <svg
                     role="img"
@@ -39,7 +40,12 @@ export const ProblemCell = ({
                     <div className="absolute top-4 w-6 text-center text-[.7em]">{solveProbability}</div>
                 )}
             </span>
-            <a href={linkHref} target="_blank" rel="noreferrer" className={clsx("truncate", textColor)}>
+            <a
+                href={linkHref}
+                target="_blank"
+                rel="noreferrer"
+                className={clsx("truncate", textColor, "link", "link-hover", "hover:brightness-75")}
+            >
                 {problemIndex != null ? `${problemIndex} - ${displayName}` : displayName}
             </a>
         </td>

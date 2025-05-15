@@ -13,7 +13,7 @@ export type ItemsPerPageSelectorProps = {
 export const ItemsPerPageSelector = ({ items }: ItemsPerPageSelectorProps): ReactNode => {
     const { t } = useTranslation();
     return (
-        <div className="flex items-baseline gap-x-2">
+        <div className="flex items-baseline gap-x-2 justify-end">
             <div>{`${t("itemsPerPageSelector.label")}:`}</div>
             <div className="flex">
                 {items.map(({ text, isSelected, onClick }) => (

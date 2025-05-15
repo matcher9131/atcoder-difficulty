@@ -5,7 +5,7 @@ import { LanguageSelectorContainer } from "../../../settings/components/language
 
 export const PageHeader = (): ReactNode => {
     return (
-        <div className="w-full flex justify-between gap-x-2">
+        <div className="w-full flex justify-between p-2 gap-x-2">
             <RatingInputContianer className="mr-auto" />
             <ThemeSelectorContainer />
             <LanguageSelectorContainer />

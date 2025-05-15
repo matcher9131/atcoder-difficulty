@@ -1,4 +1,6 @@
+import clsx from "clsx";
 import type { ReactNode } from "react";
+import { cellClassNames } from "../../../../common/cellClassNames";
 
 export type SolveProbabilityRowProps = {
     readonly contestHeaderCell: ReactNode;
@@ -17,8 +19,8 @@ export const SolveProbabilityRow = ({
         <tr className="contents">
             {contestHeaderCell}
             {problemCell}
-            <td className="px-3 py-6 text-right">{difficulty}</td>
-            <td className="px-3 py-6 text-right">{solveProbability}</td>
+            <td className={clsx(cellClassNames, "justify-end")}>{difficulty}</td>
+            <td className={clsx(cellClassNames, "justify-end")}>{solveProbability}</td>
         </tr>
     );
 };

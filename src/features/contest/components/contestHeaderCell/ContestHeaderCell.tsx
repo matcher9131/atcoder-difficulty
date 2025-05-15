@@ -1,4 +1,6 @@
+import clsx from "clsx";
 import type { ReactNode } from "react";
+import { cellClassNames } from "../../../../common/cellClassNames";
 
 export type ContestHeaderCellProps = {
     readonly textColor: string;
@@ -6,20 +8,11 @@ export type ContestHeaderCellProps = {
     readonly linkHref: string;
 };
 
-export const ContestHeaderCell = ({
-    textColor,
-    displayName,
-    linkHref,
-}: ContestHeaderCellProps): ReactNode => {
+export const ContestHeaderCell = ({ textColor, displayName, linkHref }: ContestHeaderCellProps): ReactNode => {
     return (
-        <td className="flex items-baseline px-3 py-6 gap-x-1">
+        <td className={clsx(cellClassNames, "gap-x-1")}>
             <span className={textColor}>◉</span>
-            <a
-                href={linkHref}
-                target="_blank"
-                rel="noreferrer"
-                className="link link-hover link-primary truncate"
-            >
+            <a href={linkHref} target="_blank" rel="noreferrer" className="link link-hover link-primary truncate">
                 {displayName}
             </a>
         </td>

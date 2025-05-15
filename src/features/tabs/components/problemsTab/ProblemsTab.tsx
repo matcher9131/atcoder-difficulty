@@ -9,7 +9,7 @@ export type ProblemsTabProps = {
 export const ProblemsTab = ({ solveProbabilityTabContent }: ProblemsTabProps): ReactNode => {
     const { t } = useTranslation();
     return (
-        <div className="tabs tabs-lift">
+        <div className="tabs tabs-lift p-2">
             <input type="radio" name="problems_tab" className="tab" aria-label="ABC" defaultChecked />
             <ContestsTabContent contestType="abc" />
             <input type="radio" name="problems_tab" className="tab" aria-label="ARC" />
