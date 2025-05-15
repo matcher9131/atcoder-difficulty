@@ -1,10 +1,10 @@
 import { atom } from "jotai";
 import type { PaginationKey } from "../types/paginationKey";
 
-const abcItemsPerPageAtom = atom(100);
-const arcItemsPerPageAtom = atom(100);
-const agcItemsPerPageAtom = atom(100);
-const solveProbabilityItemsPerPageAtom = atom(100);
+const abcItemsPerPageAtom = atom(20);
+const arcItemsPerPageAtom = atom(20);
+const agcItemsPerPageAtom = atom(20);
+const solveProbabilityItemsPerPageAtom = atom(20);
 
 export const itemsPerPageAtom = (key: PaginationKey): ReturnType<typeof atom<number>> => {
     switch (key) {
