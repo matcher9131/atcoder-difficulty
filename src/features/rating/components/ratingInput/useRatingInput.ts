@@ -4,6 +4,8 @@ import { useRef, type ChangeEvent } from "react";
 import { parseIntOrNull } from "../../../../utils/number";
 import type { RatingInputProps } from "./RatingInput";
 
+const delay = 500;
+
 export const useRatingInput = (): RatingInputProps => {
     const [, setRating] = useAtom(ratingAtom);
     const ratingInputRef = useRef<HTMLInputElement>(null);
@@ -15,7 +17,7 @@ export const useRatingInput = (): RatingInputProps => {
         const value = e.target.checkValidity() ? parseIntOrNull(e.target.value) : null;
         ratingTimeoutRef.current = setTimeout(() => {
             setRating(value);
-        }, 200);
+        }, delay);
     };
 
     const [, setNumContests] = useAtom(numContestsAtom);
@@ -28,7 +30,7 @@ export const useRatingInput = (): RatingInputProps => {
         const value = parseIntOrNull(e.target.value);
         numContestsTimeoutRef.current = setTimeout(() => {
             setNumContests(value);
-        }, 200);
+        }, delay);
     };
 
     return {
