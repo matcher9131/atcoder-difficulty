@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
-import type { Language } from "../../types/language";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+import type { Language } from "../../types/language";
 
 export type LanguageSelectorProps = {
     readonly selectedLanguage: Language;
@@ -45,7 +45,7 @@ export const LanguageSelector = ({
                 </li>
                 <li>
                     <button onClick={onClickJapanese} className={clsx(selectedLanguage === "ja" && "menu-active")}>
-                        Japanese
+                        日本語
                     </button>
                 </li>
             </ul>
