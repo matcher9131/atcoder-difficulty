@@ -7,6 +7,7 @@ export const PageHeader = (): ReactNode => {
     return (
         <div className="w-full flex justify-between p-2 gap-x-2">
             <RatingInputContianer className="mr-auto" />
+            <div className="px-5 font-orbiron flex items-center text-2xl">AtCoder Difficulty</div>
             <ThemeSelectorContainer />
             <LanguageSelectorContainer />
         </div>
