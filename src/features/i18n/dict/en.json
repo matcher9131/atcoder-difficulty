@@ -21,7 +21,8 @@
     "ratingInput": {
         "ratingLabel": "Rating",
         "numContestsLabel": "Num of matches",
-        "validationMessage": "Must be a non-negative integer"
+        "validationMessage": "Must be a non-negative integer",
+        "tooltipText": "Refer to \"My Profile\" page of AtCoder"
     },
     "sovleProbabilityTableHeader": {
         "contestLabel": "Contest",

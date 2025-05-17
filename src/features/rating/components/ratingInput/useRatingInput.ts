@@ -8,8 +8,9 @@ import { paginationValueAtom } from "../../../pagination/model/paginations";
 const delay = 500;
 
 export const useRatingInput = (): RatingInputProps => {
-    const [rating, setRating] = useAtom(ratingAtom);
     const [, setSolveProbabilityPaginationValue] = useAtom(paginationValueAtom("solveProbability"));
+
+    const [rating, setRating] = useAtom(ratingAtom);
     const ratingInputRef = useRef<HTMLInputElement>(null);
     const ratingTimeoutRef = useRef<number | null>(null);
     const handleRatingChange = (e: ChangeEvent<HTMLInputElement>) => {

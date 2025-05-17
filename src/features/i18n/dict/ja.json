@@ -21,7 +21,8 @@
     "ratingInput": {
         "ratingLabel": "レーティング",
         "numContestsLabel": "コンテスト回数",
-        "validationMessage": "非負整数を入力してください"
+        "validationMessage": "非負整数を入力してください",
+        "tooltipText": "AtCoderのマイプロフィールを参照して入力してください"
     },
     "sovleProbabilityTableHeader": {
         "contestLabel": "コンテスト",
