@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import { numContestsAtom, ratingAtom } from "../../models/rating";
-import { useRef, type ChangeEvent } from "react";
+import { useEffect, useRef, type ChangeEvent } from "react";
 import { parseIntOrNull } from "../../../../utils/number";
 import type { RatingInputProps } from "./RatingInput";
 import { paginationValueAtom } from "../../../pagination/model/paginations";
@@ -25,7 +25,7 @@ export const useRatingInput = (): RatingInputProps => {
         }, delay);
     };
 
-    const [, setNumContests] = useAtom(numContestsAtom);
+    const [numContests, setNumContests] = useAtom(numContestsAtom);
     const numContestsInputRef = useRef<HTMLInputElement>(null);
     const numContestsTimeoutRef = useRef<number | null>(null);
     const handleNumContestsChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -34,9 +34,21 @@ export const useRatingInput = (): RatingInputProps => {
         }
         const value = e.target.checkValidity() ? parseIntOrNull(e.target.value) : null;
         numContestsTimeoutRef.current = setTimeout(() => {
-            setNumContests(value);
+            if (value !== numContests) {
+                setSolveProbabilityPaginationValue(0);
+                setNumContests(value);
+            }
         }, delay);
     };
+
+    useEffect(() => {
+        if (ratingInputRef.current != null) {
+            ratingInputRef.current.value = `${rating ?? ""}`;
+        }
+        if (numContestsInputRef.current != null) {
+            numContestsInputRef.current.value = `${numContests ?? ""}`;
+        }
+    }, []); // No dependency to run only after initial render
 
     return {
         ratingInputRef,
