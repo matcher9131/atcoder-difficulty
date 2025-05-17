@@ -16,7 +16,7 @@
         "difficultyIconLabel": "難易度アイコン"
     },
     "problemsTab": {
-        "solveProbabilityTabLabel": "解答確率一覧"
+        "solveProbabilityTabLabel": "正答確率一覧"
     },
     "ratingInput": {
         "ratingLabel": "レーティング",
@@ -28,7 +28,7 @@
         "contestLabel": "コンテスト",
         "problemLabel": "問題",
         "difficultyLabel": "難易度",
-        "solveProbabilityLabel": "解答確率"
+        "solveProbabilityLabel": "正答確率"
     },
     "themeSelector": {
         "uncheckedLabel": "ダークモードを有効にする",
