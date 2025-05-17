@@ -4,7 +4,7 @@
     },
     "contestsTableHeader": {
         "contestLabel": "Contest",
-        "problemLabel": "Problem "
+        "problemLabel": "Task "
     },
     "itemsPerPageSelector": {
         "label": "Items per page"
@@ -21,11 +21,11 @@
     "ratingInput": {
         "ratingLabel": "Rating",
         "numContestsLabel": "Num of matches",
-        "validationMessage": "Must be an integer"
+        "validationMessage": "Must be a non-negative integer"
     },
     "sovleProbabilityTableHeader": {
         "contestLabel": "Contest",
-        "problemLabel": "Problem",
+        "problemLabel": "Task",
         "difficultyLabel": "Difficulty",
         "solveProbabilityLabel": "Solve Probability"
     },

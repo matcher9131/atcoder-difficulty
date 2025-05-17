@@ -21,7 +21,7 @@
     "ratingInput": {
         "ratingLabel": "レーティング",
         "numContestsLabel": "コンテスト回数",
-        "validationMessage": "整数を入力してください"
+        "validationMessage": "非負整数を入力してください"
     },
     "sovleProbabilityTableHeader": {
         "contestLabel": "コンテスト",
