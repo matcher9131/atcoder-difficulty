@@ -18,7 +18,7 @@ export const useRatingInput = (): RatingInputProps => {
             clearTimeout(ratingTimeoutRef.current);
         }
         const value = e.target.checkValidity() ? parseIntOrNull(e.target.value) : null;
-        ratingTimeoutRef.current = setTimeout(() => {
+        ratingTimeoutRef.current = window.setTimeout(() => {
             if (value !== rating) {
                 setSolveProbabilityPaginationValue(0);
                 setRating(value);
@@ -34,7 +34,7 @@ export const useRatingInput = (): RatingInputProps => {
             clearTimeout(numContestsTimeoutRef.current);
         }
         const value = e.target.checkValidity() ? parseIntOrNull(e.target.value) : null;
-        numContestsTimeoutRef.current = setTimeout(() => {
+        numContestsTimeoutRef.current = window.setTimeout(() => {
             if (value !== numContests) {
                 setSolveProbabilityPaginationValue(0);
                 setNumContests(value);
