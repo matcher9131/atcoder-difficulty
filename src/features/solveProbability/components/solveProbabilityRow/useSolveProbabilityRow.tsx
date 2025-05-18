@@ -10,7 +10,7 @@ export const useSolveProbabilityRow = (problem: ProblemSolveProbability): SolveP
     const contestHeaderCell = <ContestHeaderCellContainer contestId={contestId} />;
     const problemId = problem.id;
     const problemCell = <ProblemCellContainer problemId={problemId} showsParameters={false} showsProblemIndex={true} />;
-    const difficulty = `${problem.d?.[1] ?? "NaN"}`;
+    const difficulty = problem.d?.[1]?.toString() ?? "NaN";
     const solveProbability = toPercent(problem.solveProbability);
     return {
         contestHeaderCell,

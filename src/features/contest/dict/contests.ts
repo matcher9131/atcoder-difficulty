@@ -7,8 +7,8 @@ import contestUrl from "../../../assets/contests.json?url";
 const loadContets = async (): Promise<Contests> => {
     const response = await fetch(contestUrl);
     if (!response.ok) throw new Error("Failed loading contests.");
-    const json = await response.json();
-    return Object.fromEntries(json as ReadonlyArray<[string, number | "inf"]>);
+    const json = (await response.json()) as ReadonlyArray<[string, number | "inf"]>;
+    return Object.fromEntries(json);
 };
 
 const contestsAtom = atom(await loadContets());

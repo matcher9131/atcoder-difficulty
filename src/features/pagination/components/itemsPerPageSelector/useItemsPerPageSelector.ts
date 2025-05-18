@@ -8,7 +8,7 @@ export const useItemsPerPageSelector = (stateKey: PaginationKey): ItemsPerPageSe
     const [itemsPerPage, setItemsPerPage] = useAtom(itemsPerPageAtom(stateKey));
     const [, setPaginationValue] = useAtom(paginationValueAtom(stateKey));
     const items = [20, 50, 100].map((n) => ({
-        text: `${n}`,
+        text: n.toString(),
         isSelected: itemsPerPage === n,
         onClick: () => {
             if (itemsPerPage !== n) {

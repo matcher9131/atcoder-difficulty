@@ -8,5 +8,5 @@ export const selectedLanguageAtom = atomWithStorage<Language>("atcoder-difficult
 });
 
 export const selectedLanguageEffect = atomEffect((get) => {
-    i18n.changeLanguage(get(selectedLanguageAtom));
+    void i18n.changeLanguage(get(selectedLanguageAtom));
 });

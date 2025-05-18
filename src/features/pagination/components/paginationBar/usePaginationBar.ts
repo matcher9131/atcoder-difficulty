@@ -24,7 +24,7 @@ export const usePaginationBar = (stateKey: PaginationKey, scrollsToTop: boolean)
 
     return {
         items: pageIndices.map((i) => ({
-            displayIndex: `${usesNegativeIndex ? i : i + 1}`,
+            displayIndex: usesNegativeIndex ? i.toString() : (i + 1).toString(),
             isSelected: value === i,
             onClick: () => {
                 setValue(i);

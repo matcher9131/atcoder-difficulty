@@ -16,7 +16,7 @@ export const ContestsTableHeader = ({ numProblems }: ContestsTableHeaderProps): 
                     <th
                         key={i}
                         className={headerCellClassNames}
-                    >{`${t("contestsTableHeader.problemLabel")}${i + 1}`}</th>
+                    >{`${t("contestsTableHeader.problemLabel")}${(i + 1).toString()}`}</th>
                 ))}
             </tr>
         </thead>

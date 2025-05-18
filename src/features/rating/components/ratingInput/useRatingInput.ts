@@ -44,10 +44,10 @@ export const useRatingInput = (): RatingInputProps => {
 
     useEffect(() => {
         if (ratingInputRef.current != null) {
-            ratingInputRef.current.value = `${rating ?? ""}`;
+            ratingInputRef.current.value = rating?.toString() ?? "";
         }
         if (numContestsInputRef.current != null) {
-            numContestsInputRef.current.value = `${numContests ?? ""}`;
+            numContestsInputRef.current.value = numContests?.toString() ?? "";
         }
     }, []); // No dependency to run only after initial render
 
