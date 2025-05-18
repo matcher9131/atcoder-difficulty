@@ -7,7 +7,7 @@ from models.contest_info import ContestInfo
 
 
 def update_contest_info():
-    rating_regex = re.compile(r"(?P<min>\d+)?\s*~\s*(?P<max>\d+)?")
+    rating_regex = re.compile(r"(?P<min>\d+)?\s*-\s*(?P<max>\d+)?")
 
     contest_info = ContestInfo()
 
@@ -15,7 +15,7 @@ def update_contest_info():
     soup = BeautifulSoup(response.text, "html.parser")
 
     for tr in soup.select("tbody tr"):
-        if tr.select_one("span[data-original-title='algorithm']") is None:
+        if tr.select_one("span[title='Algorithm']") is None:
             continue
         time = tr.select_one("time")
         if time is None:
@@ -28,7 +28,7 @@ def update_contest_info():
             continue
 
         href = str(anchor["href"])
-        contest_id = href[:(href.rfind("/") + 1)]
+        contest_id = href[(href.rfind("/") + 1):]
         if contest_info.has_contest(contest_id):
             continue
 
@@ -41,7 +41,7 @@ def update_contest_info():
             rating["max"] = int(rating_max) if rating_min is not None else None
         
         contest_info.add_item(contest_id, {
-            "date": datetime.strptime(time.get_text(), "%Y-%m-%d(%a) %H:%M"),
+            "date": datetime.strptime(time.get_text(), "%Y-%m-%d %H:%M:%S%z"),
             "rating": None if rating_regex_result is None else rating
         })
 

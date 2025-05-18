@@ -104,4 +104,4 @@ def estimate_and_save_difficulties(contest_ids: list[str], forces_update: bool):
             executor.shutdown(wait=False)
         finally:
             save_json(problem_dict, output_filepath)
-            shutil.copy2("output/problems.json", "../public/problems.json")    
+            shutil.copy2("output/problems.json", "../src/assets/problems.json")    
