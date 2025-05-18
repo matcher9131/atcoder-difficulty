@@ -2,9 +2,10 @@ import { atom } from "jotai";
 import type { Contests } from "../types/contest";
 import { atomFamily } from "jotai/utils";
 import type { ContestType } from "../types/contestType";
+import contestUrl from "../../../assets/contests.json?url";
 
 const loadContets = async (): Promise<Contests> => {
-    const response = await fetch("/contests.json");
+    const response = await fetch(contestUrl);
     if (!response.ok) throw new Error("Failed loading contests.");
     const json = await response.json();
     return Object.fromEntries(json as ReadonlyArray<[string, number | "inf"]>);
