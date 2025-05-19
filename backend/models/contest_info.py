@@ -37,7 +37,7 @@ class ContestInfo:
     def save(self):
         save_json(self._items, ContestInfo._filepath)
 
-    def get_all_contest_max_ratings(self) -> list[tuple[str, int | Literal["inf"]]] :
+    def get_all_contest_max_ratings(self) -> list[tuple[str, int | Literal["inf"]]]:
         results: list[tuple[str, int | Literal["inf"]]] = [
             (
                 contest_id,
@@ -48,3 +48,6 @@ class ContestInfo:
         ]
         results.sort(reverse=True, key=lambda item: self._items[item[0]]["date"])
         return results
+
+    def enumerate_all_contests(self) -> list[str]:
+        return [contest_id for contest_id, _ in sorted(self._items.items(), key=lambda item: item[1]["date"])]
