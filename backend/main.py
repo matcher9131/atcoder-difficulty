@@ -1,6 +1,7 @@
 import sys
 
 from operations.create_contests_json import create_contests_json
+from operations.create_frequency_distributions import save_frequency_distributions
 from operations.estimate_difficulties import estimate_and_save_difficulties
 from operations.update_contest_info import update_contest_info
 from util.json_io import enumerate_contest_ids
@@ -17,9 +18,14 @@ if __name__ == "__main__":
         print("      Options:")
         print("        -f         Forces update")
         print("        <contest>  Contests to estimate. You can give multiple contests by separating them by space.")
-        print("                   Estimate all the contest if not given.")
+        print("                   Estimate all the contests if not given.")
         print("  python main.py -c")
         print("    Get contest info from AtCoder and create 'contests.json'")
+        print("  python main.py -f [<contest> ...]")
+        print("    Get frequency distributions of responses.")
+        print("      Options:")
+        print("        <contest>  Contests. You can give multiple contests by separating them by space.")
+        print("                   Get of all the contests if not given.")
     elif sys.argv[1] == "-d":
         forces_update = "-f" in sys.argv[2:]
         contest_ids = [contest_id for contest_id in sys.argv[2:] if contest_id != "-f"]
@@ -30,3 +36,6 @@ if __name__ == "__main__":
     elif sys.argv[1] == "-c":
         update_contest_info()
         create_contests_json()
+    elif sys.argv[1] == "-f":
+        contest_ids = [contest_id for contest_id in sys.argv[2:]]
+        save_frequency_distributions(contest_ids if contest_ids else enumerate_contest_ids())
