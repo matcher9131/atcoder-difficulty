@@ -21,7 +21,7 @@ def load_contest(contest_id: str) -> Contest:
             "responses": [
                 -1 if inner_problem_id not in player["TaskResults"]
                 else 1 if player["TaskResults"][inner_problem_id]["SubmissionID"] > 0
-                else -1
+                else 0
                 for inner_problem_id in inner_problem_ids
             ]
         } for player in contest_json["StandingsData"] if player["TotalResult"]["Count"] > 0
