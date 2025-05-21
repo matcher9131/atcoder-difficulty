@@ -1,5 +1,7 @@
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import datetime
+from os import listdir
+import re
 
 from functions.rating import adjust_low_rating
 from models.contest import Contest, load_contest
@@ -8,10 +10,9 @@ from models.player_histories import PlayerNumContestsDict, load_player_num_conte
 from operations.estimate_difficulties import get_abilities_and_responses
 from util.json_io import load_json, save_json    
 
-# returns [contest_id, frequency_dict]
-def create_contest_frequency_distributions(contest: Contest, player_num_contests_dict: None | PlayerNumContestsDict, easy_problem_indices: list[int] = []) -> tuple[str, dict[str, list[float]]]:
+frequency_step = 25
+def create_contest_frequency_distributions(contest: Contest, player_num_contests_dict: None | PlayerNumContestsDict, easy_problem_indices: list[int] = []) -> dict[str, list[float]]:
     print(f"Getting frequency distribution of {contest['name']}")
-    frequency_step = 25
 
     abilities, responses, is_target_of_easy_problems = get_abilities_and_responses(contest, player_num_contests_dict, easy_problem_indices)
     
@@ -32,23 +33,45 @@ def create_contest_frequency_distributions(contest: Contest, player_num_contests
                 continue
             frequency_dict[problem_id][frequency_index][0 if responses[problem_index][player_index] == 1 else 1] += 1
     
-    return (
-        contest["name"],
-        {
-            problem_id: [
-                round(accepted / (accepted + unaccepted) * 100, 1)
-                if accepted + unaccepted > 0 else 0
-                for [accepted, unaccepted] in frequency_list
-            ] for problem_id, frequency_list in frequency_dict.items()
-        }
-    )
-    
-def save_frequency_distributions(contest_ids: list[str]):
+    return {
+        problem_id: [
+            accepted / (accepted + unaccepted)
+            if accepted + unaccepted > 0 else 0
+            for [accepted, unaccepted] in frequency_list
+        ] for problem_id, frequency_list in frequency_dict.items()
+    }
+
+
+def load_compressed_frequency_distributions() -> dict[str, str]:
+    result: dict[str, str] = {}
+    for filename in listdir("output/distributions"):
+        if re.match(r"^distribution\d+\.json$", filename) is None:
+            continue
+        distribution_dict: dict[str, str] = load_json(f"output/distributions/{filename}")
+        result.update(distribution_dict)
+    return result
+
+
+# ['A', 'B', ... , 'Z', 'a', 'b', ... 'z']
+dist_to_byte = list(range(65, 91)) + list(range(97, 123))
+def to_compressed_frequency_distribution(frequency_distribution: list[float]) -> str:
+    # TODO: 1%刻みにしてbase64かbase85でエンコード
+    return bytes([
+        dist_to_byte[50] if frequency >= 1
+        else dist_to_byte[0] if frequency <= 0
+        else dist_to_byte[49] if frequency > 0.98
+        else dist_to_byte[1] if frequency < 0.02
+        else dist_to_byte[int((int(100 * frequency) + 1) / 2)]
+        for frequency in frequency_distribution
+    ]).decode()
+
+
+def get_compressed_frequency_distributions(contest_ids: list[str]) -> dict[str, str]:
     contest_info = ContestInfo()
-    all_contest_ids = contest_info.enumerate_all_contests()
     player_num_contests_dict = load_player_num_contests_dict()
     needs_history_older_than_this = datetime.fromisoformat("2025-04-05T12:00:00.000Z")
-    files: list[dict[str, list[float]]] = [load_json(f"output/frequency/frequency{i}.json") for i in [0, 1, 2, 3]]
+    compressed_frequency_distributions = load_compressed_frequency_distributions()
+
 
     with ProcessPoolExecutor() as executor:
         futures = []
@@ -67,18 +90,30 @@ def save_frequency_distributions(contest_ids: list[str]):
         except FileNotFoundError:
             print(f"Contest {contest_id} is not found.")
     
-        try:
-            for future in as_completed(futures):
-                contest_id: str
-                frequency_dict: dict[str, list[float]]
-                contest_id, frequency_dict = future.result()
-                contest_index = all_contest_ids.index(contest_id)
-                file_index = int(contest_index / 200)
-                files[file_index].update(frequency_dict)
-        except KeyboardInterrupt:
-            print("Stopping process...")
-            executor.shutdown(wait=False)
-        finally:
-            for file_index, file in enumerate(files):
-                save_json(file, f"output/frequency/frequency{file_index}.json")
-            # copy
+        
+        for future in as_completed(futures):
+            current_distribution: dict[str, list[float]] = future.result()
+            compressed_current_distribution = {
+                problem_id: to_compressed_frequency_distribution(distribution)
+                for problem_id, distribution in current_distribution.items()
+            }
+            compressed_frequency_distributions.update(compressed_current_distribution)
+        
+        return compressed_frequency_distributions
+       
+
+def save_frequency_distributions(contest_ids: list[str]):
+    compressed_frequency_distributions = get_compressed_frequency_distributions(contest_ids)
+    # Convert distributions dict to list in order to sort by alphabetical order
+    ordered_compressed_frequency_distributions = sorted(
+        [(problem_id, distribution) for problem_id, distribution in compressed_frequency_distributions.items()],
+        key=lambda tuple: tuple[0].replace("/", "~")
+    )
+    # Split into chunks
+    ordered_compressed_frequency_distributions_chunks = [
+        ordered_compressed_frequency_distributions[i:i+100]
+        for i in range(0, len(ordered_compressed_frequency_distributions), 100)
+    ]
+    # Save each
+    for i, chunk in enumerate(ordered_compressed_frequency_distributions_chunks):
+        save_json(dict(chunk), f"output/distributions/distribution{i}.json")
