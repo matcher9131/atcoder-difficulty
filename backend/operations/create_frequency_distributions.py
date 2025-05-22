@@ -1,3 +1,4 @@
+from base64 import b64encode
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import datetime
 from os import listdir
@@ -52,18 +53,15 @@ def load_compressed_frequency_distributions() -> dict[str, str]:
     return result
 
 
-# ['A', 'B', ... , 'Z', 'a', 'b', ... 'z']
-dist_to_byte = list(range(65, 91)) + list(range(97, 123))
 def to_compressed_frequency_distribution(frequency_distribution: list[float]) -> str:
-    # TODO: 1%刻みにしてbase64かbase85でエンコード
-    return bytes([
-        dist_to_byte[50] if frequency >= 1
-        else dist_to_byte[0] if frequency <= 0
-        else dist_to_byte[49] if frequency > 0.98
-        else dist_to_byte[1] if frequency < 0.02
-        else dist_to_byte[int((int(100 * frequency) + 1) / 2)]
+    return b64encode(bytes([
+        100 if frequency >= 1
+        else 0 if frequency <= 0
+        else 99 if frequency > 0.99
+        else 1 if frequency < 0.01
+        else int(100 * frequency + 0.5)
         for frequency in frequency_distribution
-    ]).decode()
+    ])).decode("ascii")
 
 
 def get_compressed_frequency_distributions(contest_ids: list[str]) -> dict[str, str]:
@@ -111,8 +109,8 @@ def save_frequency_distributions(contest_ids: list[str]):
     )
     # Split into chunks
     ordered_compressed_frequency_distributions_chunks = [
-        ordered_compressed_frequency_distributions[i:i+100]
-        for i in range(0, len(ordered_compressed_frequency_distributions), 100)
+        ordered_compressed_frequency_distributions[i:i+1000]
+        for i in range(0, len(ordered_compressed_frequency_distributions), 1000)
     ]
     # Save each
     for i, chunk in enumerate(ordered_compressed_frequency_distributions_chunks):
