@@ -29,6 +29,8 @@ const distributionChunkLastIds = atom(await loadDistributionChunkLastIds());
 
 export const distributionAtom = atomFamily((problemId: string) =>
     atom((get) => {
+        if (problemId === "") return new Uint8Array(0);
+
         let chunkIndex = 0;
         const lastIds = get(distributionChunkLastIds);
         for (; chunkIndex < lastIds.length; ++chunkIndex) {
