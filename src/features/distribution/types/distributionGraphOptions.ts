@@ -1,11 +1,14 @@
+type Scale = {
+    readonly min: number;
+    readonly max: number;
+    readonly ticks: {
+        readonly stepSize: number;
+    };
+};
+
 export type DistributionGraphOptions = {
     readonly scales: {
-        readonly y: {
-            readonly ticks: {
-                readonly min: 0;
-                readonly max: 100;
-                readonly stepSize: number;
-            };
-        };
+        readonly x: Scale;
+        readonly y: Scale;
     };
 };
