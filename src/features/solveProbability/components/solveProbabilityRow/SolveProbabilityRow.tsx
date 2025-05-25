@@ -7,6 +7,7 @@ export type SolveProbabilityRowProps = {
     readonly problemCell: ReactNode;
     readonly difficulty: string;
     readonly solveProbability: string;
+    readonly onGraphButtonClick: () => void;
 };
 
 export const SolveProbabilityRow = ({
@@ -14,6 +15,7 @@ export const SolveProbabilityRow = ({
     problemCell,
     difficulty,
     solveProbability,
+    onGraphButtonClick,
 }: SolveProbabilityRowProps): ReactNode => {
     return (
         <tr className="contents">
@@ -21,6 +23,11 @@ export const SolveProbabilityRow = ({
             {problemCell}
             <td className={clsx(cellClassNames, "justify-end")}>{difficulty}</td>
             <td className={clsx(cellClassNames, "justify-end")}>{solveProbability}</td>
+            <td className={cellClassNames}>
+                <button className="btn" onClick={onGraphButtonClick}>
+                    Graph
+                </button>
+            </td>
         </tr>
     );
 };

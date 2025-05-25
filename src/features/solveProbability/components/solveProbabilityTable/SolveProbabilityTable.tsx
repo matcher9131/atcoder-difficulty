@@ -9,13 +9,14 @@ export type SolveProbabilityTableProps = {
 export const SolveProbabilityTable = ({ rows }: SolveProbabilityTableProps): ReactNode => {
     const { t } = useTranslation();
     return (
-        <table className="grid grid-cols-4">
+        <table className="grid grid-cols-5">
             <thead className="contents">
                 <tr className="contents">
                     <th className={headerCellClassNames}>{t("sovleProbabilityTableHeader.contestLabel")}</th>
                     <th className={headerCellClassNames}>{t("sovleProbabilityTableHeader.problemLabel")}</th>
                     <th className={headerCellClassNames}>{t("sovleProbabilityTableHeader.difficultyLabel")}</th>
                     <th className={headerCellClassNames}>{t("sovleProbabilityTableHeader.solveProbabilityLabel")}</th>
+                    <th className={headerCellClassNames}>Graph</th>
                 </tr>
             </thead>
             <tbody className="contents">{rows}</tbody>
