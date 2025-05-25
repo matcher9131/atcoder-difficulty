@@ -2,7 +2,9 @@ import { atom } from "jotai";
 import { atomFamily, atomWithDefault } from "jotai/utils";
 import distributionChunkLastIdsUrl from "../../../assets/distribution_chunk.json?url";
 
-const encodedDistributionFiles = import.meta.glob("/assets/distributions/*.json");
+const encodedDistributionFiles = import.meta.glob("../../../assets/distributions/*.json", {
+    import: "default",
+});
 
 const loadEncodedDistributionChunk = async (chunkIndex: number): Promise<Record<string, string>> => {
     const filename = `distribution${chunkIndex.toString()}.json`;
