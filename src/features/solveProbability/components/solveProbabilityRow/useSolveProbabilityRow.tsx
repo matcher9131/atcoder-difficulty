@@ -6,7 +6,7 @@ import type { ProblemSolveProbability } from "../../types/problemSolveProbabilit
 import { toPercent } from "./functions";
 import type { SolveProbabilityRowProps } from "./SolveProbabilityRow";
 import { selectedProblemAtom } from "../../../distribution/models/selectedProblem";
-import { useDialog } from "../../../dialog/components/dialog";
+import { useOpenModalDialog } from "../../../dialog/hooks/useOpenModalDialog";
 
 export const useSolveProbabilityRow = (problem: ProblemSolveProbability): SolveProbabilityRowProps => {
     const [contestId] = splitProblemId(problem.id);
@@ -16,10 +16,10 @@ export const useSolveProbabilityRow = (problem: ProblemSolveProbability): SolveP
     const difficulty = problem.d?.[1]?.toString() ?? "NaN";
     const solveProbability = toPercent(problem.solveProbability);
     const [, setSelectedProblem] = useAtom(selectedProblemAtom);
-    const { open: openDialog } = useDialog("distribution");
+    const { openDialog } = useOpenModalDialog("distribution");
     const handleGraphButtonClick = () => {
         setSelectedProblem(problemId);
-        openDialog();
+        openDialog().catch(console.error);
     };
     return {
         contestHeaderCell,
