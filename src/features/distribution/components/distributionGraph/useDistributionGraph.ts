@@ -8,20 +8,31 @@ import { inverseAdjustmentOfLowRating } from "../../../rating/models/functions";
 
 export const useDistributionGraph = (): DistributionGraphProps => {
     const problemId = useAtomValue(selectedProblemAtom);
-    const distribution = useAtomValue(distributionAtom(problemId));
-    const labels = new Array(distribution.length).fill(0).map((_, i) => i * 25);
-    const distributionData = Array.from(distribution, (frequency, i) => [i * 25 + 12.5, frequency] as [number, number]);
+    const rawDistribution = useAtomValue(distributionAtom(problemId));
+
+    const xMin = 0;
+    const xMax = Math.floor((rawDistribution.length * 25) / 400) * 400;
+    const labels = new Array((xMax - xMin) / 12.5).fill(0).map((_, i) => i * 12.5);
+    const distributionData = new Array((xMax - xMin) / 25).fill(0).flatMap(
+        (_, i): Array<{ readonly x: number; readonly y: number | null }> => [
+            { x: i * 25, y: null },
+            { x: i * 25 + 12.5, y: i < rawDistribution.length ? rawDistribution[i] : 0 },
+        ],
+    );
     const difficultyTuple = useAtomValue(problemSelector(problemId))?.d;
     const estimatedData =
         difficultyTuple != null
-            ? labels.map(
-                  (rating) =>
-                      [
-                          rating,
-                          irt2pl(inverseAdjustmentOfLowRating(rating), difficultyTuple[0], difficultyTuple[1]),
-                      ] as [number, number],
+            ? new Array((xMax - xMin) / 25).fill(0).flatMap(
+                  (_, i): Array<{ readonly x: number; readonly y: number | null }> => [
+                      {
+                          x: i * 25,
+                          y: irt2pl(inverseAdjustmentOfLowRating(i * 25), difficultyTuple[0], difficultyTuple[1]) * 100,
+                      },
+                      { x: i * 25 + 12.5, y: null },
+                  ],
               )
             : [];
+
     return {
         data: {
             labels,
@@ -30,21 +41,41 @@ export const useDistributionGraph = (): DistributionGraphProps => {
                     label: "Actual Solve Probability",
                     data: distributionData,
                     type: "bar",
+                    backgroundColor: "red",
                 },
                 {
                     label: "Estimated Solve Probability",
                     data: estimatedData,
                     type: "line",
+                    backgroundColor: "blue",
                 },
             ],
         },
         options: {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            // TODO: Implement
+                            return `${tooltipItem.dataset.label}, ${tooltipItem.parsed.y}`;
+                        },
+                    },
+                },
+            },
             scales: {
                 x: {
-                    min: 0,
-                    max: ((labels.length + 3) / 4) * 100,
+                    min: xMin,
+                    max: xMax,
                     ticks: {
-                        stepSize: 100,
+                        align: "start",
+                        autoSkip: false,
+                        callback: function (val, index) {
+                            if (typeof val === "string") return undefined;
+                            return index % 8 === 0 ? this.getLabelForValue(val) : undefined;
+                        },
+                    },
+                    grid: {
+                        offset: false,
                     },
                 },
                 y: {
