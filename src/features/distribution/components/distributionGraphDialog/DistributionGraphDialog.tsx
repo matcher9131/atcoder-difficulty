@@ -17,7 +17,11 @@ export const DistributionGraphDialog = (): ReactNode => {
             outerClassName="w-4/5 h-4/5"
             innerClassName="px-6 py-4 h-full"
         >
-            <RemoveScroll removeScrollBar enabled={isOpen} className="w-full h-full flex items-center">
+            <RemoveScroll
+                removeScrollBar
+                enabled={isOpen}
+                className="w-full h-full flex items-center justify-center relative"
+            >
                 <DistributionGraphContainer />
             </RemoveScroll>
         </ModalDialog>

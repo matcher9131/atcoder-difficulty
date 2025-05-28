@@ -14,6 +14,10 @@ import {
 import { Suspense, type ReactNode } from "react";
 import { Chart } from "react-chartjs-2";
 import { chartAreaBackgroundPlugin } from "./plugin";
+import {
+    DistributionGraphTooltip,
+    type DistributionGraphTooltipProps,
+} from "../distributionGraphTooltip/DistributionGraphTooltip";
 
 ChartJS.register(
     CategoryScale,
@@ -31,14 +35,20 @@ const plugins = [chartAreaBackgroundPlugin];
 export type DistributionGraphProps = {
     readonly data: ChartData<"bar" | "line", Array<{ readonly x: number; readonly y: number | null }>>;
     readonly options: ChartOptions<"bar" | "line">;
+    readonly tooltipOpacity: number;
+    readonly tooltipProps: Omit<DistributionGraphTooltipProps, "opacity">;
 };
 
-export const DistributionGraph = ({ data, options }: DistributionGraphProps): ReactNode => {
+export const DistributionGraph = ({
+    data,
+    options,
+    tooltipOpacity,
+    tooltipProps,
+}: DistributionGraphProps): ReactNode => {
     return (
         <Suspense fallback={<div>loading...</div>}>
-            <div className="p-3 w-full h-full">
-                <Chart type="line" data={data} options={options} plugins={plugins} />
-            </div>
+            <Chart type="line" data={data} options={options} plugins={plugins} />
+            <DistributionGraphTooltip opacity={tooltipOpacity} {...tooltipProps} />
         </Suspense>
     );
 };

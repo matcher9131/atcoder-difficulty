@@ -1,17 +1,6 @@
-import type { ChartArea, Plugin } from "chart.js";
+import type { Plugin } from "chart.js";
 
-const colors = ["#808080", "#804000", "#008000", "#00c0c0", "#2060ff", "#c0c000", "#ff8000", "#ff0000"];
-
-const getRect = (
-    ratingMin: number,
-    xMin: number,
-    xMax: number,
-    chartArea: ChartArea,
-): { readonly left: number; readonly width: number } => {
-    const left = ((xMax - ratingMin) * chartArea.left + (ratingMin - xMin) * chartArea.right) / (xMax - xMin);
-    const width = ((chartArea.right - chartArea.left) * 400) / (xMax - xMin);
-    return { left, width };
-};
+const colors = ["#e0e0e0", "#e0d0c0", "#c0e080", "#c0f0f0", "#c0c0ff", "#f0f0c0", "#ffe0c0", "#ffc0c0"];
 
 export const chartAreaBackgroundPlugin: Plugin<"bar" | "line"> = {
     id: "chartAreaBackground",
@@ -19,19 +8,18 @@ export const chartAreaBackgroundPlugin: Plugin<"bar" | "line"> = {
         const { ctx, chartArea } = chart;
         const labels = chart.data.labels;
         if (labels == null) return;
-        const xMin = labels[0] as number;
+        const xScale = chart.scales["x"];
         const xMax = labels[labels.length - 1] as number;
 
         ctx.save();
         colors.forEach((color, index) => {
-            const { left, width } = getRect(400 * index, xMin, xMax, chartArea);
-            ctx.fillStyle = color;
-            ctx.fillRect(
-                left,
-                chartArea.top,
-                index === colors.length - 1 ? chartArea.right - left : width,
-                chartArea.bottom - chartArea.top,
+            // Somehow true value (rating) doesn't work... index wokrs well instead.
+            const left = xScale.getPixelForValue((400 * index) / 12.5);
+            const right = xScale.getPixelForValue(
+                index === colors.length - 1 ? xMax / 12.5 : (400 * (index + 1)) / 12.5,
             );
+            ctx.fillStyle = color;
+            ctx.fillRect(left, chartArea.top, right - left, chartArea.bottom - chartArea.top);
         });
         ctx.restore();
     },
