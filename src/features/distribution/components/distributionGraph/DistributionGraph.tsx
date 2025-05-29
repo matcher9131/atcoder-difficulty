@@ -35,20 +35,15 @@ const plugins = [chartAreaBackgroundPlugin];
 export type DistributionGraphProps = {
     readonly data: ChartData<"bar" | "line", Array<{ readonly x: number; readonly y: number | null }>>;
     readonly options: ChartOptions<"bar" | "line">;
-    readonly tooltipOpacity: number;
-    readonly tooltipProps: Omit<DistributionGraphTooltipProps, "opacity">;
+    readonly tooltipStyle: DistributionGraphTooltipProps["style"];
+    readonly tooltipTexts: DistributionGraphTooltipProps["texts"];
 };
 
-export const DistributionGraph = ({
-    data,
-    options,
-    tooltipOpacity,
-    tooltipProps,
-}: DistributionGraphProps): ReactNode => {
+export const DistributionGraph = ({ data, options, tooltipStyle, tooltipTexts }: DistributionGraphProps): ReactNode => {
     return (
         <Suspense fallback={<div>loading...</div>}>
             <Chart type="line" data={data} options={options} plugins={plugins} />
-            <DistributionGraphTooltip opacity={tooltipOpacity} {...tooltipProps} />
+            <DistributionGraphTooltip style={tooltipStyle} texts={tooltipTexts} />
         </Suspense>
     );
 };

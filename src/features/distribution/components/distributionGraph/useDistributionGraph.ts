@@ -40,12 +40,17 @@ export const useDistributionGraph = (): DistributionGraphProps => {
             : [];
 
     // For custom tooltip
-    const [tooltipOpacity, setTooltipOpacity] = useState(0);
-    const [tooltipProps, setTooltipProps] = useState<Omit<DistributionGraphTooltipProps, "opacity">>({
+    const [tooltipTexts, setTooltipTexts] = useState<DistributionGraphTooltipProps["texts"]>({
         xLabel: "",
         xValue: "",
         yLabel: "",
         yValue: "",
+    });
+    const [tooltipStyle, setTooltipStyle] = useState<DistributionGraphTooltipProps["style"]>({
+        opacity: 0,
+        left: undefined,
+        right: undefined,
+        top: undefined,
     });
 
     return {
@@ -75,13 +80,13 @@ export const useDistributionGraph = (): DistributionGraphProps => {
             plugins: {
                 tooltip: {
                     enabled: false,
-                    external: ({ tooltip }) => {
+                    external: ({ chart, tooltip }) => {
                         if (tooltip.opacity === 0) {
-                            setTooltipOpacity(0);
+                            setTooltipStyle({ ...tooltipStyle, opacity: 0 });
                             return;
                         }
 
-                        const newTooltipProps = {
+                        const newTooltipTexts = {
                             xLabel: "Rating",
                             xValue: tooltip.title[0],
                             yLabel: tooltip.dataPoints[0].dataset.label ?? "",
@@ -93,15 +98,22 @@ export const useDistributionGraph = (): DistributionGraphProps => {
 
                         // Supress unnecessary update
                         if (
-                            tooltipOpacity === 0 ||
-                            Object.keys(newTooltipProps).some(
+                            tooltipStyle.opacity === 0 ||
+                            Object.keys(newTooltipTexts).some(
                                 (key) =>
-                                    (tooltipProps as Record<string, string>)[key] !==
-                                    (newTooltipProps as Record<string, string>)[key],
+                                    (tooltipTexts as Record<string, string>)[key] !==
+                                    (newTooltipTexts as Record<string, string>)[key],
                             )
                         ) {
-                            setTooltipProps(newTooltipProps);
-                            setTooltipOpacity(1);
+                            const { offsetLeft, offsetTop, width: canvasWidth } = chart.canvas;
+
+                            setTooltipTexts(newTooltipTexts);
+                            setTooltipStyle({
+                                opacity: 1,
+                                left: tooltip.caretX <= canvasWidth / 2 ? offsetLeft + tooltip.caretX : undefined,
+                                right: tooltip.caretX > canvasWidth / 2 ? canvasWidth - tooltip.caretX : undefined,
+                                top: offsetTop + tooltip.caretY - tooltip.height / 2,
+                            });
                         }
                     },
                 },
@@ -145,7 +157,7 @@ export const useDistributionGraph = (): DistributionGraphProps => {
                 },
             },
         },
-        tooltipOpacity,
-        tooltipProps,
+        tooltipStyle,
+        tooltipTexts,
     };
 };
