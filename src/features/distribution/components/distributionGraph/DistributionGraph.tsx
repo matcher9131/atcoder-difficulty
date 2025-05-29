@@ -10,6 +10,8 @@ import {
     Tooltip,
     type ChartData,
     type ChartOptions,
+    Title,
+    Legend,
 } from "chart.js";
 import { Suspense, type ReactNode } from "react";
 import { Chart } from "react-chartjs-2";
@@ -27,6 +29,8 @@ ChartJS.register(
     LineElement,
     BarController,
     LineController,
+    Title,
+    Legend,
     Tooltip,
 );
 

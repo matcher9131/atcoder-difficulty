@@ -8,6 +8,8 @@ import { inverseAdjustmentOfLowRating } from "../../../rating/models/functions";
 import { useState } from "react";
 import type { DistributionGraphTooltipProps } from "../distributionGraphTooltip/DistributionGraphTooltip";
 import { parseIntOrNull } from "../../../../utils/number";
+import { splitProblemId } from "../../../problem/functions/split";
+import { capitalize } from "../../../../utils/string";
 
 const classToDisplay = (infimum: number): string => {
     return `${infimum.toString()} - ${(infimum + 25).toString()}`;
@@ -17,9 +19,16 @@ const percentToDisplay = (percent: number): string => {
     return percent >= 99.5 ? ">99%" : percent < 0.5 ? "<1%" : `${percent.toFixed(0)}%`;
 };
 
+export const problemIdToDisplayText = (problemId: string, problemName: string): string => {
+    const [contestId, innerProblemId] = splitProblemId(problemId);
+    const problemIndex = capitalize(innerProblemId.substring(innerProblemId.lastIndexOf("_") + 1));
+    return `${contestId.toUpperCase()} ${problemIndex} - ${problemName}`;
+};
+
 export const useDistributionGraph = (): DistributionGraphProps => {
     const problemId = useAtomValue(selectedProblemAtom);
     const rawDistribution = useAtomValue(distributionAtom(problemId));
+    const problemName = useAtomValue(problemSelector(problemId))?.n ?? "";
 
     const xMin = 0;
     const xMax = Math.floor((rawDistribution.length * 25) / 400) * 400;
@@ -87,6 +96,16 @@ export const useDistributionGraph = (): DistributionGraphProps => {
         },
         options: {
             plugins: {
+                legend: {
+                    display: true,
+                },
+                title: {
+                    display: true,
+                    text: problemIdToDisplayText(problemId, problemName),
+                    font: {
+                        size: 20,
+                    },
+                },
                 tooltip: {
                     enabled: false,
                     external: ({ chart, tooltip }) => {
