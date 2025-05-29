@@ -7,9 +7,14 @@ import { irt2pl } from "../../../solveProbability/models/functions";
 import { inverseAdjustmentOfLowRating } from "../../../rating/models/functions";
 import { useState } from "react";
 import type { DistributionGraphTooltipProps } from "../distributionGraphTooltip/DistributionGraphTooltip";
+import { parseIntOrNull } from "../../../../utils/number";
+
+const classToDisplay = (infimum: number): string => {
+    return `${infimum.toString()} - ${(infimum + 25).toString()}`;
+};
 
 const percentToDisplay = (percent: number): string => {
-    return percent >= 99.5 ? ">99%" : percent < 0.5 ? "<1%" : `${percent.toFixed(0)} %`;
+    return percent >= 99.5 ? ">99%" : percent < 0.5 ? "<1%" : `${percent.toFixed(0)}%`;
 };
 
 export const useDistributionGraph = (): DistributionGraphProps => {
@@ -70,9 +75,13 @@ export const useDistributionGraph = (): DistributionGraphProps => {
                     type: "line",
                     spanGaps: true,
                     cubicInterpolationMode: "monotone",
-                    pointRadius: 0,
+                    pointHitRadius: 2,
                     pointHoverRadius: 5,
                     borderColor: "rgba(241, 54, 152, 0.8)",
+                    pointBorderColor: "transparent",
+                    pointBackgroundColor: "transparent",
+                    pointHoverBorderColor: "rgba(241, 54, 152, 0.8)",
+                    pointHoverBorderWidth: 1,
                 },
             ],
         },
@@ -88,7 +97,10 @@ export const useDistributionGraph = (): DistributionGraphProps => {
 
                         const newTooltipTexts = {
                             xLabel: "Rating",
-                            xValue: tooltip.title[0],
+                            xValue:
+                                tooltip.dataPoints[0].datasetIndex === 0
+                                    ? classToDisplay(parseIntOrNull(tooltip.title[0]) ?? 0)
+                                    : tooltip.title[0],
                             yLabel: tooltip.dataPoints[0].dataset.label ?? "",
                             yValue:
                                 tooltip.dataPoints[0].datasetIndex === 0

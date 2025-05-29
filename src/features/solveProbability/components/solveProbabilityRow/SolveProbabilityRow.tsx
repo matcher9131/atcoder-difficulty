@@ -23,9 +23,9 @@ export const SolveProbabilityRow = ({
             {problemCell}
             <td className={clsx(cellClassNames, "justify-end")}>{difficulty}</td>
             <td className={clsx(cellClassNames, "justify-end")}>{solveProbability}</td>
-            <td className={cellClassNames}>
+            <td className={clsx(cellClassNames, "justify-center")}>
                 <button className="btn" onClick={onGraphButtonClick}>
-                    Graph
+                    Show
                 </button>
             </td>
         </tr>
