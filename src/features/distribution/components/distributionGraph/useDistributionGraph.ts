@@ -10,6 +10,7 @@ import type { DistributionGraphTooltipProps } from "../distributionGraphTooltip/
 import { parseIntOrNull } from "../../../../utils/number";
 import { splitProblemId } from "../../../problem/functions/split";
 import { capitalize } from "../../../../utils/string";
+import { useTranslation } from "react-i18next";
 
 const classToDisplay = (infimum: number): string => {
     return `${infimum.toString()} - ${(infimum + 25).toString()}`;
@@ -26,6 +27,8 @@ export const problemIdToDisplayText = (problemId: string, problemName: string): 
 };
 
 export const useDistributionGraph = (): DistributionGraphProps => {
+    const { t } = useTranslation();
+
     const problemId = useAtomValue(selectedProblemAtom);
     const rawDistribution = useAtomValue(distributionAtom(problemId));
     const problemName = useAtomValue(problemSelector(problemId))?.n ?? "";
@@ -72,14 +75,14 @@ export const useDistributionGraph = (): DistributionGraphProps => {
             labels,
             datasets: [
                 {
-                    label: "Actual Solve Probability",
+                    label: t("distributionGraph.yLabels.barDatasetLabel"),
                     data: distributionData,
                     type: "bar",
                     barPercentage: 1.6,
                     backgroundColor: "rgba(104, 96, 251, 0.7)",
                 },
                 {
-                    label: "Estimated Solve Probability",
+                    label: t("distributionGraph.yLabels.lineDatasetLabel"),
                     data: estimatedData,
                     type: "line",
                     spanGaps: true,
@@ -115,7 +118,7 @@ export const useDistributionGraph = (): DistributionGraphProps => {
                         }
 
                         const newTooltipTexts = {
-                            xLabel: "Rating",
+                            xLabel: t("distributionGraph.xLabel"),
                             xValue:
                                 tooltip.dataPoints[0].datasetIndex === 0
                                     ? classToDisplay(parseIntOrNull(tooltip.title[0]) ?? 0)
@@ -166,7 +169,7 @@ export const useDistributionGraph = (): DistributionGraphProps => {
                     },
                     title: {
                         display: true,
-                        text: "Rating",
+                        text: t("distributionGraph.xLabel"),
                         font: {
                             size: 16,
                         },
@@ -180,7 +183,7 @@ export const useDistributionGraph = (): DistributionGraphProps => {
                     },
                     title: {
                         display: true,
-                        text: "Solve Probability (%)",
+                        text: t("distributionGraph.yLabels.axisLabel"),
                         font: {
                             size: 16,
                         },

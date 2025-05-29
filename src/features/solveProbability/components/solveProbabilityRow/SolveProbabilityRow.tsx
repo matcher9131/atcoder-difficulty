@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { cellClassNames } from "../../../../common/cellClassNames";
+import { useTranslation } from "react-i18next";
 
 export type SolveProbabilityRowProps = {
     readonly contestHeaderCell: ReactNode;
@@ -17,6 +18,7 @@ export const SolveProbabilityRow = ({
     solveProbability,
     onGraphButtonClick,
 }: SolveProbabilityRowProps): ReactNode => {
+    const { t } = useTranslation();
     return (
         <tr className="contents">
             {contestHeaderCell}
@@ -25,7 +27,7 @@ export const SolveProbabilityRow = ({
             <td className={clsx(cellClassNames, "justify-end")}>{solveProbability}</td>
             <td className={clsx(cellClassNames, "justify-center")}>
                 <button className="btn" onClick={onGraphButtonClick}>
-                    Show
+                    {t("solveProbabilityTableContent.showGraphButtonLabel")}
                 </button>
             </td>
         </tr>

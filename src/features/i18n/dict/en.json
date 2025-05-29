@@ -6,6 +6,14 @@
         "contestLabel": "Contest",
         "problemLabel": "Task "
     },
+    "distributionGraph": {
+        "xLabel": "Rating",
+        "yLabels": {
+            "axisLabel": "Accuracy Rate (%)",
+            "barDatasetLabel": "Actual Accuracy Rate",
+            "lineDatasetLabel": "Estimated Accuracy Rate"
+        }
+    },
     "itemsPerPageSelector": {
         "label": "Items per page"
     },
@@ -16,7 +24,7 @@
         "difficultyIconLabel": "Difficulty"
     },
     "problemsTab": {
-        "solveProbabilityTabLabel": "Solve Probability"
+        "solveProbabilityTabLabel": "Accuracy Rate"
     },
     "ratingInput": {
         "ratingLabel": "Rating",
@@ -28,7 +36,11 @@
         "contestLabel": "Contest",
         "problemLabel": "Task",
         "difficultyLabel": "Difficulty",
-        "solveProbabilityLabel": "Solve Probability"
+        "solveProbabilityLabel": "Accuracy Rate",
+        "graphLabel": "Graph"
+    },
+    "solveProbabilityTableContent": {
+        "showGraphButtonLabel": "Show"
     },
     "themeSelector": {
         "uncheckedLabel": "Enable dark mode",

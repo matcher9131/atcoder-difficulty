@@ -6,6 +6,14 @@
         "contestLabel": "コンテスト",
         "problemLabel": "問題"
     },
+    "distributionGraph": {
+        "xLabel": "レーティング",
+        "yLabels": {
+            "axisLabel": "正答率 (%)",
+            "barDatasetLabel": "実際の正答率",
+            "lineDatasetLabel": "推定正答率"
+        }
+    },
     "itemsPerPageSelector": {
         "label": "1ページあたりの表示数"
     },
@@ -16,7 +24,7 @@
         "difficultyIconLabel": "難易度アイコン"
     },
     "problemsTab": {
-        "solveProbabilityTabLabel": "正答確率一覧"
+        "solveProbabilityTabLabel": "正答率一覧"
     },
     "ratingInput": {
         "ratingLabel": "レーティング",
@@ -28,7 +36,11 @@
         "contestLabel": "コンテスト",
         "problemLabel": "問題",
         "difficultyLabel": "難易度",
-        "solveProbabilityLabel": "正答確率"
+        "solveProbabilityLabel": "正答率",
+        "graphLabel": "グラフ"
+    },
+    "solveProbabilityTableContent": {
+        "showGraphButtonLabel": "表示"
     },
     "themeSelector": {
         "uncheckedLabel": "ダークモードを有効にする",

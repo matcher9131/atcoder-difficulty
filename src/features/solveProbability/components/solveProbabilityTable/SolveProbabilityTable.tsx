@@ -16,7 +16,7 @@ export const SolveProbabilityTable = ({ rows }: SolveProbabilityTableProps): Rea
                     <th className={headerCellClassNames}>{t("sovleProbabilityTableHeader.problemLabel")}</th>
                     <th className={headerCellClassNames}>{t("sovleProbabilityTableHeader.difficultyLabel")}</th>
                     <th className={headerCellClassNames}>{t("sovleProbabilityTableHeader.solveProbabilityLabel")}</th>
-                    <th className={headerCellClassNames}>Graph</th>
+                    <th className={headerCellClassNames}>{t("sovleProbabilityTableHeader.graphLabel")}</th>
                 </tr>
             </thead>
             <tbody className="contents">{rows}</tbody>
