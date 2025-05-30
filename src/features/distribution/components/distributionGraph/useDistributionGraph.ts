@@ -74,7 +74,7 @@ export const useDistributionGraph = (): DistributionGraphProps => {
                     label: t("distributionGraph.yLabels.barDatasetLabel"),
                     data: distributionData,
                     type: "bar",
-                    barPercentage: 1.6,
+                    barPercentage: 1.8,
                     backgroundColor: "rgba(104, 96, 251, 0.7)",
                 },
                 {
@@ -83,13 +83,16 @@ export const useDistributionGraph = (): DistributionGraphProps => {
                     type: "line",
                     spanGaps: true,
                     cubicInterpolationMode: "monotone",
-                    pointHitRadius: 2,
-                    pointHoverRadius: 5,
+                    // styles for line
                     borderColor: "rgba(241, 54, 152, 0.8)",
+                    backgroundColor: "rgba(241, 54, 152, 1)",
+                    // styles for point (for legend, not visible in chart)
+                    pointRadius: 0,
                     pointBorderColor: "transparent",
-                    pointBackgroundColor: "transparent",
-                    pointHoverBorderColor: "rgba(241, 54, 152, 0.8)",
-                    pointHoverBorderWidth: 1,
+                    pointBackgroundColor: "rgba(241, 54, 152, 0.8)",
+                    // styles for hovering point
+                    pointHitRadius: 2,
+                    pointHoverRadius: 4,
                 },
             ],
         },
