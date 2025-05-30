@@ -5,12 +5,13 @@ import { selectedProblemAtom } from "../../models/selectedProblem";
 import { problemSelector } from "../../../problem/dict/problems";
 import { irt2pl } from "../../../solveProbability/models/functions";
 import { inverseAdjustmentOfLowRating } from "../../../rating/models/functions";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { DistributionGraphTooltipProps } from "../distributionGraphTooltip/DistributionGraphTooltip";
 import { parseIntOrNull } from "../../../../utils/number";
 import { splitProblemId } from "../../../problem/functions/split";
 import { capitalize } from "../../../../utils/string";
 import { useTranslation } from "react-i18next";
+import type { Chart, TooltipModel } from "chart.js";
 
 const classToDisplay = (infimum: number): string => {
     return `${infimum.toString()} - ${(infimum + 25).toString()}`;
@@ -70,6 +71,49 @@ export const useDistributionGraph = (): DistributionGraphProps => {
         top: undefined,
     });
 
+    const externalTooltipHandler = useCallback(
+        ({ chart, tooltip }: { chart: Chart; tooltip: TooltipModel<"bar" | "line"> }) => {
+            if (tooltip.opacity === 0) {
+                setTooltipStyle((prevTooltipStyle) => ({ ...prevTooltipStyle, opacity: 0 }));
+                return;
+            }
+
+            const newTooltipTexts = {
+                xLabel: t("distributionGraph.xLabel"),
+                xValue:
+                    tooltip.dataPoints[0].datasetIndex === 0
+                        ? classToDisplay(parseIntOrNull(tooltip.title[0]) ?? 0)
+                        : tooltip.title[0],
+                yLabel: tooltip.dataPoints[0].dataset.label ?? "",
+                yValue:
+                    tooltip.dataPoints[0].datasetIndex === 0
+                        ? `${tooltip.dataPoints[0].parsed.y.toString()}%`
+                        : percentToDisplay(tooltip.dataPoints[0].parsed.y),
+            };
+
+            // Supress unnecessary update
+            if (
+                tooltipStyle.opacity === 0 ||
+                Object.keys(newTooltipTexts).some(
+                    (key) =>
+                        (tooltipTexts as Record<string, string>)[key] !==
+                        (newTooltipTexts as Record<string, string>)[key],
+                )
+            ) {
+                const { offsetLeft, offsetTop, width: canvasWidth } = chart.canvas;
+
+                setTooltipTexts(newTooltipTexts);
+                setTooltipStyle({
+                    opacity: 1,
+                    left: tooltip.caretX <= canvasWidth / 2 ? offsetLeft + tooltip.caretX : undefined,
+                    right: tooltip.caretX > canvasWidth / 2 ? canvasWidth - tooltip.caretX : undefined,
+                    top: offsetTop + tooltip.caretY - tooltip.height / 2,
+                });
+            }
+        },
+        [tooltipTexts, tooltipStyle],
+    );
+
     return {
         data: {
             labels,
@@ -111,45 +155,7 @@ export const useDistributionGraph = (): DistributionGraphProps => {
                 },
                 tooltip: {
                     enabled: false,
-                    external: ({ chart, tooltip }) => {
-                        if (tooltip.opacity === 0) {
-                            setTooltipStyle({ ...tooltipStyle, opacity: 0 });
-                            return;
-                        }
-
-                        const newTooltipTexts = {
-                            xLabel: t("distributionGraph.xLabel"),
-                            xValue:
-                                tooltip.dataPoints[0].datasetIndex === 0
-                                    ? classToDisplay(parseIntOrNull(tooltip.title[0]) ?? 0)
-                                    : tooltip.title[0],
-                            yLabel: tooltip.dataPoints[0].dataset.label ?? "",
-                            yValue:
-                                tooltip.dataPoints[0].datasetIndex === 0
-                                    ? `${tooltip.dataPoints[0].parsed.y.toString()}%`
-                                    : percentToDisplay(tooltip.dataPoints[0].parsed.y),
-                        };
-
-                        // Supress unnecessary update
-                        if (
-                            tooltipStyle.opacity === 0 ||
-                            Object.keys(newTooltipTexts).some(
-                                (key) =>
-                                    (tooltipTexts as Record<string, string>)[key] !==
-                                    (newTooltipTexts as Record<string, string>)[key],
-                            )
-                        ) {
-                            const { offsetLeft, offsetTop, width: canvasWidth } = chart.canvas;
-
-                            setTooltipTexts(newTooltipTexts);
-                            setTooltipStyle({
-                                opacity: 1,
-                                left: tooltip.caretX <= canvasWidth / 2 ? offsetLeft + tooltip.caretX : undefined,
-                                right: tooltip.caretX > canvasWidth / 2 ? canvasWidth - tooltip.caretX : undefined,
-                                top: offsetTop + tooltip.caretY - tooltip.height / 2,
-                            });
-                        }
-                    },
+                    external: externalTooltipHandler,
                 },
             },
             scales: {
