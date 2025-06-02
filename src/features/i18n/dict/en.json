@@ -14,6 +14,10 @@
             "lineDatasetLabel": "Estimated Accuracy Rate"
         }
     },
+    "distributionGraphError": {
+        "message": "Failed loading graph data.",
+        "buttonLabel": "Try again"
+    },
     "itemsPerPageSelector": {
         "label": "Items per page"
     },

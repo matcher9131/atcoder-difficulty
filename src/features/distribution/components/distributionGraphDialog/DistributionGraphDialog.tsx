@@ -2,6 +2,8 @@ import { type ReactNode } from "react";
 import { ModalDialog, useModalDialog } from "../../../dialog/components/modalDialog";
 import { DistributionGraphContainer } from "../distributionGraph/DistributionGraphContainer";
 import { RemoveScroll } from "react-remove-scroll";
+import { ErrorBoundary } from "react-error-boundary";
+import { DistributionGraphError } from "../distributionGraphError";
 
 export const DistributionGraphDialog = (): ReactNode => {
     const { isOpen, setDialogElement, closeDialog } = useModalDialog("distribution");
@@ -22,7 +24,9 @@ export const DistributionGraphDialog = (): ReactNode => {
                 enabled={isOpen}
                 className="w-full h-full flex items-center justify-center relative"
             >
-                <DistributionGraphContainer />
+                <ErrorBoundary FallbackComponent={DistributionGraphError}>
+                    <DistributionGraphContainer />
+                </ErrorBoundary>
             </RemoveScroll>
         </ModalDialog>
     );

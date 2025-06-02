@@ -14,6 +14,10 @@
             "lineDatasetLabel": "推定正答率"
         }
     },
+    "distributionGraphError": {
+        "message": "グラフの読み込みに失敗しました。",
+        "buttonLabel": "再試行"
+    },
     "itemsPerPageSelector": {
         "label": "1ページあたりの表示数"
     },

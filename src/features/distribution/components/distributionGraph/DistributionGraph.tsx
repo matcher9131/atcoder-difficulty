@@ -13,10 +13,9 @@ import {
     Title,
     Legend,
 } from "chart.js";
-import { Suspense, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Chart } from "react-chartjs-2";
 import { chartAreaBackgroundPlugin } from "./plugin";
-import { LoadingIndicator } from "../../../suspense/component/loadingIndicator";
 
 ChartJS.register(
     CategoryScale,
@@ -39,9 +38,5 @@ export type DistributionGraphProps = {
 };
 
 export const DistributionGraph = ({ data, options }: DistributionGraphProps): ReactNode => {
-    return (
-        <Suspense fallback={<LoadingIndicator />}>
-            <Chart type="line" data={data} options={options} plugins={plugins} />
-        </Suspense>
-    );
+    return <Chart type="line" data={data} options={options} plugins={plugins} />;
 };
