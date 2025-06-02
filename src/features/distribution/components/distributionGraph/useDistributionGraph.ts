@@ -11,8 +11,8 @@ import { capitalize } from "../../../../utils/string";
 import { useTranslation } from "react-i18next";
 import type { TooltipItem } from "chart.js";
 
-const classToDisplay = (infimum: number): string => {
-    return `${infimum.toString()} - ${(infimum + 25).toString()}`;
+const classToDisplay = (median: number): string => {
+    return `${(median - 12.5).toString()} - ${(median + 12.5).toString()}`;
 };
 
 const percentToDisplay = (percent: number): string => {
@@ -33,34 +33,30 @@ export const useDistributionGraph = (): DistributionGraphProps => {
     const problemName = useAtomValue(problemSelector(problemId))?.n ?? "";
 
     const xMin = 0;
-    const xMax = Math.floor((rawDistribution.length * 25) / 400) * 400;
-    const labels = new Array((xMax - xMin) / 25).fill(0).flatMap((_, i) => [i * 25, i * 25]);
-    const distributionData = new Array((xMax - xMin) / 25).fill(0).flatMap(
-        (_, i): Array<{ readonly x: number; readonly y: number | null }> => [
-            { x: i * 25, y: null },
-            { x: i * 25 + 12.5, y: i < rawDistribution.length ? rawDistribution[i] : 0 },
-        ],
-    );
+    const xMax = rawDistribution.length * 25 <= 3200 ? 3200 : Math.ceil((rawDistribution.length * 25) / 100) * 100;
+    const dataLength = (xMax - xMin) / 12.5 + 1;
+    const distributionData = new Array(dataLength)
+        .fill(0)
+        .map((_, i): { readonly x: number; readonly y: number | null } => ({
+            x: i * 12.5,
+            y: i % 2 == 0 ? null : (i - 1) / 2 < rawDistribution.length ? rawDistribution[(i - 1) / 2] : 0,
+        }));
     const difficultyTuple = useAtomValue(problemSelector(problemId))?.d;
     const estimatedData =
         difficultyTuple != null
-            ? new Array((xMax - xMin) / 25).fill(0).flatMap(
-                  (_, i): Array<{ readonly x: number; readonly y: number | null }> => [
-                      {
-                          x: i * 25,
-                          y: irt2pl(inverseAdjustmentOfLowRating(i * 25), difficultyTuple[0], difficultyTuple[1]) * 100,
-                      },
-                      { x: i * 25 + 12.5, y: null },
-                  ],
-              )
+            ? new Array(dataLength).fill(0).map((_, i): { readonly x: number; readonly y: number | null } => ({
+                  x: i * 12.5,
+                  y:
+                      i % 2 == 0
+                          ? irt2pl(inverseAdjustmentOfLowRating(i * 12.5), difficultyTuple[0], difficultyTuple[1]) * 100
+                          : null,
+              }))
             : [];
 
     // For custom tooltip
     const tooltipCallbackTitle = useCallback((tooltipItems: TooltipItem<"bar" | "line">[]) => {
         const tooltipItem = tooltipItems[0];
-        const labels = (tooltipItem.chart.data.labels ?? []) as number[];
-        const label = labels[tooltipItem.dataIndex];
-        return `${t("distributionGraph.xLabel")}: ${tooltipItem.datasetIndex === 0 ? classToDisplay(label) : label.toString()}`;
+        return `${t("distributionGraph.xLabel")}: ${tooltipItem.datasetIndex === 0 ? classToDisplay(tooltipItem.parsed.x) : tooltipItem.parsed.x.toString()}`;
     }, []);
     const tooltipCallbackLabel = useCallback((tooltipItem: TooltipItem<"bar" | "line">) => {
         return `${tooltipItem.dataset.label ?? ""}: ${tooltipItem.datasetIndex === 0 ? `${tooltipItem.parsed.y.toString()}%` : percentToDisplay(tooltipItem.parsed.y)}`;
@@ -68,7 +64,6 @@ export const useDistributionGraph = (): DistributionGraphProps => {
 
     return {
         data: {
-            labels,
             datasets: [
                 {
                     label: t("distributionGraph.yLabels.barDatasetLabel"),
@@ -97,6 +92,7 @@ export const useDistributionGraph = (): DistributionGraphProps => {
             ],
         },
         options: {
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     display: true,
@@ -118,15 +114,12 @@ export const useDistributionGraph = (): DistributionGraphProps => {
             },
             scales: {
                 x: {
+                    type: "linear",
+                    beginAtZero: true,
                     min: xMin,
                     max: xMax,
                     ticks: {
-                        align: "start",
-                        autoSkip: false,
-                        callback: function (val, index) {
-                            if (typeof val === "string") return undefined;
-                            return index % 8 === 0 ? this.getLabelForValue(val) : undefined;
-                        },
+                        stepSize: 100,
                     },
                     grid: {
                         offset: false,
