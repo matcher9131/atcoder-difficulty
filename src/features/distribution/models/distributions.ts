@@ -8,7 +8,9 @@ const encodedDistributionFiles = import.meta.glob("../../../assets/distributions
 
 const loadEncodedDistributionChunk = async (chunkIndex: number): Promise<Record<string, string>> => {
     const filename = `distribution${chunkIndex.toString()}.json`;
-    const matchedKey = Object.keys(encodedDistributionFiles).find((key) => key.endsWith(filename));
+    const matchedKey = Object.keys(encodedDistributionFiles).find(
+        (key) => key.substring(key.lastIndexOf("/") + 1) === filename,
+    );
     if (matchedKey == null) throw new Error(`${filename} is not found.`);
     return (await encodedDistributionFiles[matchedKey]()) as Record<string, string>;
 };
