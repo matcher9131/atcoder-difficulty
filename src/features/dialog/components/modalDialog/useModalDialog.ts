@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, type KeyboardEvent } from "react";
 import { useAtom } from "jotai";
 import { dialogIsOpenAtom, dialogElementAtom } from "../../models/dialog";
 
@@ -6,6 +6,7 @@ type UseModalDialogReturnType = {
     readonly isOpen: boolean;
     readonly setDialogElement: (element: HTMLDialogElement) => void;
     readonly closeDialog: () => Promise<void>;
+    readonly handleEscapeKeyDown: (e: KeyboardEvent<HTMLDialogElement>) => Promise<void>;
 };
 
 export const useModalDialog = (id: string): UseModalDialogReturnType => {
@@ -30,5 +31,15 @@ export const useModalDialog = (id: string): UseModalDialogReturnType => {
         setOpen(false);
     }, [dialogElement]);
 
-    return { isOpen, setDialogElement, closeDialog };
+    const handleEscapeKeyDown = useCallback(
+        async (e: KeyboardEvent<HTMLDialogElement>) => {
+            if (e.key === "Escape") {
+                e.preventDefault();
+                await closeDialog();
+            }
+        },
+        [dialogElement],
+    );
+
+    return { isOpen, setDialogElement, closeDialog, handleEscapeKeyDown };
 };
