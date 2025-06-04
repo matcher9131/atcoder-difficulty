@@ -19,12 +19,27 @@ export const useModalDialog = (id: string): UseModalDialogReturnType => {
                 duration: 100,
                 iteration: 1,
             };
-            dialogElement.animate([{ transform: "scale(1)" }, { transform: "scale(0.5)" }], animationOptions);
-            dialogElement.animate([{ opacity: 1 }, { opacity: 0 }], {
-                pseudoElement: "::backdrop",
-                ...animationOptions,
-            });
-            await Promise.allSettled(dialogElement.getAnimations().map(async (animation) => await animation.finished));
+            const bodyAnimation = dialogElement.animate(
+                [{ transform: "scale(1)" }, { transform: "scale(0.5)" }],
+                animationOptions,
+            );
+            // Some browsers do not support pseudo-element '::backdrop' in Element.animate,
+            // so animate it only if the browser support it.
+            let backdropAnimation: Animation | null = null;
+            try {
+                backdropAnimation = dialogElement.animate([{ opacity: 1 }, { opacity: 0 }], {
+                    pseudoElement: "::backdrop",
+                    ...animationOptions,
+                });
+            } catch {
+                backdropAnimation = null;
+            }
+
+            await bodyAnimation.finished;
+            if (backdropAnimation != null) {
+                await backdropAnimation.finished;
+            }
+
             dialogElement.close();
         }
 
