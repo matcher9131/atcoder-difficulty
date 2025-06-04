@@ -3,6 +3,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import datetime
 from os import listdir
 import re
+import shutil
 
 from functions.rating import adjust_low_rating
 from models.contest import Contest, load_contest
@@ -111,6 +112,7 @@ def save_frequency_distributions(contest_ids: list[str], forces_update: bool):
         ordered_compressed_frequency_distributions[i:i+1000]
         for i in range(0, len(ordered_compressed_frequency_distributions), 1000)
     ]
-    # Save each
+    # Save each and copy
     for i, chunk in enumerate(ordered_compressed_frequency_distributions_chunks):
         save_json(dict(chunk), f"output/distributions/distribution{i}.json")
+        shutil.copy2(f"output/distributions/distribution{i}.json", f"../src/assets/distributions/distribution{i}.json")
