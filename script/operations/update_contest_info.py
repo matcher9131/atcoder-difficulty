@@ -38,8 +38,8 @@ def update_contest_info():
             rating_min = rating_regex_result.group("min")
             rating["min"] = int(rating_min) if rating_min is not None else None
             rating_max = rating_regex_result.group("max")
-            rating["max"] = int(rating_max) if rating_min is not None else None
-        
+            rating["max"] = int(rating_max) if rating_max is not None else None
+
         contest_info.add_item(contest_id, {
             "date": datetime.strptime(time.get_text(), "%Y-%m-%d %H:%M:%S%z"),
             "rating": None if rating_regex_result is None else rating
