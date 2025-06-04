@@ -2,17 +2,12 @@ import { atom } from "jotai";
 import { atomFamily, atomWithDefault } from "jotai/utils";
 import distributionChunkLastIdsUrl from "../../../assets/distribution_chunk.json?url";
 
-const encodedDistributionFiles = import.meta.glob("../../../assets/distributions/*.json", {
-    import: "default",
-});
-
 const loadEncodedDistributionChunk = async (chunkIndex: number): Promise<Record<string, string>> => {
-    const filename = `distribution${chunkIndex.toString()}.json`;
-    const matchedKey = Object.keys(encodedDistributionFiles).find(
-        (key) => key.substring(key.lastIndexOf("/") + 1) === filename,
-    );
-    if (matchedKey == null) throw new Error(`${filename} is not found.`);
-    return (await encodedDistributionFiles[matchedKey]()) as Record<string, string>;
+    const filenameWithoutExtension = `distribution${chunkIndex.toString()}`;
+    const module = (await import(`../../../assets/distributions/${filenameWithoutExtension}.json`)) as {
+        default: Record<string, string>;
+    };
+    return module.default;
 };
 
 const encodedDistributionChunkAtom = atomFamily((chunkIndex: number) =>
