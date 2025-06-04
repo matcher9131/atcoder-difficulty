@@ -64,30 +64,29 @@ def to_compressed_frequency_distribution(frequency_distribution: list[float]) ->
     ])).decode("ascii")
 
 
-def get_compressed_frequency_distributions(contest_ids: list[str]) -> dict[str, str]:
+def get_compressed_frequency_distributions(contest_ids: list[str], forces_update: bool) -> dict[str, str]:
     contest_info = ContestInfo()
     player_num_contests_dict = load_player_num_contests_dict()
     needs_history_older_than_this = datetime.fromisoformat("2025-04-05T12:00:00.000Z")
     compressed_frequency_distributions = load_compressed_frequency_distributions()
 
-
     with ProcessPoolExecutor() as executor:
         futures = []
-
-        try:
-            for contest_id in contest_ids:
+        
+        for contest_id in contest_ids:
+            try:
                 contest: Contest = load_contest(contest_id)
-                contest_date = contest_info.get_contest_date(contest_id)
-                max_rating = contest_info.get_max_rating(contest_id)
-                futures.append(executor.submit(
-                    create_contest_frequency_distributions,
-                    contest,
-                    player_num_contests_dict if contest_date is None or contest_date < needs_history_older_than_this else None,
-                    [0, 1] if max_rating is not None and max_rating < 2000 else []
-                ))
-        except FileNotFoundError:
-            print(f"Contest {contest_id} is not found.")
-    
+                if forces_update or any([problem_id not in compressed_frequency_distributions for problem_id in contest["problems"].keys()]):
+                    contest_date = contest_info.get_contest_date(contest_id)
+                    max_rating = contest_info.get_max_rating(contest_id)
+                    futures.append(executor.submit(
+                        create_contest_frequency_distributions,
+                        contest,
+                        player_num_contests_dict if contest_date is None or contest_date < needs_history_older_than_this else None,
+                        [0, 1] if max_rating is not None and max_rating < 2000 else []
+                    ))
+            except FileNotFoundError:
+                print(f"Contest {contest_id} is not found.")    
         
         for future in as_completed(futures):
             current_distribution: dict[str, list[float]] = future.result()
@@ -100,9 +99,9 @@ def get_compressed_frequency_distributions(contest_ids: list[str]) -> dict[str, 
         return compressed_frequency_distributions
        
 
-def save_frequency_distributions(contest_ids: list[str]):
-    compressed_frequency_distributions = get_compressed_frequency_distributions(contest_ids)
-    # Convert distributions dict to list in order to sort by alphabetical order
+def save_frequency_distributions(contest_ids: list[str], forces_update: bool):
+    compressed_frequency_distributions = get_compressed_frequency_distributions(contest_ids, forces_update)
+    # Convert distributions dict to a list in order to sort by alphabetical order
     ordered_compressed_frequency_distributions = sorted(
         [(problem_id, distribution) for problem_id, distribution in compressed_frequency_distributions.items()],
         key=lambda tuple: tuple[0].replace("/", "~")

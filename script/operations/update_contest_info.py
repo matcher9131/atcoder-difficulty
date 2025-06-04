@@ -1,7 +1,7 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup # type: ignore
 from datetime import datetime
 import re
-import requests
+import requests # type: ignore
 
 from models.contest_info import ContestInfo
 
