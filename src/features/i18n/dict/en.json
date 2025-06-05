@@ -24,6 +24,9 @@
     "languageSelector": {
         "label": "Select language"
     },
+    "mainPageError": {
+        "message": "An error has occurred."
+    },
     "problemCell": {
         "difficultyIconLabel": "Difficulty"
     },

@@ -24,6 +24,9 @@
     "languageSelector": {
         "label": "言語を選択する"
     },
+    "mainPageError": {
+        "message": "エラーが発生しました。"
+    },
     "problemCell": {
         "difficultyIconLabel": "難易度アイコン"
     },
