@@ -1,9 +1,10 @@
-import { type ReactNode, type KeyboardEvent } from "react";
+import { type ReactNode, type KeyboardEvent, Suspense } from "react";
 import { ModalDialog, useModalDialog } from "../../../dialog/components/modalDialog";
 import { DistributionGraphContainer } from "../distributionGraph/DistributionGraphContainer";
 import { RemoveScroll } from "react-remove-scroll";
 import { ErrorBoundary } from "react-error-boundary";
 import { DistributionGraphError } from "../distributionGraphError";
+import { LoadingIndicator } from "../../../suspense/components/loadingIndicator";
 
 export const DistributionGraphDialog = (): ReactNode => {
     const { isOpen, setDialogElement, closeDialog, handleEscapeKeyDown } = useModalDialog("distribution");
@@ -29,7 +30,9 @@ export const DistributionGraphDialog = (): ReactNode => {
                 className="w-full h-full flex items-center justify-center relative"
             >
                 <ErrorBoundary FallbackComponent={DistributionGraphError}>
-                    <DistributionGraphContainer />
+                    <Suspense fallback={<LoadingIndicator />}>
+                        <DistributionGraphContainer />
+                    </Suspense>
                 </ErrorBoundary>
             </RemoveScroll>
         </ModalDialog>

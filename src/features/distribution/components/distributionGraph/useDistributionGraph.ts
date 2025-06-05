@@ -25,11 +25,13 @@ export const problemIdToDisplayText = (problemId: string, problemName: string): 
     return `${contestId.toUpperCase()} ${problemIndex} - ${problemName}`;
 };
 
-export const useDistributionGraph = (): DistributionGraphProps => {
+export const useDistributionGraph = (): DistributionGraphProps | "loading" | "hasError" => {
     const { t } = useTranslation();
 
     const problemId = useAtomValue(selectedProblemAtom);
-    const rawDistribution = useAtomValue(distributionAtom(problemId));
+    const rawDistributionLodable = useAtomValue(distributionAtom(problemId));
+    const rawDistribution =
+        rawDistributionLodable.state === "hasData" ? rawDistributionLodable.data : new Uint8Array(0);
     const problemName = useAtomValue(problemSelector(problemId))?.n ?? "";
 
     const xMin = 0;
@@ -62,6 +64,7 @@ export const useDistributionGraph = (): DistributionGraphProps => {
         return `${tooltipItem.dataset.label ?? ""}: ${tooltipItem.datasetIndex === 0 ? `${tooltipItem.parsed.y.toString()}%` : percentToDisplay(tooltipItem.parsed.y)}`;
     }, []);
 
+    if (rawDistributionLodable.state !== "hasData") return rawDistributionLodable.state;
     return {
         data: {
             datasets: [
