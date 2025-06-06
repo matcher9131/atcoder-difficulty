@@ -52,5 +52,8 @@
     "themeSelector": {
         "uncheckedLabel": "Enable dark mode",
         "checkedLabel": "Disable dark mode"
+    },
+    "userInput": {
+        "label": "User name"
     }
 }
