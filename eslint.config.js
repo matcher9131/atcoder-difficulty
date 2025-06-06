@@ -6,7 +6,7 @@ import { defineConfig } from "eslint/config";
 import eslintConfigPrettier from "eslint-config-prettier";
 
 export default defineConfig([
-    { ignores: ["**/script/**", "**/dist/**", "*.config.js"] },
+    { ignores: ["**/script/**", "**/supabase/**", "**/dist/**", "*.config.js"] },
     {
         files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
         plugins: { js },
