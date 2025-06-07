@@ -116,3 +116,7 @@ def save_frequency_distributions(contest_ids: list[str], forces_update: bool):
     for i, chunk in enumerate(ordered_compressed_frequency_distributions_chunks):
         save_json(dict(chunk), f"output/distributions/distribution{i}.json")
         shutil.copy2(f"output/distributions/distribution{i}.json", f"../src/assets/distributions/distribution{i}.json")
+    # Save chunk index file and copy
+    chunkLastIds = [chunk[-1][0] for chunk in ordered_compressed_frequency_distributions_chunks]
+    save_json(chunkLastIds, "output/distribution_chunk.json")
+    shutil.copy2("output/distribution_chunk.json", f"../src/assets/distribution_chunk.json")
