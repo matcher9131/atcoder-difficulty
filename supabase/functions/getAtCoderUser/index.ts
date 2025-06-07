@@ -1,20 +1,17 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { DOMParser } from "https://deno.land/x/deno_dom@v0.1.49/deno-dom-wasm.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
-Deno.serve(async (request) => {
-    const { userName } = await request.json();
-    if (userName == null) {
-        return new Response("User name is missing", { status: 400 });
-    }
+type UserData = {
+    readonly rating: number;
+    readonly numContests: number;
+};
 
+const fetchUserData = async (userName: string): Promise<UserData | null> => {
     const externalResponse = await fetch(`https://atcoder.jp/users/${userName}`);
     if (externalResponse.status === 404) {
-        return new Response("User not found", { status: 404 });
+        return null;
     } else if (externalResponse.status !== 200) {
         throw new Error("Failed to fetch");
     }
@@ -30,20 +27,27 @@ Deno.serve(async (request) => {
         [...parser.querySelectorAll("tr")].find((tr) => tr.querySelector("th")?.textContent == "Rated Matches ")
             ?.querySelector("td")?.textContent ?? "",
     );
-    const data = { rating, numContests };
-    return new Response(JSON.stringify(data), {
-        headers: { "Content-Type": "application/json" },
-    });
+    return !Number.isNaN(rating) && !Number.isNaN(numContests) ? { rating, numContests } : null;
+};
+
+Deno.serve(async (request) => {
+    const { userName } = await request.json();
+    if (userName == null || userName === "") {
+        return new Response("User name is missing", { status: 400 });
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (supabaseUrl == null || supabaseKey == null) {
+        return new Response("Invalid server settings", { status: 500 });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const { data, error } = await supabase.from("user").select().eq("user_name", userName);
+    if (error) {
+        return new Response("Something went wrong", { status: 500 });
+    }
+
+    // temp
+    return new Response(JSON.stringify(data), { status: 200 });
 });
-
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/getAtCoderUser' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
-
-*/
