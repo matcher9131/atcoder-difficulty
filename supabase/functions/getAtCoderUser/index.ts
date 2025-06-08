@@ -1,33 +1,17 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { DOMParser } from "https://deno.land/x/deno_dom@v0.1.49/deno-dom-wasm.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { addDays, parseDateOrNull, setUTCTimeOfDay } from "./util.ts";
+import { fetchUserData } from "./userData.ts";
 
-type UserData = {
-    readonly rating: number;
-    readonly numContests: number;
-};
-
-const fetchUserData = async (userName: string): Promise<UserData | null> => {
-    const externalResponse = await fetch(`https://atcoder.jp/users/${userName}`);
-    if (externalResponse.status === 404) {
-        return null;
-    } else if (externalResponse.status !== 200) {
-        throw new Error("Failed to fetch");
-    }
-
-    const html = await externalResponse.text();
-    const parser = new DOMParser().parseFromString(html, "text/html");
-    const rating = parseInt(
-        [...parser.querySelectorAll("tr")].find((tr) => tr.querySelector("th")?.textContent == "Rating")?.querySelector(
-            "td span",
-        )?.textContent ?? "",
-    );
-    const numContests = parseInt(
-        [...parser.querySelectorAll("tr")].find((tr) => tr.querySelector("th")?.textContent == "Rated Matches ")
-            ?.querySelector("td")?.textContent ?? "",
-    );
-    return !Number.isNaN(rating) && !Number.isNaN(numContests) ? { rating, numContests } : null;
+const needsRefresh = (lastAccess: Date, now: Date): boolean => {
+    // UserData should be refreshed at every Sat. 15:00 and Sun. 15:00 UTC
+    // (Assume week starts on Sun.)
+    // deno-fmt-ignore
+    const refreshDate = now.getUTCDay() === 6 && now.getUTCHours() >= 15 ? setUTCTimeOfDay(now, 15) // should be refreshed at this Sat. 15:00 UTC
+        : now.getUTCDay() === 0 && now.getUTCHours() < 15 ? addDays(setUTCTimeOfDay(now, 15), -1) // should be refreshed at last Sat. 15:00 UTC
+        : addDays(setUTCTimeOfDay(now, 15), -now.getUTCDay()); // should be refreshed at this Sun. 15:00 UTC
+    return lastAccess < refreshDate;
 };
 
 Deno.serve(async (request) => {
@@ -43,11 +27,40 @@ Deno.serve(async (request) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const { data, error } = await supabase.from("user").select().eq("user_name", userName);
+    const { data, error } = await supabase.from("users").select().eq("user_name", userName);
     if (error) {
         return new Response("Something went wrong", { status: 500 });
     }
 
-    // temp
-    return new Response(JSON.stringify(data), { status: 200 });
+    if (data.length === 0) {
+        // No user data in DB, so fetch user data and save it to DB, then return it.
+        const userData = await fetchUserData(userName);
+        const { rating, numContests } = userData ?? { rating: 0, numContests: 0 };
+        supabase.from("users").insert({
+            user_name: userName,
+            rating,
+            num_contests: numContests,
+            last_access: new Date().toISOString(),
+        });
+        return new Response(JSON.stringify(userData), { status: 200 });
+    } else {
+        const lastAccess = parseDateOrNull(data[0]["last_access"] ?? "");
+        if (lastAccess == null || needsRefresh(lastAccess, new Date())) {
+            // User data exists in DB but old, so fetch new user data and save it to DB, then return it.
+            const userData = await fetchUserData(userName);
+            const { rating, numContests } = userData ?? { rating: 0, numContests: 0 };
+            supabase.from("users").upsert({
+                user_name: userName,
+                rating,
+                num_contests: numContests,
+                last_access: new Date().toISOString(),
+            });
+            return new Response(JSON.stringify(userData), { status: 200 });
+        } else {
+            // User data exists in DB and new, so just return it.
+            return new Response(JSON.stringify({ rating: data[0]["rating"], numContests: data[0]["num_contests"] }), {
+                status: 200,
+            });
+        }
+    }
 });
