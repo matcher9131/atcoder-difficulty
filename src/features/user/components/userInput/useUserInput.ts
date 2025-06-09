@@ -37,7 +37,7 @@ export const useUserInput = (): Omit<UserInputProps, "classNames"> => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer `,
+                    Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
                 },
                 mode: "cors",
                 body: JSON.stringify({ userName: value }),

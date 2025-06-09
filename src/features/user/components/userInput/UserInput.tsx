@@ -22,7 +22,7 @@ export const UserInput = ({
         validationState === "success" ? "input-success" : validationState === "error" ? "input-error" : false;
     const { t } = useTranslation();
     return (
-        <div className={clsx("text-left", "flex", "gap-x-2", className)}>
+        <div className={clsx("text-left", "flex", "gap-x-2", "items-center", className)}>
             <label className={clsx("input", labelStateClass, "w-60")}>
                 <span className="text-sm">{t("userInput.label")}</span>
                 <input
@@ -33,7 +33,7 @@ export const UserInput = ({
                     className="grow text-right"
                 />
             </label>
-            <span className="text-error">{validationMessage}</span>
+            <div className="text-error">{validationMessage}</div>
         </div>
     );
 };
