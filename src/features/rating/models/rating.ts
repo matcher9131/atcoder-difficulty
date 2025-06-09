@@ -1,14 +1,9 @@
 import { atom } from "jotai";
 import { getRawRating } from "./functions";
-import { atomWithStorage } from "jotai/utils";
 
-export const ratingAtom = atomWithStorage<number | null>("atcoder-difficulty-rating", null, undefined, {
-    getOnInit: true,
-});
+export const ratingAtom = atom<number | null>(null);
 
-export const numContestsAtom = atomWithStorage<number | null>("atcoder-difficulty-num-of-matches", null, undefined, {
-    getOnInit: true,
-});
+export const numContestsAtom = atom<number | null>(null);
 
 export const rawRatingAtom = atom((get) => {
     const rating = get(ratingAtom);
