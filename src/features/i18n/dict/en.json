@@ -54,6 +54,9 @@
         "checkedLabel": "Disable dark mode"
     },
     "userInput": {
-        "label": "User name"
+        "inputLabel": "User name",
+        "buttonLabel": "Apply",
+        "userNotFoundMessage": "User not found.",
+        "fetchUserErrorMessage": "An error has occurred."
     }
 }
