@@ -1,13 +1,15 @@
-import { type ChangeEvent, useRef } from "react";
+import { useRef, useState } from "react";
 import type { UserInputProps } from "./UserInput";
 import { useAtom } from "jotai";
 import { paginationValueAtom } from "../../../pagination/model/paginations";
 import { userNameAtom, userNameValidationMessageAtom, userNameValidationStateAtom } from "../../models/username";
 import { numContestsAtom, ratingAtom } from "../../../rating/models/rating";
-
-const delay = 500;
+import { fetchUser } from "./functions";
+import { useTranslation } from "react-i18next";
+import { UserNotFoundError } from "../../types/fetchUserError";
 
 export const useUserInput = (): Omit<UserInputProps, "classNames"> => {
+    const { t } = useTranslation();
     const [, setSolveProbabilityPaginationValue] = useAtom(paginationValueAtom("solveProbability"));
 
     const [userName, setUserName] = useAtom(userNameAtom);
@@ -16,73 +18,52 @@ export const useUserInput = (): Omit<UserInputProps, "classNames"> => {
     const [, setRating] = useAtom(ratingAtom);
     const [, setNumContests] = useAtom(numContestsAtom);
     const inputRef = useRef<HTMLInputElement>(null);
-    const timeoutRef = useRef<number | null>(null);
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        if (timeoutRef.current != null) {
-            clearTimeout(timeoutRef.current);
+    const [buttonIsDisabled, setButtonIsDisabled] = useState(false);
+
+    const handleClick = () => {
+        const input = inputRef.current;
+        if (input == null) return;
+
+        const newUserName = input.value;
+        if (newUserName === userName) return;
+
+        setSolveProbabilityPaginationValue(0);
+        if (newUserName === "") {
+            setRating(null);
+            setNumContests(null);
+            setValidationState("none");
+            setValidationMessage("");
+            return;
         }
-        const value = e.target.checkValidity() ? e.target.value : "";
-        timeoutRef.current = window.setTimeout(() => {
-            if (value === userName) return;
-            setSolveProbabilityPaginationValue(0);
-            setUserName(value);
-            if (value === "") {
+
+        setButtonIsDisabled(true);
+        setUserName(newUserName);
+        fetchUser(newUserName)
+            .then(({ rating, numContests }) => {
+                setRating(rating);
+                setNumContests(numContests);
+                setValidationState("success");
+                setValidationMessage("");
+            })
+            .catch((error: unknown) => {
                 setRating(null);
                 setNumContests(null);
-                setValidationState("none");
-                setValidationMessage("");
-                return;
-            }
-            fetch(import.meta.env.VITE_API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
-                },
-                mode: "cors",
-                body: JSON.stringify({ userName: value }),
+                setValidationState("error");
+                setValidationMessage(
+                    error instanceof UserNotFoundError
+                        ? t("userInput.userNotFoundMessage")
+                        : t("userInput.fetchUserErrorMessage"),
+                );
             })
-                .then((response) => {
-                    if (response.ok) {
-                        response
-                            .text()
-                            .then((text) => {
-                                if (text == "null") {
-                                    setRating(null);
-                                    setNumContests(null);
-                                    setValidationState("error");
-                                    setValidationMessage("User not found.");
-                                } else {
-                                    const { rating, numContests } = JSON.parse(text) as {
-                                        rating: number;
-                                        numContests: number;
-                                    };
-                                    setRating(rating);
-                                    setNumContests(numContests);
-                                    setValidationState("success");
-                                    setValidationMessage("");
-                                }
-                            })
-                            .catch(console.log);
-                    } else {
-                        setRating(null);
-                        setNumContests(null);
-                        setValidationState("error");
-                        setValidationMessage("Some errors occur.");
-                    }
-                })
-                .catch(() => {
-                    setRating(null);
-                    setNumContests(null);
-                    setValidationState("error");
-                    setValidationMessage("Request Failed.");
-                });
-        }, delay);
+            .finally(() => {
+                setButtonIsDisabled(false);
+            });
     };
 
     return {
         inputRef,
-        handleChange,
+        buttonIsDisabled,
+        handleClick,
         validationState,
         validationMessage,
     };
