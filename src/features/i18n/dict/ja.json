@@ -58,5 +58,11 @@
         "buttonLabel": "適用",
         "userNotFoundMessage": "ユーザーが見つかりません",
         "fetchUserErrorMessage": "エラーが発生しました"
+    },
+    "userLabel": {
+        "ratingLabel": "レーティング",
+        "numContestsLabel": "参加回数",
+        "rawRatingLabel": "生レーティング",
+        "iconLabel": "レーティングアイコン"
     }
 }
