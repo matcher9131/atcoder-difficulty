@@ -21,19 +21,23 @@ export const UserLabel = ({
 }: UserLabelProps): ReactNode => {
     const { t } = useTranslation();
     return (
-        <div className="w-full flex gap-x-3">
-            <span>{`${t("userLabel.ratingLabel")}: ${rating ?? "-"}`}</span>
-            <span>{`${t("userLabel.numContestsLabel")}: ${numContests ?? "-"}`}</span>
+        <div className="w-full p-2 flex gap-x-3">
+            <div>{`${t("userLabel.ratingLabel")}: ${rating ?? "-"}`}</div>
+            <div>{`${t("userLabel.numContestsLabel")}: ${numContests ?? "-"}`}</div>
             {rawRating != null ? (
-                <span>
-                    {`${t("userLabel.rawRatingLabel")}: `}
-                    <svg role="img" aria-label={t("userLabel.iconLabel")} className={clsx("w-6", "h-4", iconFillColor)}>
+                <div className="flex items-center">
+                    <div className="mr-1">{`${t("userLabel.rawRatingLabel")}:`}</div>
+                    <svg
+                        role="img"
+                        aria-label={t("userLabel.iconLabel")}
+                        className={clsx("w-6", "h-4", iconFillColor, "inline")}
+                    >
                         <use href={iconHref} />
                     </svg>
-                    <span className={textColor}>{rawRating}</span>
-                </span>
+                    <div className={textColor}>{rawRating}</div>
+                </div>
             ) : (
-                <span>{`${t("userLabel.numContestsLabel")}: -`}</span>
+                <div>{`${t("userLabel.rawRatingLabel")}: -`}</div>
             )}
         </div>
     );
