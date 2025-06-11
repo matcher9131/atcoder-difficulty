@@ -1,8 +1,9 @@
 import { useAtom } from "jotai";
-import { getFillColor, getProblemIndex, getTextColor, toPercent } from "./functions";
+import { getProblemIndex, toPercent } from "./functions";
 import type { ProblemCellProps } from "./ProblemCell";
 import { splitProblemId } from "../../functions/split";
 import { problemWithSolveProbabilityAtom } from "../../../solveProbability/models/solveProbabilities";
+import { getFillColor, getTextColor } from "../../../rating/functions/color";
 
 export const useProblemCell = (
     problemId: string,

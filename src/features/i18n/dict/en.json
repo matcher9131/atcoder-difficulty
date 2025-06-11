@@ -54,6 +54,15 @@
         "checkedLabel": "Disable dark mode"
     },
     "userInput": {
-        "label": "User name"
+        "inputLabel": "User name",
+        "buttonLabel": "Apply",
+        "userNotFoundMessage": "User not found.",
+        "fetchUserErrorMessage": "An error has occurred."
+    },
+    "userLabel": {
+        "ratingLabel": "Rating",
+        "numContestsLabel": "Num of matches",
+        "rawRatingLabel": "True rating",
+        "iconLabel": "Rating icon"
     }
 }
