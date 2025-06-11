@@ -24,7 +24,7 @@ export const UserInput = ({
         validationState === "success" ? "input-success" : validationState === "error" ? "input-error" : false;
     const { t } = useTranslation();
     return (
-        <div className={clsx("text-left", "flex", "gap-x-2", "items-center", className)}>
+        <div className={clsx("w-full", "pl-2", "text-left", "flex", "gap-x-2", "items-center", className)}>
             <label className={clsx("input", labelStateClass, "w-60")}>
                 <span className="text-sm">{t("userInput.inputLabel")}</span>
                 <input type="text" ref={inputRef} pattern="^[0-9A-Za-z_]+$" className="grow text-right" />
