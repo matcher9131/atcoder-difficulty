@@ -1,43 +1,61 @@
-import sys
+from bs4 import BeautifulSoup # type: ignore
+from datetime import datetime
+import os
+import re
+import requests # type: ignore
 
-from operations.create_contests_json import create_contests_json
-from operations.create_frequency_distributions import save_frequency_distributions
-from operations.estimate_difficulties import estimate_and_save_difficulties
-from operations.update_contest_info import update_contest_info
-from util.json_io import enumerate_contest_ids
+from util.json_io import load_json, save_json
+
+
+def get_new_contests(existing_ids: list[str]) -> list[tuple[str, int | str]]:
+    rating_regex = re.compile(r"(?P<min>\d+)?\s*-\s*(?P<max>\d+)?")
+
+    response = requests.get("https://atcoder.jp/contests/archive")
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    contests: list[tuple[str, int | str]] = []
+    for tr in soup.select("tbody tr"):
+        if tr.select_one("span[title='Algorithm']") is None:
+            continue
+        time = tr.select_one("time")
+        if time is None:
+            continue
+        anchor = tr.select_one("td:nth-of-type(2) a")
+        if anchor is None:
+            continue
+        rated_cell = tr.select_one("td:nth-of-type(4)")
+        if rated_cell is None or rated_cell.get_text() == "-":
+            continue
+
+        href = str(anchor["href"])
+        contest_id = href[(href.rfind("/") + 1):]
+        if contest_id in existing_ids:
+            continue
+
+        rating_regex_result = rating_regex.search(rated_cell.get_text())
+        max_rating: int | None = None
+        if rating_regex_result is not None:
+            max_rating = int(rating_regex_result.group("max"))
+
+        contests.append((contest_id, max_rating or "inf"))
+
+    return contests
+
+
+contests_json_path = "../src/assets/contests.json"
+
+def run():
+    contests_json: list[tuple[str, int | str]] = load_json(contests_json_path)
+    existing_ids = [id for id, _ in contests_json]
+
+    new_contests = get_new_contests(existing_ids)
+    if (len(new_contests) == 0):
+        return
+    save_json(new_contests + contests_json, contests_json_path) 
+
+
+    session = os.getenv("REVEL_SESSION")
+
 
 if __name__ == "__main__":
-    if (len(sys.argv) == 1):
-        print("This program should be called with commandline arguments. Call with '-h' to show details.")
-        sys.exit(0)
-
-    if sys.argv[1] == "-h":
-        print("Usage:")
-        print("  python main.py difficulty [-f] [<contest> ...]")
-        print("    Estimate difficulty of problems.")
-        print("      Options:")
-        print("        -f         Forces update.")
-        print("        <contest>  Contests to estimate. You can give multiple contests by separating them by space.")
-        print("                   Estimate all the contests if not given.")
-        print("  python main.py contest")
-        print("    Get contest info from AtCoder and create 'contests.json'")
-        print("  python main.py distribution [-f] [<contest> ...]")
-        print("    Get frequency distributions of responses.")
-        print("      Options:")
-        print("        -f         Forces update.")
-        print("        <contest>  Contests. You can give multiple contests by separating them by space.")
-        print("                   Get of all the contests if not given.")
-    elif sys.argv[1] == "difficulty":
-        forces_update = "-f" in sys.argv[2:]
-        contest_ids = [contest_id for contest_id in sys.argv[2:] if contest_id != "-f"]
-        if contest_ids:
-            estimate_and_save_difficulties(contest_ids, forces_update)
-        else:
-            estimate_and_save_difficulties(enumerate_contest_ids(), forces_update)
-    elif sys.argv[1] == "contest":
-        update_contest_info()
-        create_contests_json()
-    elif sys.argv[1] == "distribution":
-        forces_update = "-f" in sys.argv[2:]
-        contest_ids = [contest_id for contest_id in sys.argv[2:] if contest_id != "-f"]
-        save_frequency_distributions(contest_ids if contest_ids else enumerate_contest_ids(), forces_update)
+    run()
