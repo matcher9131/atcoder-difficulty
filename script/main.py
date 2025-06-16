@@ -3,7 +3,10 @@ from datetime import datetime
 import os
 import re
 import requests # type: ignore
+import sys
 
+from models.contest import Contest
+from models.player import Player
 from util.json_io import load_json, save_json
 
 
@@ -42,6 +45,39 @@ def get_new_contests(existing_ids: list[str]) -> list[tuple[str, int | str]]:
     return contests
 
 
+def get_contest(contest_id: str) -> Contest:
+    session = os.getenv("REVEL_SESSION")
+    if session is None:
+        raise ValueError("Session is none.")
+    
+    url = f"https://atcoder.jp/contests/{contest_id}/standings/json"
+    response = requests.get(url=url, cookies={ "REVEL_SESSION": session })
+    if response.status_code != 200:
+        response.raise_for_status()
+    if response.headers["Content-Type"] != "application/json":
+        raise TypeError("Response is not a json.")
+    
+    json = response.json()
+    problems: dict[str, str] = { f"{contest_id}/{element['TaskScreenName']}": element["TaskName"] for element in json["TaskInfo"] }
+    inner_problem_ids = [element["TaskScreenName"] for element in json["TaskInfo"]]
+    players: list[Player] = [
+        {
+            "name": player["UserScreenName"],
+            "rating": player["OldRating"],
+            "numContests": player["Competitions"],
+            "isRated": player["IsRated"],
+            "responses": [
+                -1 if inner_problem_id not in player["TaskResults"]
+                else 1 if player["TaskResults"][inner_problem_id]["SubmissionID"] > 0
+                else 0
+                for inner_problem_id in inner_problem_ids
+            ]
+        } for player in json["StandingsData"] if player["TotalResult"]["Count"] > 0
+    ]
+
+    return { "name": contest_id, "problems": problems, "players": players }
+
+
 contests_json_path = "../src/assets/contests.json"
 
 def run():
@@ -49,12 +85,18 @@ def run():
     existing_ids = [id for id, _ in contests_json]
 
     new_contests = get_new_contests(existing_ids)
-    if (len(new_contests) == 0):
+    if len(new_contests) == 0:
         return
-    save_json(new_contests + contests_json, contests_json_path) 
+    
 
+    for contest_id, max_rating in new_contests:
+        try:
+            contest = get_contest(contest_id)
+            # 
+        except Exception as e:
+            print(f"Failed get contest {contest_id}, message: {str(e)}", file=sys.stderr)
 
-    session = os.getenv("REVEL_SESSION")
+    save_json(new_contests + contests_json, contests_json_path)
 
 
 if __name__ == "__main__":
