@@ -5,7 +5,7 @@ from os import listdir
 import re
 import shutil
 
-from functions.rating import adjust_low_rating
+from script.util.rating import adjust_low_rating
 from models.contest import Contest, load_contest
 from models.contest_info import ContestInfo
 from models.player_histories import PlayerNumContestsDict, load_player_num_contests_dict

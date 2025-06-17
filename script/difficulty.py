@@ -1,21 +1,19 @@
-from concurrent.futures import as_completed, ProcessPoolExecutor
-from datetime import datetime
-from numpy import isnan
-import shutil
+import numpy as np
+from scipy.optimize import minimize
 
-from util.irt_2pl import estimate_problem_difficulty
-from script.util.rating import get_raw_rating
-from models.contest import Contest, load_contest
-from models.contest_info import ContestInfo
-from models.player_histories import PlayerNumContestsDict, load_player_num_contests_dict
-from script.problem import Problem
-from util.json_io import load_json, save_json, enumerate_contest_ids
+from contest import Contest
+from models.player_histories import PlayerNumContestsDict
+from problem import Problem
+from util.rating import adjust_low_rating, get_raw_rating
+from util.irt_2pl import neg_log_likelihood
+
 
 def is_nan_tuple(x: tuple[float, float] | tuple[None, None]) -> bool:
     for xi in x:
-        if xi is None or isnan(xi):
+        if xi is None or np.isnan(xi):
             return True
     return False
+
 
 def get_abilities_and_responses(
     contest: Contest,
@@ -52,6 +50,27 @@ def get_abilities_and_responses(
     return abilities, responses, is_target_of_easy_problems
 
 
+def estimate_problem_difficulty(abilities: list[float], responses: list[int]) -> tuple[float, float]:
+    mean = np.mean(abilities)
+    # Fix stddev for solve probability
+    # stddev = np.std(abilities)
+    stddev = 600.0
+    scaled_abilities = (np.array(abilities) - mean) / stddev
+    minimize_result = minimize(
+        neg_log_likelihood,
+        [np.log(6), 0.0],
+        args=(responses, scaled_abilities),
+        method='Nelder-Mead',
+        options={"maxiter": 1000}
+    )
+    if minimize_result.success:
+        discrimination, difficulty = minimize_result.x
+        return (float(discrimination), adjust_low_rating(float(difficulty * stddev + mean)))
+    else:
+        print(f"ERROR: {minimize_result.message}")
+        return (float("nan"), float("nan"))
+
+
 def estimate_contest_difficulties(contest: Contest, player_num_contests_dict: None | PlayerNumContestsDict, easy_problem_indices: list[int] = []) -> dict[str, Problem]:
     print(f"Estimating difficulties of {contest['name']}")
     result: dict[str, Problem] = {}
@@ -64,44 +83,3 @@ def estimate_contest_difficulties(contest: Contest, player_num_contests_dict: No
         difficulty_tuple = None if is_nan_tuple(raw_difficulty_tuple) or raw_difficulty_tuple[0] <= 0 else (round(raw_difficulty_tuple[0], 3), int(round(raw_difficulty_tuple[1], 0)))
         result[problem_id] = { "n": problem_display_name, "d": difficulty_tuple }
     return result
-
-
-def estimate_and_save_difficulties(contest_ids: list[str], forces_update: bool):
-    output_filepath = "output/problems.json"
-    problem_dict: dict[str, Problem] = load_json(output_filepath)
-    contest_info = ContestInfo()
-
-    if (not contest_ids):
-        contest_ids = enumerate_contest_ids()
-    
-    player_num_contests_dict = load_player_num_contests_dict()
-
-    needs_history_older_than_this = datetime.fromisoformat("2025-04-05T12:00:00.000Z")
-
-    with ProcessPoolExecutor() as executor:
-        futures = []
-
-        for contest_id in contest_ids:
-            try:
-                contest: Contest = load_contest(contest_id)
-                if (forces_update or any([problem_id not in problem_dict for problem_id in contest["problems"].keys()])):
-                    contest_date = contest_info.get_contest_date(contest_id)
-                    max_rating = contest_info.get_max_rating(contest_id)
-                    futures.append(executor.submit(
-                        estimate_contest_difficulties,
-                        contest,
-                        player_num_contests_dict if contest_date is None or contest_date < needs_history_older_than_this else None,
-                        [0, 1] if max_rating is not None and max_rating < 2000 else []
-                    ))
-            except FileNotFoundError:
-                print(f"Contest {contest_id} is not found.")
-        
-        try:
-            for future in as_completed(futures):
-                problem_dict.update(future.result())
-        except KeyboardInterrupt:
-            print("Stopping process...")
-            executor.shutdown(wait=False)
-        finally:
-            save_json(problem_dict, output_filepath)
-            shutil.copy2("output/problems.json", "../src/assets/problems.json")    

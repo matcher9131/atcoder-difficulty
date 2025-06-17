@@ -2,8 +2,8 @@ import sys
 
 from contest import get_contest, get_contest_info, get_new_contests_info
 from distribution import create_compressed_frequency_distributions, load_all_distributions, save_all_distributions
-from models.problem import Problem
-from operations.estimate_difficulties import estimate_contest_difficulties
+from problem import Problem
+from difficulty import estimate_contest_difficulties
 from util.json_io import load_json, save_json
 
 

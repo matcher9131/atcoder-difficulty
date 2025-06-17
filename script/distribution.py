@@ -1,7 +1,7 @@
 from base64 import b64encode
 
-from functions.rating import adjust_low_rating
-from models.contest import Contest
+from util.rating import adjust_low_rating
+from contest import Contest
 from models.player_histories import PlayerNumContestsDict
 from operations.estimate_difficulties import get_abilities_and_responses
 from util.json_io import load_json, save_json
