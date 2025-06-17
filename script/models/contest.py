@@ -1,5 +1,5 @@
 from typing import TypedDict
-from models.player import Player
+from player import Player
 from util.json_io import load_json
 
 class Contest(TypedDict):
