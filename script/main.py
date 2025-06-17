@@ -1,9 +1,9 @@
 import sys
 
 from contest import get_contest, get_contest_info, get_new_contests_info
+from difficulty import estimate_contest_difficulties
 from distribution import create_compressed_frequency_distributions, load_all_distributions, save_all_distributions
 from problem import Problem
-from difficulty import estimate_contest_difficulties
 from util.json_io import load_json, save_json
 
 
@@ -25,9 +25,9 @@ def run(contest_ids: list[str]):
         try:
             contest = get_contest(contest_id)
             easy_problem_indices = [0, 1] if isinstance(max_rating, int) and max_rating < 2000 else []
-            difficulties = estimate_contest_difficulties(contest, None, easy_problem_indices)
+            difficulties = estimate_contest_difficulties(contest, easy_problem_indices)
             problems_json |= difficulties
-            distributions = create_compressed_frequency_distributions(contest, None, easy_problem_indices)
+            distributions = create_compressed_frequency_distributions(contest, easy_problem_indices)
             distribution_json |= distributions
         except Exception as e:
             print(f"Failed get contest {contest_id}, message: {str(e)}", file=sys.stderr)

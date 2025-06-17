@@ -1,11 +1,10 @@
-import numpy as np
 from scipy.optimize import minimize
+import numpy as np
 
 from contest import Contest
-from models.player_histories import PlayerNumContestsDict
 from problem import Problem
-from util.rating import adjust_low_rating, get_raw_rating
 from util.irt_2pl import neg_log_likelihood
+from util.rating import adjust_low_rating, get_raw_rating
 
 
 def is_nan_tuple(x: tuple[float, float] | tuple[None, None]) -> bool:
@@ -17,7 +16,6 @@ def is_nan_tuple(x: tuple[float, float] | tuple[None, None]) -> bool:
 
 def get_abilities_and_responses(
     contest: Contest,
-    player_num_contests_dict: None | PlayerNumContestsDict,
     easy_problem_indices: list[int] = []
 ) -> tuple[list[float], list[list[int]], list[bool]]:
     abilities: list[float] = []
@@ -26,21 +24,11 @@ def get_abilities_and_responses(
     for player in contest["players"]:
         if player["rating"] <= 0:
             continue
-        num_contests: int | None
-        if player_num_contests_dict is None:
-            # "numContests" includes this contest, so rated player's value must be reduced by 1.
-            num_contests = player["numContests"] - (1 if player["isRated"] else 0)
-        else:
-            num_contests_dict = player_num_contests_dict.get(player["name"])
-            if num_contests_dict is None or len(num_contests_dict) == 0:
-                continue
-            num_contests = num_contests_dict.get(contest["name"])
-        if num_contests is None:
-            print(f"Entry not found: contest_name = {contest['name']}, player = {player['name']}")
-            continue
+        # "numContests" includes this contest, so rated player's value must be reduced by 1.
+        num_contests = player["numContests"] - (1 if player["isRated"] else 0)
         if num_contests <= 0:
             # Ignore newbies because their raw rating are all 1200 regardless their skills.
-            # (and "numContests" can be -1 for rated and deleted players)
+            # (and "num_contests" can be -1 for rated and deleted players)
             continue
         abilities.append(get_raw_rating(player["rating"], num_contests))
         for problem_index in range(len(contest["problems"])):
@@ -71,10 +59,10 @@ def estimate_problem_difficulty(abilities: list[float], responses: list[int]) ->
         return (float("nan"), float("nan"))
 
 
-def estimate_contest_difficulties(contest: Contest, player_num_contests_dict: None | PlayerNumContestsDict, easy_problem_indices: list[int] = []) -> dict[str, Problem]:
+def estimate_contest_difficulties(contest: Contest, easy_problem_indices: list[int] = []) -> dict[str, Problem]:
     print(f"Estimating difficulties of {contest['name']}")
     result: dict[str, Problem] = {}
-    abilities, responses, is_target_of_easy_problems = get_abilities_and_responses(contest, player_num_contests_dict, easy_problem_indices)
+    abilities, responses, is_target_of_easy_problems = get_abilities_and_responses(contest, easy_problem_indices)
     for problem_index, (problem_id, problem_display_name) in enumerate(contest["problems"].items()):
         raw_difficulty_tuple = estimate_problem_difficulty(
             [ability for ability, is_target in zip(abilities, is_target_of_easy_problems) if is_target],

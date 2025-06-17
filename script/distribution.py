@@ -1,10 +1,9 @@
 from base64 import b64encode
 
-from util.rating import adjust_low_rating
 from contest import Contest
-from models.player_histories import PlayerNumContestsDict
-from operations.estimate_difficulties import get_abilities_and_responses
+from difficulty import get_abilities_and_responses
 from util.json_io import load_json, save_json
+from util.rating import adjust_low_rating
 
 
 def to_compressed_frequency_distribution(frequency_distribution: list[float]) -> str:
@@ -19,10 +18,10 @@ def to_compressed_frequency_distribution(frequency_distribution: list[float]) ->
 
 
 distribution_step = 25
-def create_compressed_frequency_distributions(contest: Contest, player_num_contests_dict: None | PlayerNumContestsDict, easy_problem_indices: list[int] = []) -> dict[str, str]:
+def create_compressed_frequency_distributions(contest: Contest, easy_problem_indices: list[int] = []) -> dict[str, str]:
     print(f"Getting frequency distribution of {contest['name']}")
 
-    abilities, responses, is_target_of_easy_problems = get_abilities_and_responses(contest, player_num_contests_dict, easy_problem_indices)
+    abilities, responses, is_target_of_easy_problems = get_abilities_and_responses(contest, easy_problem_indices)
     
     # apply low rating adjustment to make sure abilities are positive
     abilities = [adjust_low_rating(ability) for ability in abilities]
