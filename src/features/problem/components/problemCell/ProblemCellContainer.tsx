@@ -5,9 +5,15 @@ type ProblemCellContainerProps = {
     readonly problemId: string;
     readonly showsParameters: boolean;
     readonly showsProblemIndex: boolean;
+    readonly showsOpenGraphButton: boolean;
 };
 
-export const ProblemCellContainer = ({ problemId, showsParameters, showsProblemIndex }: ProblemCellContainerProps) => {
-    const props = useProblemCell(problemId, showsParameters, showsProblemIndex);
+export const ProblemCellContainer = ({
+    problemId,
+    showsParameters,
+    showsProblemIndex,
+    showsOpenGraphButton,
+}: ProblemCellContainerProps) => {
+    const props = useProblemCell(problemId, showsParameters, showsProblemIndex, showsOpenGraphButton);
     return <ProblemCell {...props} />;
 };

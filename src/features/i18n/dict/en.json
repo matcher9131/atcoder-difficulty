@@ -28,7 +28,8 @@
         "message": "An error has occurred."
     },
     "problemCell": {
-        "difficultyIconLabel": "Difficulty"
+        "difficultyIconLabel": "Difficulty",
+        "graphButtonIconTitle": "Show chart"
     },
     "problemsTab": {
         "solveProbabilityTabLabel": "Accuracy Rate"
@@ -44,7 +45,7 @@
         "problemLabel": "Task",
         "difficultyLabel": "Difficulty",
         "solveProbabilityLabel": "Accuracy Rate",
-        "graphLabel": "Graph"
+        "graphLabel": "Chart"
     },
     "solveProbabilityTableContent": {
         "showGraphButtonLabel": "Show"

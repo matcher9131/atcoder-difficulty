@@ -28,7 +28,8 @@
         "message": "エラーが発生しました。"
     },
     "problemCell": {
-        "difficultyIconLabel": "難易度アイコン"
+        "difficultyIconLabel": "難易度アイコン",
+        "graphButtonIconTitle": "グラフを表示"
     },
     "problemsTab": {
         "solveProbabilityTabLabel": "正答率一覧"
