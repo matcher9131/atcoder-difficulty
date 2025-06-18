@@ -45,7 +45,7 @@
         "problemLabel": "Task",
         "difficultyLabel": "Difficulty",
         "solveProbabilityLabel": "Accuracy Rate",
-        "graphLabel": "Graph"
+        "graphLabel": "Chart"
     },
     "solveProbabilityTableContent": {
         "showGraphButtonLabel": "Show"
