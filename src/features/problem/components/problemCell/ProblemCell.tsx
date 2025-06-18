@@ -32,7 +32,7 @@ export const ProblemCell = ({
 }: ProblemCellProps): ReactNode => {
     const { t } = useTranslation();
     return (
-        <td className={cellClassNames}>
+        <td tabIndex={0} className={cellClassNames}>
             <span className="relative">
                 <svg
                     role="img"
