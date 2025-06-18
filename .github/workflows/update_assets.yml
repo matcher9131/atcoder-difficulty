@@ -1,0 +1,51 @@
+name: Update assets
+
+on:
+    schedule:
+        - cron: "0 15 * * 0,6" # Evey Sat. and Sun. 24:00 JST
+
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+
+permissions:
+    contents: write
+
+jobs:
+    update:
+        # Runs only on main branch
+        if: github.ref == 'refs/heads/main'
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: "Checkout repository"
+              uses: actions/checkout@v3
+
+            - name: "Install Pipenv"
+              working-directory: script
+              run: pip install pipenv
+
+            - name: "Install dependencies"
+              working-directory: script
+              run: pipenv install
+
+            - name: "Run script"
+              working-directory: script
+              run: pipenv run python main.py
+              env:
+                  REVEL_SESSION: ${{ secrets.REVEL_SESSION }}
+
+            - name: "Config Git"
+              run: |
+                  git config --global user.name matcher9131
+                  git config --global user.email ${{ secrets.EMAIL }}
+
+            - name: "Commit changes if any"
+              run: |
+                  git add .
+                  if [ -n "$(git status --porcelain)" ]; then
+                      git commit -m "Update assets by GitHub Actions"
+                      git push origin main
+                  else
+                      echo "No changes to commit"
+                  fi

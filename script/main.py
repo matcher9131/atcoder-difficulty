@@ -1,43 +1,42 @@
 import sys
 
-from operations.create_contests_json import create_contests_json
-from operations.create_frequency_distributions import save_frequency_distributions
-from operations.estimate_difficulties import estimate_and_save_difficulties
-from operations.update_contest_info import update_contest_info
-from util.json_io import enumerate_contest_ids
+from contest import get_contest, get_contest_info, get_new_contests_info
+from difficulty import estimate_contest_difficulties
+from distribution import create_compressed_frequency_distributions, load_all_distributions, save_all_distributions
+from problem import Problem
+from util.json_io import load_json, save_json
+
+
+contests_json_path = "../src/assets/contests.json"
+problems_json_path = "../src/assets/problems.json"
+def run(contest_ids: list[str]):
+    contests_json: list[tuple[str, int | str]] = load_json(contests_json_path)
+    existing_ids = [id for id, _ in contests_json]
+
+    new_contests_info = [get_contest_info(contest_id) for contest_id in contest_ids] if contest_ids else get_new_contests_info(existing_ids)
+    new_contests_info = [contest_info for contest_info in new_contests_info if contest_info is not None]
+    if len(new_contests_info) == 0:
+        print("No new contests")
+        return
+
+    problems_json: dict[str, Problem] = load_json(problems_json_path)
+    distribution_json = load_all_distributions()
+    for contest_id, max_rating in new_contests_info:
+        try:
+            contest = get_contest(contest_id)
+            easy_problem_indices = [0, 1] if isinstance(max_rating, int) and max_rating < 2000 else []
+            difficulties = estimate_contest_difficulties(contest, easy_problem_indices)
+            problems_json |= difficulties
+            distributions = create_compressed_frequency_distributions(contest, easy_problem_indices)
+            distribution_json |= distributions
+        except Exception as e:
+            print(f"Failed get contest {contest_id}, message: {str(e)}", file=sys.stderr)
+
+    save_json(problems_json, problems_json_path)
+    save_all_distributions(distribution_json)
+    save_json(new_contests_info + contests_json, contests_json_path)
+
 
 if __name__ == "__main__":
-    if (len(sys.argv) == 1):
-        print("This program should be called with commandline arguments. Call with '-h' to show details.")
-        sys.exit(0)
-
-    if sys.argv[1] == "-h":
-        print("Usage:")
-        print("  python main.py difficulty [-f] [<contest> ...]")
-        print("    Estimate difficulty of problems.")
-        print("      Options:")
-        print("        -f         Forces update.")
-        print("        <contest>  Contests to estimate. You can give multiple contests by separating them by space.")
-        print("                   Estimate all the contests if not given.")
-        print("  python main.py contest")
-        print("    Get contest info from AtCoder and create 'contests.json'")
-        print("  python main.py distribution [-f] [<contest> ...]")
-        print("    Get frequency distributions of responses.")
-        print("      Options:")
-        print("        -f         Forces update.")
-        print("        <contest>  Contests. You can give multiple contests by separating them by space.")
-        print("                   Get of all the contests if not given.")
-    elif sys.argv[1] == "difficulty":
-        forces_update = "-f" in sys.argv[2:]
-        contest_ids = [contest_id for contest_id in sys.argv[2:] if contest_id != "-f"]
-        if contest_ids:
-            estimate_and_save_difficulties(contest_ids, forces_update)
-        else:
-            estimate_and_save_difficulties(enumerate_contest_ids(), forces_update)
-    elif sys.argv[1] == "contest":
-        update_contest_info()
-        create_contests_json()
-    elif sys.argv[1] == "distribution":
-        forces_update = "-f" in sys.argv[2:]
-        contest_ids = [contest_id for contest_id in sys.argv[2:] if contest_id != "-f"]
-        save_frequency_distributions(contest_ids if contest_ids else enumerate_contest_ids(), forces_update)
+    contest_ids = sys.argv[1:]
+    run(contest_ids)
