@@ -11,7 +11,13 @@ export const useContestRow = (contestId: string, numProblems: number): ContestRo
     const [problemIds] = useAtom(contestProblemIdsAtom(contestId));
     const problemCells = range(0, numProblems).map((i) =>
         i < problemIds.length ? (
-            <ProblemCellContainer key={i} problemId={problemIds[i]} showsParameters={true} showsProblemIndex={false} />
+            <ProblemCellContainer
+                key={i}
+                problemId={problemIds[i]}
+                showsParameters={true}
+                showsProblemIndex={false}
+                showsOpenGraphButton={true}
+            />
         ) : (
             <BlankProblemCell key={i} />
         ),
