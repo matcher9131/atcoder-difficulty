@@ -40,6 +40,9 @@
         "validationMessage": "Must be a non-negative integer",
         "tooltipText": "Refer to \"My Profile\" page of AtCoder"
     },
+    "ratingWithIcon": {
+        "iconLabel": "Rating icon"
+    },
     "sovleProbabilityTableHeader": {
         "contestLabel": "Contest",
         "problemLabel": "Task",
@@ -63,7 +66,6 @@
     "userLabel": {
         "ratingLabel": "Rating",
         "numContestsLabel": "Num of matches",
-        "rawRatingLabel": "True rating",
-        "iconLabel": "Rating icon"
+        "rawRatingLabel": "True rating"
     }
 }
