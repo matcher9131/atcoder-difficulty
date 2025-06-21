@@ -4,11 +4,14 @@ import type { ProblemCellProps } from "./ProblemCell";
 import { splitProblemId } from "../../functions/split";
 import { problemWithSolveProbabilityAtom } from "../../../solveProbability/models/solveProbabilities";
 import { getFillColor, getTextColor } from "../../../rating/functions/color";
+import { selectedProblemAtom } from "../../../distribution/models/selectedProblem";
+import { useOpenModalDialog } from "../../../dialog/hooks/useOpenModalDialog";
 
 export const useProblemCell = (
     problemId: string,
     showsParameters: boolean,
     showsProblemIndex: boolean,
+    showsOpenGraphButton: boolean,
 ): ProblemCellProps => {
     const [problem] = useAtom(problemWithSolveProbabilityAtom(problemId));
     if (problem == null) throw new Error(`Invalid problemId = ${problemId}`);
@@ -21,6 +24,13 @@ export const useProblemCell = (
     const textColor = difficulty != null ? getTextColor(difficulty) : "";
     const [problemIdContest, problemIdProblem] = splitProblemId(problemId);
     const linkHref = `https://atcoder.jp/contests/${problemIdContest}/tasks/${problemIdProblem}`;
+    const graphIconHref = (import.meta.env.PROD ? "/atcoder-difficulty" : "") + "/resources/chart.svg#chart";
+    const [, setSelectedProblem] = useAtom(selectedProblemAtom);
+    const { openDialog } = useOpenModalDialog("distribution");
+    const handleGraphButtonClick = () => {
+        setSelectedProblem(problemId);
+        openDialog().catch(console.error);
+    };
     return {
         fillColor,
         iconHref,
@@ -30,5 +40,8 @@ export const useProblemCell = (
         textColor,
         linkHref,
         ...(showsProblemIndex ? { problemIndex: getProblemIndex(problemId) } : {}),
+        graphIconHref,
+        graphButtonIsEnabled: showsOpenGraphButton,
+        onGraphButtonClick: handleGraphButtonClick,
     };
 };

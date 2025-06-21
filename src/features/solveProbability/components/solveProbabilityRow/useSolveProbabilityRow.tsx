@@ -12,7 +12,14 @@ export const useSolveProbabilityRow = (problem: ProblemSolveProbability): SolveP
     const [contestId] = splitProblemId(problem.id);
     const contestHeaderCell = <ContestHeaderCellContainer contestId={contestId} />;
     const problemId = problem.id;
-    const problemCell = <ProblemCellContainer problemId={problemId} showsParameters={false} showsProblemIndex={true} />;
+    const problemCell = (
+        <ProblemCellContainer
+            problemId={problemId}
+            showsParameters={false}
+            showsProblemIndex={true}
+            showsOpenGraphButton={false}
+        />
+    );
     const difficulty = problem.d?.[1]?.toString() ?? "NaN";
     const solveProbability = toPercent(problem.solveProbability);
     const [, setSelectedProblem] = useAtom(selectedProblemAtom);

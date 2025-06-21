@@ -12,6 +12,9 @@ export type ProblemCellProps = {
     readonly textColor: string;
     readonly linkHref: string;
     readonly problemIndex?: string;
+    readonly graphIconHref: string;
+    readonly graphButtonIsEnabled: boolean;
+    readonly onGraphButtonClick: () => void;
 };
 
 export const ProblemCell = ({
@@ -23,10 +26,13 @@ export const ProblemCell = ({
     textColor,
     linkHref,
     problemIndex,
+    graphIconHref,
+    graphButtonIsEnabled,
+    onGraphButtonClick,
 }: ProblemCellProps): ReactNode => {
     const { t } = useTranslation();
     return (
-        <td className={cellClassNames}>
+        <td tabIndex={0} className={cellClassNames}>
             <span className="relative">
                 <svg
                     role="img"
@@ -44,10 +50,30 @@ export const ProblemCell = ({
                 href={linkHref}
                 target="_blank"
                 rel="noreferrer"
-                className={clsx("truncate", textColor, "link", "link-hover", "hover:brightness-75")}
+                className={clsx(
+                    "w-full",
+                    "text-left",
+                    "truncate",
+                    textColor,
+                    "link",
+                    "link-hover",
+                    "hover:brightness-75",
+                )}
             >
                 {problemIndex != null ? `${problemIndex} - ${displayName}` : displayName}
             </a>
+            {graphButtonIsEnabled && (
+                <button onClick={onGraphButtonClick} className="hidden group-hover:block group-focus-within:block">
+                    <svg
+                        role="img"
+                        aria-label="Show graph"
+                        className="h-6 w-6 fill-current cursor-pointer hover:invert-30 transition-all"
+                    >
+                        <title>{t("problemCell.graphButtonIconTitle")}</title>
+                        <use href={graphIconHref} />
+                    </svg>
+                </button>
+            )}
         </td>
     );
 };
