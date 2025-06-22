@@ -73,8 +73,8 @@ def get_contest(contest_id: str) -> Contest:
     response = requests.get(url=url, cookies={ "REVEL_SESSION": session })
     if response.status_code != 200:
         response.raise_for_status()
-    if response.headers["Content-Type"] != "application/json":
-        raise TypeError("Response is not a json.")
+    # if response.headers["Content-Type"] != "application/json":
+    #    raise TypeError("Response is not a json.")
     
     json = response.json()
     problems: dict[str, str] = { f"{contest_id}/{element['TaskScreenName']}": element["TaskName"] for element in json["TaskInfo"] }

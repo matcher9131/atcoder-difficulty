@@ -21,6 +21,7 @@ def run(contest_ids: list[str]):
 
     problems_json: dict[str, Problem] = load_json(problems_json_path)
     distribution_json = load_all_distributions()
+    unavailable_contest_ids = []
     for contest_id, max_rating in new_contests_info:
         try:
             contest = get_contest(contest_id)
@@ -31,10 +32,12 @@ def run(contest_ids: list[str]):
             distribution_json |= distributions
         except Exception as e:
             print(f"Failed get contest {contest_id}, message: {str(e)}", file=sys.stderr)
+            unavailable_contest_ids.append(contest_id)
 
     save_json(problems_json, problems_json_path)
     save_all_distributions(distribution_json)
-    save_json(new_contests_info + contests_json, contests_json_path)
+    # Remove unavailable contests
+    save_json([contest_info for contest_info in new_contests_info if contest_info[0] not in unavailable_contest_ids] + contests_json, contests_json_path)
 
 
 if __name__ == "__main__":
