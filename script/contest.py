@@ -1,7 +1,7 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup # type: ignore
 import os
 import re
-import requests
+import requests # type: ignore
 from typing import Literal, TypedDict
 
 from player import Player
@@ -50,14 +50,15 @@ def get_new_contests_info(existing_ids: list[str]) -> list[tuple[str, int | Lite
 
 
 def get_contest_info(contest_id: str) -> tuple[str, int | Literal["inf"]] | None:
-    response = requests.get(f"https://atcoder.jp/contests/{contest_id}")
+    response = requests.get(f"https://atcoder.jp/contests/{contest_id}?lang=en")
     if response.status_code != 200:
+        print("[get_contest_info]: Invalid status code of response.")
         return None
     
-    soup = BeautifulSoup(response.text, "html.parser")
-    rating_regex = re.compile(r"(?P<min>\d+)?\s*-\s*(?P<max>\d+)?")
-    rating_regex_result = next((re.search(rating_regex, span.get_text()) for span in soup.select("span") if re.match(rating_regex, span.get_text())), None)
+    rating_regex = re.compile(r"Rated Range: (?P<min>\d+)?\s*-\s*(?P<max>\d+)?")
+    rating_regex_result = re.search(rating_regex, response.text)
     if rating_regex_result is None:
+        print("[get_contest_info]: No match results for rating regex.")
         return None
     
     max_rating = int(rating_regex_result.group("max")) if rating_regex_result.group("max") is not None else "inf"
@@ -73,8 +74,8 @@ def get_contest(contest_id: str) -> Contest:
     response = requests.get(url=url, cookies={ "REVEL_SESSION": session })
     if response.status_code != 200:
         response.raise_for_status()
-    # if response.headers["Content-Type"] != "application/json":
-    #    raise TypeError("Response is not a json.")
+    if "application/json" not in response.headers.get("Content-Type", ""):
+        raise TypeError("Response is not a json.")
     
     json = response.json()
     problems: dict[str, str] = { f"{contest_id}/{element['TaskScreenName']}": element["TaskName"] for element in json["TaskInfo"] }
@@ -93,5 +94,7 @@ def get_contest(contest_id: str) -> Contest:
             ]
         } for player in json["StandingsData"] if player["TotalResult"]["Count"] > 0
     ]
+    if not players:
+        raise ValueError("No players.")
 
     return { "name": contest_id, "problems": problems, "players": players }
