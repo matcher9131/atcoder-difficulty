@@ -40,6 +40,9 @@
         "validationMessage": "非負整数を入力してください",
         "tooltipText": "AtCoderのマイプロフィールを参照して入力してください"
     },
+    "ratingWithIcon": {
+        "iconLabel": "レーティングアイコン"
+    },
     "sovleProbabilityTableHeader": {
         "contestLabel": "コンテスト",
         "problemLabel": "問題",
@@ -63,7 +66,6 @@
     "userLabel": {
         "ratingLabel": "レーティング",
         "numContestsLabel": "参加回数",
-        "rawRatingLabel": "生レーティング",
-        "iconLabel": "レーティングアイコン"
+        "rawRatingLabel": "生レーティング"
     }
 }
