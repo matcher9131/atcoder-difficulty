@@ -1,6 +1,6 @@
 import sys
 
-from contest import get_contest, get_contest_info, get_new_contests_info
+from contest import get_contest, get_contest_info, get_contest_json, get_new_contests_info
 from difficulty import estimate_contest_difficulties
 from distribution import create_compressed_frequency_distributions, load_all_distributions, save_all_distributions
 from problem import Problem
@@ -24,7 +24,8 @@ def run(contest_ids: list[str]):
     unavailable_contest_ids = []
     for contest_id, max_rating in new_contests_info:
         try:
-            contest = get_contest(contest_id)
+            json = get_contest_json(contest_id)
+            contest = get_contest(json, contest_id)
             easy_problem_indices = [0, 1] if isinstance(max_rating, int) and max_rating < 2000 else []
             difficulties = estimate_contest_difficulties(contest, easy_problem_indices)
             problems_json |= difficulties

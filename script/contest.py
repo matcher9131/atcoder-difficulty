@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup # type: ignore
 import os
 import re
 import requests # type: ignore
-from typing import Literal, TypedDict
+from typing import Any, Literal, TypedDict
 
 from player import Player
 
@@ -63,9 +63,9 @@ def get_contest_info(contest_id: str) -> tuple[str, int | Literal["inf"]] | None
     
     max_rating = int(rating_regex_result.group("max")) if rating_regex_result.group("max") is not None else "inf"
     return (contest_id, max_rating)
-    
 
-def get_contest(contest_id: str) -> Contest:
+
+def get_contest_json(contest_id: str) -> dict[str, Any]:
     session = os.getenv("REVEL_SESSION")
     if session is None:
         raise ValueError("Session is none.")
@@ -77,9 +77,12 @@ def get_contest(contest_id: str) -> Contest:
     if "application/json" not in response.headers.get("Content-Type", ""):
         raise TypeError("Response is not a json.")
     
-    json = response.json()
-    problems: dict[str, str] = { f"{contest_id}/{element['TaskScreenName']}": element["TaskName"] for element in json["TaskInfo"] }
-    inner_problem_ids = [element["TaskScreenName"] for element in json["TaskInfo"]]
+    return response.json()
+
+
+def get_contest(contest_json: dict[str, Any], contest_id: str) -> Contest:
+    problems: dict[str, str] = { f"{contest_id}/{element['TaskScreenName']}": element["TaskName"] for element in contest_json["TaskInfo"] }
+    inner_problem_ids = [element["TaskScreenName"] for element in contest_json["TaskInfo"]]
     players: list[Player] = [
         {
             "name": player["UserScreenName"],
@@ -92,7 +95,7 @@ def get_contest(contest_id: str) -> Contest:
                 else 0
                 for inner_problem_id in inner_problem_ids
             ]
-        } for player in json["StandingsData"] if player["TotalResult"]["Count"] > 0
+        } for player in contest_json["StandingsData"] if player["TotalResult"]["Count"] > 0
     ]
     if not players:
         raise ValueError("No players.")
