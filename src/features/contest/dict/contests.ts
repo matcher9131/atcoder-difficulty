@@ -1,43 +1,33 @@
 import { atom } from "jotai";
-import type { Contests } from "../types/contest";
+import type { Contest } from "../types/contest";
 import { atomFamily } from "jotai/utils";
 import type { ContestType } from "../types/contestType";
 import contestUrl from "../../../assets/contests.json?url";
 
-const loadContets = async (): Promise<Contests> => {
+const loadContets = async (): Promise<readonly Contest[]> => {
     const response = await fetch(contestUrl);
     if (!response.ok) throw new Error("Failed loading contests.");
-    const json = (await response.json()) as ReadonlyArray<[string, number | "inf"]>;
-    return Object.fromEntries(json);
+    const json = (await response.json()) as Record<string, Omit<Contest, "id">>;
+    return Object.entries(json).map(([id, rest]) => ({ id, ...rest }));
 };
 
 const contestsAtom = atom(await loadContets());
 
-export const contestMaxRatingAtom = atomFamily((contestId: string) => atom((get) => get(contestsAtom)[contestId]));
+export const contestAtom = atomFamily((contestId: string) =>
+    atom((get) => get(contestsAtom).find((contest) => contest.id === contestId)),
+);
 
-const abcLikeContestIdsAtom = atom((get) => {
-    const contests = get(contestsAtom);
-    return Object.keys(contests).filter((id) => {
-        const maxRating = contests[id];
-        return maxRating !== "inf" && maxRating < 2000;
-    });
-});
+const abcLikeContestIdsAtom = atom((get) =>
+    get(contestsAtom).flatMap((contest) => (contest.m !== "inf" && contest.m < 2000 ? [contest.id] : [])),
+);
 
-const arcLikeContestIdsAtom = atom((get) => {
-    const contests = get(contestsAtom);
-    return Object.keys(contests).filter((id) => {
-        const maxRating = contests[id];
-        return maxRating !== "inf" && maxRating >= 2000;
-    });
-});
+const arcLikeContestIdsAtom = atom((get) =>
+    get(contestsAtom).flatMap((contest) => (contest.m !== "inf" && contest.m >= 2000 ? [contest.id] : [])),
+);
 
-const agcLikeContestIdsAtom = atom((get) => {
-    const contests = get(contestsAtom);
-    return Object.keys(contests).filter((id) => {
-        const maxRating = contests[id];
-        return maxRating === "inf";
-    });
-});
+const agcLikeContestIdsAtom = atom((get) =>
+    get(contestsAtom).flatMap((contest) => (contest.m === "inf" ? [contest.id] : [])),
+);
 
 export const contestIdsByTypeAtom = (contestType: ContestType) => {
     switch (contestType) {
