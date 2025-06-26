@@ -28,3 +28,14 @@ class Player(TypedDict):
 class ContestJson(TypedDict):
     TaskInfo: list[TaskInfoItem]
     StandingsData: list[Player]
+
+
+class ContestStatsItem(TypedDict):
+    # Rank
+    r: int
+    # Score
+    s: int
+    # Time
+    t: int
+    # Perfermance
+    p: int

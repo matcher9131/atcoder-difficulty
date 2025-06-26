@@ -39,7 +39,7 @@ def estimate_problem_difficulty(abilities: list[float], responses: list[int]) ->
 def estimate_contest_difficulties(contest_id: str, contest_json: ContestJson, easy_problem_indices: list[int] = []) -> dict[str, Problem]:
     print(f"Estimating difficulties of {contest_id}")
     result: dict[str, Problem] = {}
-    abilities, responses, is_target_of_easy_problems = get_abilities_and_responses(contest_id, contest_json, easy_problem_indices)
+    abilities, responses, is_target_of_easy_problems = get_abilities_and_responses(contest_json, easy_problem_indices)
     for problem_index, task_info_item in enumerate(contest_json["TaskInfo"]):
         problem_id = f"{contest_id}/{task_info_item['TaskScreenName']}"
         raw_difficulty_tuple = estimate_problem_difficulty(

@@ -1,10 +1,13 @@
+from bisect import bisect_left
 from bs4 import BeautifulSoup # type: ignore
+from itertools import chain, combinations
 import os
 import re
 import requests # type: ignore
 from typing import Any, Literal, TypedDict
 
-from contest_types import ContestJson
+from contest_types import ContestJson, ContestStatsItem
+from history_types import HistoryItem
 from util.rating import get_raw_rating
 
 
@@ -52,6 +55,48 @@ def get_contest_json(contest_id: str) -> ContestJson:
     return response.json()
 
 
+def _find_last_player(contest_json: ContestJson, score: int) -> int:
+    """Find the last player with the score given and return the index of the player"""
+
+    return bisect_left([
+        (-player["TotalResult"]["Score"], player["TotalResult"]["Elapsed"]) for player in contest_json["StandingsData"]
+    ], (-score + 1, 0)) - 1
+
+
+def _get_player_performance(player_name: str, contest_id: str) -> int | None:
+    response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
+    if response.status_code != 200:
+        print(f"User {player_name} is not found")
+        return None
+    
+    histories: list[HistoryItem] = response.json()
+    item = next((history for history in histories if history["ContestScreenName"] == contest_id + ".contest.atcoder.jp"), None)
+    if item is None:
+        return None
+    if not item["IsRated"]:
+        return None
+    return item["Performance"]
+
+
+def _get_contest_stats_by_score(contest_id: str, contest_json: ContestJson, score: int) -> ContestStatsItem | None:
+    index = _find_last_player(contest_json, score)
+    while True:
+        if index < 0:
+            return None
+        if contest_json["StandingsData"][index]["TotalResult"]["Score"] != score:
+            # No rated player who gets the score given
+            return None
+        performance = _get_player_performance(contest_json["StandingsData"][index]["UserScreenName"], contest_id)
+        if performance is not None:
+            return {
+                "r": contest_json["StandingsData"][index]["Rank"],
+                "s": score,
+                "t": contest_json["StandingsData"][index]["TotalResult"]["Elapsed"] // 1000000000,
+                "p": performance
+            }
+        index -= 1
+
+
 def get_contest_stats(contest_id: str, contest_json: ContestJson):
     response = requests.get(f"https://atcoder.jp/contests/{contest_id}?lang=en")
     if response.status_code != 200:
@@ -67,22 +112,28 @@ def get_contest_stats(contest_id: str, contest_json: ContestJson):
     max_rating = int(rating_regex_result.group("max")) if rating_regex_result.group("max") is not None else "inf"
 
     soup = BeautifulSoup(html, "html.parser")
-    th = soup.find("th", string="Score")
-    if th is None:
-        raise ValueError("[get_contest_stats]: Point values table is not found.")
-    scores_table = th.find_parent("table")
+    scores_table = next(
+        (table for table in soup.select("table") if table.find("th", string="Score") is not None), 
+        None
+    )
     if scores_table is None:
         raise ValueError("[get_contest_stats]: Point values table is not found.")
     scores = [int(td.get_text()) for td in scores_table.select("tbody tr td:nth-child(2)")]
 
-    # TODO: Enumerate all the possible scores
+    sum_scores = sorted(set([
+        sum(subset)
+        for subset in chain.from_iterable(
+            combinations(scores, r) for r in range(len(scores) + 1)
+        )
+    ]))
+
+
     # TODO: Find the last user to reach the score, and access the user's page and get performance value
 
     raise NotImplementedError()
 
 
 def get_abilities_and_responses(
-    contest_id: str, 
     contest_json: ContestJson, 
     easy_problem_indices: list[int]
 ) -> tuple[list[float], list[list[int]], list[bool]]:
