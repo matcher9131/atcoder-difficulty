@@ -30,12 +30,17 @@ class ContestJson(TypedDict):
     StandingsData: list[Player]
 
 
-class ContestStatsItem(TypedDict):
+class ContestStatsItemByScore(TypedDict):
+    # Rank
+    r: int
+    # Perfermance
+    p: int
+
+
+class ContestStatsItemByPerformance(TypedDict):
     # Rank
     r: int
     # Score
     s: int
     # Time
     t: int
-    # Perfermance
-    p: int

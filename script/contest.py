@@ -6,7 +6,7 @@ import re
 import requests # type: ignore
 from typing import Any, Literal, TypedDict
 
-from contest_types import ContestJson, ContestStatsItem
+from contest_types import ContestJson, ContestStatsItemByPerformance, ContestStatsItemByScore
 from history_types import HistoryItem
 from util.rating import get_raw_rating
 
@@ -64,6 +64,8 @@ def _find_last_player(contest_json: ContestJson, score: int) -> int:
 
 
 def _get_player_performance(player_name: str, contest_id: str) -> int | None:
+    """Access AtCoder user's page and get performance of contest given."""
+
     response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
     if response.status_code != 200:
         print(f"User {player_name} is not found")
@@ -78,7 +80,7 @@ def _get_player_performance(player_name: str, contest_id: str) -> int | None:
     return item["Performance"]
 
 
-def _get_contest_stats_by_score(contest_id: str, contest_json: ContestJson, score: int) -> ContestStatsItem | None:
+def _get_contest_stats_by_score(contest_id: str, contest_json: ContestJson, score: int) -> ContestStatsItemByScore | None:
     index = _find_last_player(contest_json, score)
     while True:
         if index < 0:
@@ -90,11 +92,16 @@ def _get_contest_stats_by_score(contest_id: str, contest_json: ContestJson, scor
         if performance is not None:
             return {
                 "r": contest_json["StandingsData"][index]["Rank"],
-                "s": score,
-                "t": contest_json["StandingsData"][index]["TotalResult"]["Elapsed"] // 1000000000,
                 "p": performance
             }
         index -= 1
+
+
+def _get_contest_stats_by_performance(contest_id: str, contest_json: ContestJson, performance: int) -> ContestStatsItemByPerformance | None:
+    left = -1
+    right = len(contest_json["StandingsData"]) - 1
+    
+    raise NotImplementedError()
 
 
 def get_contest_stats(contest_id: str, contest_json: ContestJson):
@@ -127,8 +134,10 @@ def get_contest_stats(contest_id: str, contest_json: ContestJson):
         )
     ]))
 
-
-    # TODO: Find the last user to reach the score, and access the user's page and get performance value
+    stats_by_score = [
+        (sum_score, _get_contest_stats_by_score(contest_id, contest_json, sum_score))
+        for sum_score in sum_scores
+    ]
 
     raise NotImplementedError()
 
