@@ -4,6 +4,8 @@ export const useContestStatsRow = (
     contest_id: string,
     query: { readonly performance: number } | { readonly score: number },
 ): ContestStatsRowProps => {
+    console.log(contest_id);
+    console.log(query);
     // TODO: Implement functions below
     // Get rank, estimated scores and estimated times by performance
     // Get rank and performance by score (time = ∞)
