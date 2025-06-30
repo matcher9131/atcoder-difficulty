@@ -4,10 +4,9 @@ from itertools import chain, combinations
 import os
 import re
 import requests # type: ignore
-from typing import Any, Literal, TypedDict
 
 from contest_types import ContestJson, ContestStatsItemByPerformance, ContestStatsItemByScore
-from history_types import HistoryItem
+from performance import PlayerPerformance
 from util.rating import get_raw_rating
 
 
@@ -63,24 +62,7 @@ def _find_last_player(contest_json: ContestJson, score: int) -> int:
     ], (-score + 1, 0)) - 1
 
 
-def _get_player_performance(player_name: str, contest_id: str) -> int | None:
-    """Access AtCoder user's page and get performance of contest given."""
-
-    response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
-    if response.status_code != 200:
-        print(f"User {player_name} is not found")
-        return None
-    
-    histories: list[HistoryItem] = response.json()
-    item = next((history for history in histories if history["ContestScreenName"] == contest_id + ".contest.atcoder.jp"), None)
-    if item is None:
-        return None
-    if not item["IsRated"]:
-        return None
-    return item["Performance"]
-
-
-def _get_contest_stats_by_score(contest_id: str, contest_json: ContestJson, score: int) -> ContestStatsItemByScore | None:
+def _get_contest_stats_by_score(contest_json: ContestJson, player_performance: PlayerPerformance, score: int) -> ContestStatsItemByScore | None:
     index = _find_last_player(contest_json, score)
     while True:
         if index < 0:
@@ -88,7 +70,7 @@ def _get_contest_stats_by_score(contest_id: str, contest_json: ContestJson, scor
         if contest_json["StandingsData"][index]["TotalResult"]["Score"] != score:
             # No rated player who gets the score given
             return None
-        performance = _get_player_performance(contest_json["StandingsData"][index]["UserScreenName"], contest_id)
+        performance = player_performance[index]
         if performance is not None:
             return {
                 "r": contest_json["StandingsData"][index]["Rank"],
@@ -97,11 +79,59 @@ def _get_contest_stats_by_score(contest_id: str, contest_json: ContestJson, scor
         index -= 1
 
 
-def _get_contest_stats_by_performance(contest_id: str, contest_json: ContestJson, performance: int) -> ContestStatsItemByPerformance | None:
-    left = -1
-    right = len(contest_json["StandingsData"]) - 1
-    
-    raise NotImplementedError()
+def _get_contest_stats_by_performance(contest_json: ContestJson, performances: PlayerPerformance, target_performance: int) -> ContestStatsItemByPerformance | None:
+    n = len(contest_json["StandingsData"])
+    left = 0
+    right = n - 1
+    # Index of players with the smallest performance greater than the performance given 
+    ceiling_index = None
+
+    while left <= right:
+        mid = (left + right) // 2
+
+        # Adjust mid
+        if performances[mid] is None:
+            current_left = mid - 1
+            current_right = mid + 1
+            while left <= current_left or current_right <= right:
+                if left <= current_left and performances[current_left] is not None:
+                    mid = current_left
+                    break
+                if current_right <= right and performances[current_right] is not None:
+                    mid = current_right
+                    break
+                current_left -= 1
+                current_right += 1
+        
+        current_performance = performances[mid]
+        if current_performance is None:
+            # All null for [low, high]
+            return None
+        if current_performance == target_performance:
+            return {
+                "r": contest_json["StandingsData"][mid]["Rank"],
+                "s": contest_json["StandingsData"][mid]["TotalResult"]["Score"],
+                "t": contest_json["StandingsData"][mid]["TotalResult"]["Elapsed"] // int(1e9),
+            }
+        elif current_performance < target_performance:
+            right = mid - 1
+            if ceiling_index is None:
+                ceiling_index = mid
+            else:
+                ceiling_performance = performances[ceiling_index]
+                if ceiling_performance is None:
+                    raise ValueError("Invalid state: ceiling_performance is None")
+                if current_performance < ceiling_performance:
+                    ceiling_index = mid
+        else:
+            left = mid + 1
+    # end while left <= right
+
+    return {
+        "r": contest_json["StandingsData"][ceiling_index]["Rank"],
+        "s": contest_json["StandingsData"][ceiling_index]["TotalResult"]["Score"],
+        "t": contest_json["StandingsData"][ceiling_index]["TotalResult"]["Elapsed"] // int(1e9),
+    } if ceiling_index is not None else None
 
 
 def get_contest_stats(contest_id: str, contest_json: ContestJson):
@@ -117,6 +147,8 @@ def get_contest_stats(contest_id: str, contest_json: ContestJson):
         raise ValueError("[get_contest_stats]: No match results for rating regex.")
     
     max_rating = int(rating_regex_result.group("max")) if rating_regex_result.group("max") is not None else "inf"
+
+    player_performances = PlayerPerformance(contest_id, contest_json)
 
     soup = BeautifulSoup(html, "html.parser")
     scores_table = next(
@@ -135,11 +167,23 @@ def get_contest_stats(contest_id: str, contest_json: ContestJson):
     ]))
 
     stats_by_score = [
-        (sum_score, _get_contest_stats_by_score(contest_id, contest_json, sum_score))
+        (sum_score, _get_contest_stats_by_score(contest_json, player_performances, sum_score))
         for sum_score in sum_scores
     ]
 
-    raise NotImplementedError()
+    # TODO: Change target performances by contest types
+    target_performances = [400, 800, 1200, 1600, 2000, 2400, 2800]
+    stats_by_performance = [
+        (performance, _get_contest_stats_by_performance(contest_json, player_performances, performance))
+        for performance in target_performances
+    ]
+
+    return {
+        "m": max_rating,
+        "s": scores,
+        "ss": stats_by_score,
+        "sp": stats_by_performance
+    }
 
 
 def get_abilities_and_responses(
