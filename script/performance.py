@@ -33,14 +33,23 @@ class PlayerPerformance:
         return self._performances[i]
     
     
-    def find(self, performance: int) -> int | None:
-        """Find the player with performance given by binary search and return the index of the player"""
+    def find(self, performance: int) -> int | tuple[int, int] | None:
+        """Find the player with performance given by binary search and return the index of the player
+        Args:
+            performance (int): Performance value to find
+        Return:
+            One of the following
+            - An index of the player with the exact performance
+            - A tuple of indices of the players ranked just above and below
+            - `None`
+        """
 
         n = len(self._player_names)
         left = 0
         right = n - 1
-        # Index of players with the smallest performance greater than the performance given 
+        # Index of players ranked just above or below 
         sup_index = None
+        inf_index = None
 
         while left <= right:
             mid = (left + right) // 2
@@ -62,11 +71,19 @@ class PlayerPerformance:
             current_performance = self[mid]
             if current_performance is None:
                 # All null for [low, high]
-                return None
+                return (sup_index, inf_index) if sup_index is not None and inf_index is not None else None
             if current_performance == performance:
                 return mid
             elif current_performance < performance:
                 right = mid - 1
+                if inf_index is None:
+                    inf_index = mid
+                else:
+                    inf_performance = self[inf_index]
+                    if inf_performance is None:
+                        raise ValueError("Invalid state: inf_performance is None")
+                    if inf_performance < current_performance:
+                        inf_index = mid
             else:
                 left = mid + 1
                 if sup_index is None:
@@ -74,11 +91,11 @@ class PlayerPerformance:
                 else:
                     sup_performance = self[sup_index]
                     if sup_performance is None:
-                        raise ValueError("Invalid state: ceiling_performance is None")
+                        raise ValueError("Invalid state: sup_performance is None")
                     if current_performance < sup_performance:
                         sup_index = mid
         # end while left <= right
 
-        return sup_index
+        return (sup_index, inf_index) if sup_index is not None and inf_index is not None else None
 
     

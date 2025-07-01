@@ -11,19 +11,19 @@ def players() -> list[tuple[str, int | None]]:
         ("bar", 2800),
         ("baz", 2300),
         ("qux", None),
-        ("quux", 2100),
-        ("corge", None),
+        ("quux", None),
+        ("corge", 2100),
         ("grault", 1700),
         ("garply", 1400),
-        ("waldo", None),
-        ("fred", None)
+        ("waldo", 1100),
     ]
 
 @pytest.mark.parametrize("target_parameter, expected", [
     (1400, 7),
     (3200, None),
-    (1500, 6),
-    (1000, None)
+    (1500, (6, 7)),
+    (1000, None),
+    (2200, (2, 5))
 ])
 def test_find(players, target_parameter, expected):
     with patch.object(PlayerPerformance, "__getitem__", side_effect=lambda i: players[i][1]):
