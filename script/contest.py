@@ -80,58 +80,12 @@ def _get_contest_stats_by_score(contest_json: ContestJson, player_performance: P
 
 
 def _get_contest_stats_by_performance(contest_json: ContestJson, performances: PlayerPerformance, target_performance: int) -> ContestStatsItemByPerformance | None:
-    n = len(contest_json["StandingsData"])
-    left = 0
-    right = n - 1
-    # Index of players with the smallest performance greater than the performance given 
-    ceiling_index = None
-
-    while left <= right:
-        mid = (left + right) // 2
-
-        # Adjust mid
-        if performances[mid] is None:
-            current_left = mid - 1
-            current_right = mid + 1
-            while left <= current_left or current_right <= right:
-                if left <= current_left and performances[current_left] is not None:
-                    mid = current_left
-                    break
-                if current_right <= right and performances[current_right] is not None:
-                    mid = current_right
-                    break
-                current_left -= 1
-                current_right += 1
-        
-        current_performance = performances[mid]
-        if current_performance is None:
-            # All null for [low, high]
-            return None
-        if current_performance == target_performance:
-            return {
-                "r": contest_json["StandingsData"][mid]["Rank"],
-                "s": contest_json["StandingsData"][mid]["TotalResult"]["Score"],
-                "t": contest_json["StandingsData"][mid]["TotalResult"]["Elapsed"] // int(1e9),
-            }
-        elif current_performance < target_performance:
-            right = mid - 1
-            if ceiling_index is None:
-                ceiling_index = mid
-            else:
-                ceiling_performance = performances[ceiling_index]
-                if ceiling_performance is None:
-                    raise ValueError("Invalid state: ceiling_performance is None")
-                if current_performance < ceiling_performance:
-                    ceiling_index = mid
-        else:
-            left = mid + 1
-    # end while left <= right
-
+    index = performances.find(target_performance)
     return {
-        "r": contest_json["StandingsData"][ceiling_index]["Rank"],
-        "s": contest_json["StandingsData"][ceiling_index]["TotalResult"]["Score"],
-        "t": contest_json["StandingsData"][ceiling_index]["TotalResult"]["Elapsed"] // int(1e9),
-    } if ceiling_index is not None else None
+        "r": contest_json["StandingsData"][index]["Rank"],
+        "s": contest_json["StandingsData"][index]["TotalResult"]["Score"],
+        "t": contest_json["StandingsData"][index]["TotalResult"]["Elapsed"] // int(1e9),
+    } if index is not None else None
 
 
 def get_contest_stats(contest_id: str, contest_json: ContestJson):

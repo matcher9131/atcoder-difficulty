@@ -13,6 +13,7 @@ class PlayerPerformance:
         # None: Deleted user, -1: Not visited yet
         self._performances: list[int | None] = [-1] * len(self._player_names)
     
+
     def __getitem__(self, i: int) -> int | None:
         if self._performances[i] != -1:
             return self._performances[i]
@@ -31,4 +32,54 @@ class PlayerPerformance:
                 self._performances[i] = item["Performance"]
         
         return self._performances[i]
+    
+    
+    def find(self, performance: int) -> int | None:
+        """Find the player with performance given by binary search and return the index of the player"""
+
+        n = len(self._player_names)
+        left = 0
+        right = n - 1
+        # Index of players with the smallest performance greater than the performance given 
+        ceiling_index = None
+
+        while left <= right:
+            mid = (left + right) // 2
+
+            # Adjust mid
+            if self[mid] is None:
+                current_left = mid - 1
+                current_right = mid + 1
+                while left <= current_left or current_right <= right:
+                    if left <= current_left and self[current_left] is not None:
+                        mid = current_left
+                        break
+                    if current_right <= right and self[current_right] is not None:
+                        mid = current_right
+                        break
+                    current_left -= 1
+                    current_right += 1
+            
+            current_performance = self[mid]
+            if current_performance is None:
+                # All null for [low, high]
+                return None
+            if current_performance == performance:
+                return mid
+            elif current_performance < performance:
+                right = mid - 1
+                if ceiling_index is None:
+                    ceiling_index = mid
+                else:
+                    ceiling_performance = self[ceiling_index]
+                    if ceiling_performance is None:
+                        raise ValueError("Invalid state: ceiling_performance is None")
+                    if current_performance < ceiling_performance:
+                        ceiling_index = mid
+            else:
+                left = mid + 1
+        # end while left <= right
+
+        return ceiling_index
+
     
