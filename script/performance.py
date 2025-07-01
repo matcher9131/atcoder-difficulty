@@ -1,17 +1,16 @@
 import requests # type: ignore
 
-from contest_types import ContestJson
 from history_types import HistoryItem
 
 
 class PlayerPerformance:
     """A Class to get player's performance in the contest and cache it"""
 
-    def __init__(self, contest_id: str, contest_json: ContestJson) -> None:
+    def __init__(self, contest_id: str, player_names: list[str]) -> None:
         self._id = contest_id
-        self._player_names = [player["UserScreenName"] for player in contest_json["StandingsData"]]
+        self._player_names = player_names
         # None: Deleted user, -1: Not visited yet
-        self._performances: list[int | None] = [-1] * len(self._player_names)
+        self._performances: list[int | None] = [-1] * len(player_names)
     
 
     def __getitem__(self, i: int) -> int | None:
@@ -41,7 +40,7 @@ class PlayerPerformance:
         left = 0
         right = n - 1
         # Index of players with the smallest performance greater than the performance given 
-        ceiling_index = None
+        sup_index = None
 
         while left <= right:
             mid = (left + right) // 2
@@ -68,18 +67,18 @@ class PlayerPerformance:
                 return mid
             elif current_performance < performance:
                 right = mid - 1
-                if ceiling_index is None:
-                    ceiling_index = mid
-                else:
-                    ceiling_performance = self[ceiling_index]
-                    if ceiling_performance is None:
-                        raise ValueError("Invalid state: ceiling_performance is None")
-                    if current_performance < ceiling_performance:
-                        ceiling_index = mid
             else:
                 left = mid + 1
+                if sup_index is None:
+                    sup_index = mid
+                else:
+                    sup_performance = self[sup_index]
+                    if sup_performance is None:
+                        raise ValueError("Invalid state: ceiling_performance is None")
+                    if current_performance < sup_performance:
+                        sup_index = mid
         # end while left <= right
 
-        return ceiling_index
+        return sup_index
 
     

@@ -102,7 +102,7 @@ def get_contest_stats(contest_id: str, contest_json: ContestJson):
     
     max_rating = int(rating_regex_result.group("max")) if rating_regex_result.group("max") is not None else "inf"
 
-    player_performances = PlayerPerformance(contest_id, contest_json)
+    player_performances = PlayerPerformance(contest_id, [player["UserScreenName"] for player in contest_json["StandingsData"]])
 
     soup = BeautifulSoup(html, "html.parser")
     scores_table = next(
