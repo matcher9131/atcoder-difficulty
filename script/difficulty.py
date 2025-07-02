@@ -1,9 +1,8 @@
 from scipy.optimize import minimize
 import numpy as np
 
-from contest import get_abilities_and_responses
+from contest_json import ContestJson
 from problem import Problem
-from contest_types import ContestJson
 from util.irt_2pl import neg_log_likelihood
 from util.rating import adjust_low_rating
 
@@ -39,13 +38,12 @@ def estimate_problem_difficulty(abilities: list[float], responses: list[int]) ->
 def estimate_contest_difficulties(contest_id: str, contest_json: ContestJson, easy_problem_indices: list[int] = []) -> dict[str, Problem]:
     print(f"Estimating difficulties of {contest_id}")
     result: dict[str, Problem] = {}
-    abilities, responses, is_target_of_easy_problems = get_abilities_and_responses(contest_json, easy_problem_indices)
-    for problem_index, task_info_item in enumerate(contest_json["TaskInfo"]):
-        problem_id = f"{contest_id}/{task_info_item['TaskScreenName']}"
+    abilities, responses, is_target_of_easy_problems = contest_json.get_abilities_and_responses(easy_problem_indices)
+    for problem_index, (problem_id, problem_title) in enumerate(contest_json.get_id_and_name_of_problems(contest_id)):
         raw_difficulty_tuple = estimate_problem_difficulty(
             [ability for ability, is_target in zip(abilities, is_target_of_easy_problems) if is_target],
             [response for response, is_target in zip(responses[problem_index], is_target_of_easy_problems) if is_target]
         ) if problem_index in easy_problem_indices else estimate_problem_difficulty(abilities, responses[problem_index])
         difficulty_tuple = None if is_nan_tuple(raw_difficulty_tuple) or raw_difficulty_tuple[0] <= 0 else (round(raw_difficulty_tuple[0], 3), int(round(raw_difficulty_tuple[1], 0)))
-        result[problem_id] = { "n": task_info_item["TaskName"], "d": difficulty_tuple }
+        result[problem_id] = { "n": problem_title, "d": difficulty_tuple }
     return result

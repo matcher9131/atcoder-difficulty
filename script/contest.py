@@ -1,13 +1,10 @@
-from bisect import bisect_left
 from bs4 import BeautifulSoup # type: ignore
 from itertools import chain, combinations
-import os
 import re
+from contest_stats import ContestStats
 import requests # type: ignore
 
-from contest_types import ContestJson, ContestStatsItemByPerformance, ContestStatsItemByScore
-from performance import PlayerPerformance
-from util.rating import get_raw_rating
+from contest_json import ContestJson
 
 
 def get_new_contest_ids(existing_ids: list[str]) -> list[str]:
@@ -37,58 +34,7 @@ def get_new_contest_ids(existing_ids: list[str]) -> list[str]:
     return result
 
 
-def get_contest_json(contest_id: str) -> ContestJson:
-    """Access standings page of contest and get the JSON of standings data"""
-
-    session = os.getenv("REVEL_SESSION")
-    if session is None:
-        raise ValueError("Session is none.")
-    
-    url = f"https://atcoder.jp/contests/{contest_id}/standings/json"
-    response = requests.get(url=url, cookies={ "REVEL_SESSION": session })
-    if response.status_code != 200:
-        response.raise_for_status()
-    if "application/json" not in response.headers.get("Content-Type", ""):
-        raise TypeError("Response is not a json.")
-    
-    return response.json()
-
-
-def _find_last_player(contest_json: ContestJson, score: int) -> int:
-    """Find the last player with the score given and return the index of the player"""
-
-    return bisect_left([
-        (-player["TotalResult"]["Score"], player["TotalResult"]["Elapsed"]) for player in contest_json["StandingsData"]
-    ], (-score + 1, 0)) - 1
-
-
-def _get_contest_stats_by_score(contest_json: ContestJson, player_performance: PlayerPerformance, score: int) -> ContestStatsItemByScore | None:
-    index = _find_last_player(contest_json, score)
-    while True:
-        if index < 0:
-            return None
-        if contest_json["StandingsData"][index]["TotalResult"]["Score"] != score:
-            # No rated player who gets the score given
-            return None
-        performance = player_performance[index]
-        if performance is not None:
-            return {
-                "r": contest_json["StandingsData"][index]["Rank"],
-                "p": performance
-            }
-        index -= 1
-
-
-def _get_contest_stats_by_performance(contest_json: ContestJson, performances: PlayerPerformance, target_performance: int) -> ContestStatsItemByPerformance | None:
-    index = performances.find(target_performance)
-    return {
-        "r": contest_json["StandingsData"][index]["Rank"],
-        "s": contest_json["StandingsData"][index]["TotalResult"]["Score"],
-        "t": contest_json["StandingsData"][index]["TotalResult"]["Elapsed"] // int(1e9),
-    } if index is not None else None
-
-
-def get_contest_stats(contest_id: str, contest_json: ContestJson):
+def get_contest_stats(contest_id: str, contest_json: ContestJson) -> ContestStats:
     response = requests.get(f"https://atcoder.jp/contests/{contest_id}?lang=en")
     if response.status_code != 200:
         response.raise_for_status()
@@ -101,8 +47,6 @@ def get_contest_stats(contest_id: str, contest_json: ContestJson):
         raise ValueError("[get_contest_stats]: No match results for rating regex.")
     
     max_rating = int(rating_regex_result.group("max")) if rating_regex_result.group("max") is not None else "inf"
-
-    player_performances = PlayerPerformance(contest_id, [player["UserScreenName"] for player in contest_json["StandingsData"]])
 
     soup = BeautifulSoup(html, "html.parser")
     scores_table = next(
@@ -120,15 +64,17 @@ def get_contest_stats(contest_id: str, contest_json: ContestJson):
         )
     ]))
 
+    player_performances = contest_json.create_player_performances(contest_id)
+
     stats_by_score = [
-        (sum_score, _get_contest_stats_by_score(contest_json, player_performances, sum_score))
+        (sum_score, contest_json.get_contest_stats_by_score(player_performances, sum_score))
         for sum_score in sum_scores
     ]
 
     # TODO: Change target performances by contest types
     target_performances = [400, 800, 1200, 1600, 2000, 2400, 2800]
     stats_by_performance = [
-        (performance, _get_contest_stats_by_performance(contest_json, player_performances, performance))
+        (performance, contest_json.get_contest_stats_by_performance(player_performances, performance))
         for performance in target_performances
     ]
 
@@ -138,46 +84,3 @@ def get_contest_stats(contest_id: str, contest_json: ContestJson):
         "ss": stats_by_score,
         "sp": stats_by_performance
     }
-
-
-def get_abilities_and_responses(
-    contest_json: ContestJson, 
-    easy_problem_indices: list[int]
-) -> tuple[list[float], list[list[int]], list[bool]]:
-    inner_problem_ids = [element["TaskScreenName"] for element in contest_json["TaskInfo"]]
-    players = [
-        {
-            "rating": player["OldRating"],
-            "numContests": player["Competitions"],
-            "isRated": player["IsRated"],
-            "responses": [
-                -1 if inner_problem_id not in player["TaskResults"]
-                else 1 if player["TaskResults"][inner_problem_id]["SubmissionID"] > 0
-                else 0
-                for inner_problem_id in inner_problem_ids
-            ]
-        } for player in contest_json["StandingsData"] if player["TotalResult"]["Count"] > 0
-    ]
-    if not players:
-        raise ValueError("No players.")
-    
-    abilities: list[float] = []
-    responses: list[list[int]] = [[] for _ in range(len(contest_json["TaskInfo"]))]
-    is_target_of_easy_problems: list[bool] = []
-    for player in players:
-        if player["rating"] <= 0:
-            continue
-        # "numContests" includes this contest, so rated player's value must be reduced by 1.
-        num_contests = player["numContests"] - (1 if player["isRated"] else 0)
-        if num_contests <= 0:
-            # Ignore newbies because their raw rating are all 1200 regardless their skills.
-            # (and "num_contests" can be -1 for rated and deleted players)
-            continue
-        abilities.append(get_raw_rating(player["rating"], num_contests))
-        for problem_index in range(len(contest_json["TaskInfo"])):
-            responses[problem_index].append(player["responses"][problem_index])
-        # Exclude players who have no submissions to easy problems in estimating difficulties of easy problems
-        is_target_of_easy_problems.append(any(
-            [player["responses"][easy_problem_index] != -1 for easy_problem_index in easy_problem_indices]
-        ))
-    return abilities, responses, is_target_of_easy_problems

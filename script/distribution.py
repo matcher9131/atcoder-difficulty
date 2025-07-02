@@ -1,7 +1,6 @@
 from base64 import b64encode
 
-from contest import Contest
-from difficulty import get_abilities_and_responses
+from contest_json import ContestJson
 from util.json_io import load_json, save_json
 from util.rating import adjust_low_rating
 
@@ -18,10 +17,10 @@ def to_compressed_frequency_distribution(frequency_distribution: list[float]) ->
 
 
 distribution_step = 25
-def create_compressed_frequency_distributions(contest: Contest, easy_problem_indices: list[int] = []) -> dict[str, str]:
-    print(f"Getting frequency distribution of {contest['name']}")
+def create_compressed_frequency_distributions(contest_id: str, contest_json: ContestJson, easy_problem_indices: list[int] = []) -> dict[str, str]:
+    print(f"Getting frequency distribution of {contest_id}")
 
-    abilities, responses, is_target_of_easy_problems = get_abilities_and_responses(contest, easy_problem_indices)
+    abilities, responses, is_target_of_easy_problems = contest_json.get_abilities_and_responses(easy_problem_indices)
     
     # apply low rating adjustment to make sure abilities are positive
     abilities = [adjust_low_rating(ability) for ability in abilities]
@@ -29,13 +28,16 @@ def create_compressed_frequency_distributions(contest: Contest, easy_problem_ind
     max_rating = max(abilities) if abilities else 0
     distribution_length = int(max_rating / distribution_step) + 1
     # distribution_dict[problem_id][frequency_index][is_accepted] = frequency
-    distribution_dict = { problem_id: [[0, 0] for _ in range(distribution_length)] for problem_id in contest["problems"].keys() }
+    distribution_dict = {
+        problem_id: [[0, 0] for _ in range(distribution_length)]
+            for problem_id, _ in contest_json.get_id_and_name_of_problems(contest_id)
+    }
     for player_index in range(len(abilities)):
         frequency_index = int(abilities[player_index] / distribution_step)
         if frequency_index < 0:
             print(f"Invalid ability = {abilities[player_index]}")
             continue
-        for problem_index, problem_id in enumerate(contest["problems"].keys()):
+        for problem_index, (problem_id, _) in enumerate(contest_json.get_id_and_name_of_problems(contest_id)):
             if problem_index in easy_problem_indices and not is_target_of_easy_problems[player_index]:
                 continue
             distribution_dict[problem_id][frequency_index][0 if responses[problem_index][player_index] == 1 else 1] += 1
