@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup # type: ignore
+from datetime import datetime
 from itertools import chain, combinations
 import re
 from contest_stats import ContestStats
@@ -41,6 +42,19 @@ def get_contest_stats(contest_id: str, contest_json: ContestJson) -> ContestStat
     
     html = response.text
     
+    date_regex = re.compile(r"Contest Duration: (?P<year>\d+)-(?P<month>\d+)-(?P<day>\d+)\([^)]+\) (?P<hour>\d+):(?P<minute>\d+)")
+    date_regex_result = re.search(date_regex, html)
+    if date_regex_result is None:
+        raise ValueError("[get_contest_stats]: No match results for date regex.")
+
+    date = datetime(
+        int(date_regex_result.group("year")),
+        int(date_regex_result.group("month")),
+        int(date_regex_result.group("day")),
+        int(date_regex_result.group("hour")),
+        int(date_regex_result.group("minute")),
+    )
+
     rating_regex = re.compile(r"Rated Range: (?P<min>\d+)?\s*-\s*(?P<max>\d+)?")
     rating_regex_result = re.search(rating_regex, html)
     if rating_regex_result is None:
@@ -79,6 +93,7 @@ def get_contest_stats(contest_id: str, contest_json: ContestJson) -> ContestStat
     ]
 
     return {
+        "d": date,
         "m": max_rating,
         "s": scores,
         "ss": stats_by_score,

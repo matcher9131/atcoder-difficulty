@@ -29,13 +29,14 @@ def run(contest_ids: list[str]):
             easy_problem_indices = [0, 1] if isinstance(contest_stats["m"], int) and contest_stats["m"] < 2000 else []
             difficulties = estimate_contest_difficulties(contest_id, contest_json, easy_problem_indices)
             distributions = create_compressed_frequency_distributions(contest_id, contest_json, easy_problem_indices)
-            # TODO: Sort contsts stats by date
             contests_json.append((contest_id, contest_stats))
             problems_json |= difficulties
             distribution_json |= distributions
         except Exception as e:
             print(f"Failed get contest {contest_id}, message: {str(e)}", file=sys.stderr)
 
+    contests_json.sort(key=lambda tuple: tuple[1]["d"], reverse=True)
+    save_json(contests_json, contests_json_path)
     save_json(problems_json, problems_json_path)
     save_all_distributions(distribution_json)
 

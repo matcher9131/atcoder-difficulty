@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal, TypedDict
 
 
@@ -16,7 +17,10 @@ class ContestStatsItemByPerformance(TypedDict):
     # Time
     t: int
 
+
 class ContestStats(TypedDict):
+    # Date
+    d: datetime
     # Max rating
     m: int | Literal["inf"]
     # Problem scores
