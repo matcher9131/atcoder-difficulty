@@ -86,7 +86,11 @@ def get_contest_stats(contest_id: str, contest_json: ContestJson) -> ContestStat
     ]
 
     # TODO: Change target performances by contest types
-    target_performances = [400, 800, 1200, 1600, 2000, 2400, 2800]
+    target_performances = (
+        [2400, 2800, 3200, 3600, 4000] if max_rating == "inf"         # AGC
+        else [400, 800, 1200, 1600, 2000, 2400] if max_rating < 2000  # ABC
+        else [1600, 2000, 2400, 2800, 3200]                           # ARC
+    )
     stats_by_performance = [
         (performance, contest_json.get_contest_stats_by_performance(player_performances, performance))
         for performance in target_performances
