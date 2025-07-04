@@ -2,10 +2,10 @@ from bs4 import BeautifulSoup # type: ignore
 from datetime import datetime
 from itertools import chain, combinations
 import re
-from contest_stats import ContestStats
 import requests # type: ignore
 
 from contest_json import ContestJson
+from contest_stats import ContestStats
 
 
 def get_new_contest_ids(existing_ids: list[str]) -> list[str]:

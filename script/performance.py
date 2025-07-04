@@ -1,15 +1,22 @@
+from performance_db import PlayerPerformancesDB
 import requests # type: ignore
 
 from history_types import HistoryItem
 
 
+def contest_screen_name_to_contest_id(screen_name: str) -> str:
+    index = screen_name.rfind(".contest.atcoder.jp")
+    return screen_name[:index] if index >= 0 else screen_name
+
+
 class PlayerPerformance:
     """A Class to get player's performance in the contest and cache it"""
 
-    def __init__(self, contest_id: str, player_names: list[str]) -> None:
+    def __init__(self, contest_id: str, player_names: list[str], db: PlayerPerformancesDB | None) -> None:
         self._id = contest_id
         self._player_names = player_names
-        # None: Deleted user, -1: Not visited yet
+        self._db = db
+        # None: Unrated or deleted user, -1: Not visited yet
         self._performances: list[int | None] = [-1] * len(player_names)
     
 
@@ -18,18 +25,38 @@ class PlayerPerformance:
             return self._performances[i]
         
         player_name = self._player_names[i]
-        response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
-        if response.status_code != 200:
-            print(f"User {player_name} is not found")
-            self._performances[i] = None
+
+        if self._db:
+            performance_in_db = self._db.get_performance(player_name, self._id)
+            if performance_in_db:
+                self._performances[i] = performance_in_db if performance_in_db > 0 else None
+            else:
+                # Get player's performances from AtCoder's user page
+                response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
+                if response.status_code != 200:
+                    print(f"User {player_name} is not found")
+                    self._performances[i] = None
+                else:
+                    histories: list[HistoryItem] = response.json()
+                    self._db.set_performances(player_name, [(contest_screen_name_to_contest_id(history["ContestScreenName"]), history["Performance"]) for history in histories])
+                    item = next((history for history in histories if history["ContestScreenName"] == self._id + ".contest.atcoder.jp"), None)
+                    if item is None or not item["IsRated"]:
+                        self._performances[i] = None
+                    else:
+                        self._performances[i] = item["Performance"]
         else:
-            histories: list[HistoryItem] = response.json()
-            item = next((history for history in histories if history["ContestScreenName"] == self._id + ".contest.atcoder.jp"), None)
-            if item is None or not item["IsRated"]:
+            response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
+            if response.status_code != 200:
+                print(f"User {player_name} is not found")
                 self._performances[i] = None
             else:
-                self._performances[i] = item["Performance"]
-        
+                histories: list[HistoryItem] = response.json()
+                item = next((history for history in histories if history["ContestScreenName"] == self._id + ".contest.atcoder.jp"), None)
+                if item is None or not item["IsRated"]:
+                    self._performances[i] = None
+                else:
+                    self._performances[i] = item["Performance"]
+            
         return self._performances[i]
     
     

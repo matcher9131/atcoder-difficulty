@@ -5,7 +5,12 @@ from typing import TypedDict
 
 from contest_stats import ContestStatsItemByPerformance, ContestStatsItemByScore
 from performance import PlayerPerformance
+from performance_db import PlayerPerformancesDB
 from util.rating import get_raw_rating
+
+
+# Set this before run script
+uses_db = False
 
 
 class _TaskInfoItem(TypedDict):
@@ -69,7 +74,7 @@ class ContestJson:
 
 
     def create_player_performances(self, contest_id: str) -> PlayerPerformance:
-        return PlayerPerformance(contest_id, [player["UserScreenName"] for player in self._json["StandingsData"]])
+        return PlayerPerformance(contest_id, [player["UserScreenName"] for player in self._json["StandingsData"]], PlayerPerformancesDB() if uses_db else None)
 
     
     def _get_score(self, index: int) -> int:
