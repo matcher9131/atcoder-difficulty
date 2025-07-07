@@ -78,7 +78,7 @@ class ContestJson:
 
     
     def _get_score(self, index: int) -> int:
-        return self._json["StandingsData"][index]["TotalResult"]["Score"]
+        return self._json["StandingsData"][index]["TotalResult"]["Score"] // 100
     
 
     def _get_time(self, index: int) -> int:
