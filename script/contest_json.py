@@ -49,7 +49,8 @@ class ContestJson_Inner(TypedDict):
 
 
 class ContestJson:
-    def __init__(self, json: ContestJson_Inner) -> None:
+    def __init__(self, id: str, json: ContestJson_Inner) -> None:
+        self._id = id
         self._json = json
 
 
@@ -68,18 +69,18 @@ class ContestJson:
         if "application/json" not in response.headers.get("Content-Type", ""):
             raise TypeError("Response is not a json.")
         
-        return ContestJson(response.json())
+        return ContestJson(id, response.json())
 
 
-    def get_id_and_name_of_problems(self, contest_id: str) -> list[tuple[str, str]]:
+    def get_id_and_name_of_problems(self) -> list[tuple[str, str]]:
         return [
-            (f"{contest_id}/{task_info_item['TaskScreenName']}", task_info_item["TaskName"])
+            (f"{self._id}/{task_info_item['TaskScreenName']}", task_info_item["TaskName"])
             for task_info_item in self._json["TaskInfo"]
         ]
 
 
-    def create_player_performances(self, contest_id: str) -> PlayerPerformance:
-        return PlayerPerformance(contest_id, [player["UserScreenName"] for player in self._json["StandingsData"]], PlayerPerformancesDB() if uses_db else None)
+    def create_player_performances(self) -> PlayerPerformance:
+        return PlayerPerformance(self._id, [player["UserScreenName"] for player in self._json["StandingsData"]], PlayerPerformancesDB() if uses_db else None)
 
     
     def _get_score(self, index: int) -> int:
@@ -187,8 +188,8 @@ class ContestJson:
                 }
     
 
-    def get_contest_stats(self, contest_id: str) -> ContestStats:
-        response = requests.get(f"https://atcoder.jp/contests/{contest_id}?lang=en")
+    def get_contest_stats(self) -> ContestStats:
+        response = requests.get(f"https://atcoder.jp/contests/{self._id}?lang=en")
         if response.status_code != 200:
             response.raise_for_status()
         
@@ -225,7 +226,7 @@ class ContestJson:
             )
         ]))
 
-        player_performances = self.create_player_performances(contest_id)
+        player_performances = self.create_player_performances()
 
         stats_by_score = [
             (sum_score, self._get_contest_stats_by_score(player_performances, sum_score))

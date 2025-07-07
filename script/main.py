@@ -24,7 +24,7 @@ def run(contest_ids: list[str]):
     for contest_id in new_contest_ids:
         try:
             contest_json = ContestJson.from_contest_id(contest_id)
-            contest_stats = contest_json.get_contest_stats(contest_id)
+            contest_stats = contest_json.get_contest_stats()
             easy_problem_indices = [0, 1] if isinstance(contest_stats["m"], int) and contest_stats["m"] < 2000 else []
             difficulties = estimate_contest_difficulties(contest_id, contest_json, easy_problem_indices)
             distributions = create_compressed_frequency_distributions(contest_id, contest_json, easy_problem_indices)
