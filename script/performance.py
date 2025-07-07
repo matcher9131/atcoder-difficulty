@@ -1,5 +1,6 @@
 from performance_db import PlayerPerformancesDB
 import requests # type: ignore
+from time import sleep
 
 from history_types import HistoryItem
 
@@ -16,6 +17,7 @@ class PlayerPerformance:
         self._id = contest_id
         self._player_names = player_names
         self._db = db
+        print("Using PlayerPerformancesDB" if db else "Not using PlayerPerformancesDB")
         # None: Unrated or deleted user, -1: Not visited yet
         self._performances: list[int | None] = [-1] * len(player_names)
     
@@ -33,6 +35,7 @@ class PlayerPerformance:
             else:
                 # Get player's performances from AtCoder's user page
                 response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
+                sleep(3)
                 if response.status_code != 200:
                     print(f"User {player_name} is not found")
                     self._performances[i] = None
@@ -45,9 +48,11 @@ class PlayerPerformance:
                     else:
                         self._performances[i] = item["Performance"]
         else:
+            # Get player's performances from AtCoder's user page
             response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
+            sleep(3)
             if response.status_code != 200:
-                print(f"User {player_name} is not found")
+                print(f"User {player_name} is not found: {response.status_code}")
                 self._performances[i] = None
             else:
                 histories: list[HistoryItem] = response.json()
