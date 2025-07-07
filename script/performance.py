@@ -28,34 +28,25 @@ class PlayerPerformance:
         
         player_name = self._player_names[i]
 
-        if self._db:
-            performance_in_db = self._db.get_performance(player_name, self._id)
-            if performance_in_db:
-                self._performances[i] = performance_in_db if performance_in_db > 0 else None
-            else:
-                # Get player's performances from AtCoder's user page
-                response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
-                sleep(3)
-                if response.status_code != 200:
-                    print(f"User {player_name} is not found")
-                    self._performances[i] = None
-                else:
-                    histories: list[HistoryItem] = response.json()
-                    self._db.set_performances(player_name, [(contest_screen_name_to_contest_id(history["ContestScreenName"]), history["Performance"]) for history in histories])
-                    item = next((history for history in histories if history["ContestScreenName"] == self._id + ".contest.atcoder.jp"), None)
-                    if item is None or not item["IsRated"]:
-                        self._performances[i] = None
-                    else:
-                        self._performances[i] = item["Performance"]
+        performance_in_db = self._db.get_performance(player_name, self._id) if self._db else None
+        if performance_in_db:
+            self._performances[i] = performance_in_db if performance_in_db > 0 else None
         else:
             # Get player's performances from AtCoder's user page
             response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
             sleep(3)
             if response.status_code != 200:
-                print(f"User {player_name} is not found: {response.status_code}")
+                print(f"User {player_name} is not found")
+                if self._db:
+                    self._db.set_deleted_player(player_name)
                 self._performances[i] = None
             else:
                 histories: list[HistoryItem] = response.json()
+                if self._db:
+                    self._db.set_performances(
+                        player_name,
+                        [(contest_screen_name_to_contest_id(history["ContestScreenName"]), history["Performance"]) for history in histories]
+                    )
                 item = next((history for history in histories if history["ContestScreenName"] == self._id + ".contest.atcoder.jp"), None)
                 if item is None or not item["IsRated"]:
                     self._performances[i] = None
