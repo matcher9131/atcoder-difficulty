@@ -1,8 +1,7 @@
 import sys
 
-from contest import get_contest_stats, get_new_contest_ids
 from contest_json import ContestJson
-from contest_stats import ContestStats
+from contest_stats import ContestStats, get_contest_stats, get_new_contest_ids
 from difficulty import estimate_contest_difficulties
 from distribution import create_compressed_frequency_distributions, load_all_distributions, save_all_distributions
 from problem import Problem
