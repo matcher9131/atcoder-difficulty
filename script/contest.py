@@ -40,29 +40,24 @@ def get_contest_stats(contest_id: str, contest_json: ContestJson) -> ContestStat
     if response.status_code != 200:
         response.raise_for_status()
     
-    html = response.text
+    soup = BeautifulSoup(response.text, "html.parser")
     
-    date_regex = re.compile(r"Contest Duration: (?P<year>\d+)-(?P<month>\d+)-(?P<day>\d+)\([^)]+\) (?P<hour>\d+):(?P<minute>\d+)")
-    date_regex_result = re.search(date_regex, html)
-    if date_regex_result is None:
+    time_node = soup.select_one(".contest-duration time")
+    if time_node is None:
         raise ValueError("[get_contest_stats]: No match results for date regex.")
-
-    date = datetime(
-        int(date_regex_result.group("year")),
-        int(date_regex_result.group("month")),
-        int(date_regex_result.group("day")),
-        int(date_regex_result.group("hour")),
-        int(date_regex_result.group("minute")),
-    )
+    # Somehow get different html than when accessing the page with browsers; Be cautious of the date format.
+    date = datetime.strptime(time_node.text, "%Y-%m-%d %H:%M:%S%z")
 
     rating_regex = re.compile(r"Rated Range: (?P<min>\d+)?\s*-\s*(?P<max>\d+)?")
-    rating_regex_result = re.search(rating_regex, html)
+    rating_regex_text_node = soup.find(string=rating_regex)
+    if rating_regex_text_node is None:
+        raise ValueError("[get_contest_stats]: No match results for rating regex.")
+    rating_regex_result = re.search(rating_regex, rating_regex_text_node.text)
     if rating_regex_result is None:
         raise ValueError("[get_contest_stats]: No match results for rating regex.")
     
     max_rating = int(rating_regex_result.group("max")) if rating_regex_result.group("max") is not None else "inf"
 
-    soup = BeautifulSoup(html, "html.parser")
     scores_table = next(
         (table for table in soup.select("table") if table.find("th", string="Score") is not None), 
         None
@@ -85,7 +80,6 @@ def get_contest_stats(contest_id: str, contest_json: ContestJson) -> ContestStat
         for sum_score in sum_scores
     ]
 
-    # TODO: Change target performances by contest types
     target_performances = (
         [2400, 2800, 3200, 3600, 4000] if max_rating == "inf"         # AGC
         else [400, 800, 1200, 1600, 2000, 2400] if max_rating < 2000  # ABC
