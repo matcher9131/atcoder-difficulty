@@ -55,6 +55,11 @@ class ContestJson:
         self._id = id
         self._json = json
         # Members for cache
+        self._player_performances = PlayerPerformance(
+            self._id,
+            [player["UserScreenName"] for player in self._json["StandingsData"]],
+            PlayerPerformancesDB() if uses_db else None
+        )
         self._properties_cache = cast(tuple[datetime, int | Literal["inf"], list[int]] | None, None)
 
 
@@ -179,8 +184,8 @@ class ContestJson:
         return compress(rated_distribution), compress(unrated_distribution)
 
 
-    def _create_player_performances(self) -> PlayerPerformance:
-        return PlayerPerformance(self._id, [player["UserScreenName"] for player in self._json["StandingsData"]], PlayerPerformancesDB() if uses_db else None)
+    def _get_is_rated(self, index: int) -> bool:
+        return self._json["StandingsData"][index]["IsRated"]
 
     
     def _get_score(self, index: int) -> int:
@@ -215,34 +220,33 @@ class ContestJson:
         """Find the last player with the score and time given by binary search and return the index"""
         return bisect_left(
             [
-                (-player["TotalResult"]["Score"], player["TotalResult"]["Elapsed"])
-                for player in self._json["StandingsData"]
+                (-self._get_score(i), self._get_time(i))
+                for i in range(len(self._json["StandingsData"]))
             ],
             (-score, time)
         )
 
 
-    def _get_contest_stats_by_score(self, performances: PlayerPerformance, score: int) -> ContestStatsItemByScore | None:
-        # FIXME (returns all None. Probably start index should be reduced by 1)
-        index = self._find_player_by_score_and_time(score, int(1e16))
-        if index >= len(self._json["StandingsData"]):
-            return None
-        while True:
-            # Decrement index and find rated player with the score given
-            if index < 0 or self._get_score(index) != score:
+    def _get_contest_stats_by_score(self, score: int) -> ContestStatsItemByScore | None:
+        start_index = self._find_player_by_score_and_time(score, int(1e16)) - 1
+        for i in range(start_index, -1, -1):
+            if self._get_score(i) != score:
                 # No rated player who gets the exact score
                 return None
-            performance = performances[index]
+            if not self._get_is_rated(i):
+                # Skip this player because unrated player's performance is always 0
+                continue
+            performance = self._player_performances[i]
             if performance is not None:
                 return {
-                    "r": self._get_rank(index),
+                    "r": self._get_rank(i),
                     "p": performance
                 }
-            index -= 1
+        return None
     
 
-    def _get_contest_stats_by_performance(self, performances: PlayerPerformance, target_performance: int) -> ContestStatsItemByPerformance | None:
-        index = performances.find(target_performance)
+    def _get_contest_stats_by_performance(self, target_performance: int) -> ContestStatsItemByPerformance | None:
+        index = self._player_performances.find(target_performance)
         if index is None:
             return None
         elif isinstance(index, int):
@@ -256,8 +260,8 @@ class ContestJson:
             smaller_index_score = self._get_score(smaller_index)
             larger_index_score = self._get_score(larger_index)
             
-            smaller_index_performance = performances[smaller_index]
-            larger_index_performance = performances[larger_index]
+            smaller_index_performance = self._player_performances[smaller_index]
+            larger_index_performance = self._player_performances[larger_index]
             if smaller_index_performance is None or larger_index_performance is None:
                 raise ValueError("Performance is None")
             
@@ -301,10 +305,8 @@ class ContestJson:
 
         rated_distribution, unrated_distribution = self._get_frequency_distribution()
 
-        player_performances = self._create_player_performances()
-
         stats_by_score = [
-            (sum_score, self._get_contest_stats_by_score(player_performances, sum_score))
+            (sum_score, self._get_contest_stats_by_score(sum_score))
             for sum_score in sum_scores
         ]
 
@@ -314,7 +316,7 @@ class ContestJson:
             else [1600, 2000, 2400, 2800, 3200]                           # ARC
         )
         stats_by_performance = [
-            (performance, self._get_contest_stats_by_performance(player_performances, performance))
+            (performance, self._get_contest_stats_by_performance(performance))
             for performance in target_performances
         ]
 

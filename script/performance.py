@@ -11,7 +11,7 @@ def contest_screen_name_to_contest_id(screen_name: str) -> str:
 
 
 class PlayerPerformance:
-    """A Class to get player's performance in the contest and cache it"""
+    """A Class to get players' performance in the contest and cache them"""
 
     def __init__(self, contest_id: str, player_names: list[str], db: PlayerPerformancesDB | None) -> None:
         self._id = contest_id
@@ -34,7 +34,10 @@ class PlayerPerformance:
         else:
             # Get player's performances from AtCoder's user page
             response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
-            sleep(3)
+            # Debug
+            print(f"Getting data of user {player_name}")
+            # End debug
+            sleep(2)
             if response.status_code != 200:
                 print(f"User {player_name} is not found")
                 if self._db:
