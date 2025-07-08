@@ -1,12 +1,14 @@
+import base64
 from bisect import bisect_left
 from bs4 import BeautifulSoup # type: ignore
 from datetime import datetime
 from itertools import chain, combinations
+import numpy as np
+from numpy.typing import NDArray
 import os
 import requests # type: ignore
 import re
-from typing import TypedDict
-
+from typing import Literal, TypedDict, cast
 
 from contest_stats import ContestStats, ContestStatsItemByPerformance, ContestStatsItemByScore
 from performance import PlayerPerformance
@@ -52,6 +54,8 @@ class ContestJson:
     def __init__(self, id: str, json: ContestJson_Inner) -> None:
         self._id = id
         self._json = json
+        # Members for cache
+        self._properties_cache = cast(tuple[datetime, int | Literal["inf"], list[int]] | None, None)
 
 
     @staticmethod
@@ -72,6 +76,89 @@ class ContestJson:
         return ContestJson(id, response.json())
 
 
+    def _get_properties(self) -> tuple[datetime, int | Literal["inf"], list[int]]:
+        if self._properties_cache is not None:
+            return self._properties_cache
+        
+        response = requests.get(f"https://atcoder.jp/contests/{self._id}?lang=en")
+        if response.status_code != 200:
+            response.raise_for_status()
+        
+        soup = BeautifulSoup(response.text, "html.parser")
+        
+        time_node = soup.select_one(".contest-duration time")
+        if time_node is None:
+            raise ValueError("[get_contest_stats]: No match results for date regex.")
+        # Somehow get different html than when accessing the page with browsers; Be cautious of the date format.
+        date = datetime.strptime(time_node.text, "%Y-%m-%d %H:%M:%S%z")
+
+        rating_regex = re.compile(r"Rated Range: (?P<min>\d+)?\s*-\s*(?P<max>\d+)?")
+        rating_regex_text_node = soup.find(string=rating_regex)
+        if rating_regex_text_node is None:
+            raise ValueError("[get_contest_stats]: No match results for rating regex.")
+        rating_regex_result = re.search(rating_regex, rating_regex_text_node.text)
+        if rating_regex_result is None:
+            raise ValueError("[get_contest_stats]: No match results for rating regex.")
+        
+        max_rating = int(rating_regex_result.group("max")) if rating_regex_result.group("max") is not None else "inf"
+
+        scores_table = next(
+            (table for table in soup.select("table") if table.find("th", string="Score") is not None), 
+            None
+        )
+        if scores_table is None:
+            raise ValueError("[get_contest_stats]: Point values table is not found.")
+        scores = [int(td.get_text()) for td in scores_table.select("tbody tr td:nth-child(2)")]
+
+        # Store cache
+        self._properties_cache = (date, max_rating, scores)
+        return self._properties_cache
+
+
+    def get_abilities_and_responses(self) -> tuple[list[float], list[list[int]], list[bool]]:
+        inner_problem_ids = [element["TaskScreenName"] for element in self._json["TaskInfo"]]
+        players = [
+            {
+                "rating": player["OldRating"],
+                "numContests": player["Competitions"],
+                "isRated": player["IsRated"],
+                "responses": [
+                    -1 if inner_problem_id not in player["TaskResults"]
+                    else 1 if player["TaskResults"][inner_problem_id]["SubmissionID"] > 0
+                    else 0
+                    for inner_problem_id in inner_problem_ids
+                ]
+            } for player in self._json["StandingsData"] if player["TotalResult"]["Count"] > 0
+        ]
+        if not players:
+            raise ValueError("No players.")
+        
+        (_, max_rating, _) = self._get_properties()
+        easy_problem_indices = [0, 1] if max_rating != "inf" and max_rating < 2000 else []
+
+        abilities: list[float] = []
+        responses: list[list[int]] = [[] for _ in range(len(self._json["TaskInfo"]))]
+        is_target_of_easy_problems: list[bool] = []
+        for player in players:
+            if player["rating"] <= 0:
+                continue
+            # "numContests" includes this contest, so rated player's value must be reduced by 1.
+            num_contests = player["numContests"] - (1 if player["isRated"] else 0)
+            if num_contests <= 0:
+                # Ignore newbies because their raw rating are all 1200 regardless their skills.
+                # (and "num_contests" can be -1 for rated and deleted players)
+                continue
+            abilities.append(get_raw_rating(player["rating"], num_contests))
+            for problem_index in range(len(self._json["TaskInfo"])):
+                responses[problem_index].append(player["responses"][problem_index])
+            # Exclude players who have no submissions to easy problems in estimating difficulties of easy problems
+            is_target_of_easy_problems.append(any(
+                [player["responses"][easy_problem_index] != -1 for easy_problem_index in easy_problem_indices]
+            ))
+        
+        return abilities, responses, is_target_of_easy_problems
+
+
     def get_id_and_name_of_problems(self) -> list[tuple[str, str]]:
         return [
             (f"{self._id}/{task_info_item['TaskScreenName']}", task_info_item["TaskName"])
@@ -79,7 +166,20 @@ class ContestJson:
         ]
 
 
-    def create_player_performances(self) -> PlayerPerformance:
+    def _get_frequency_distribution(self) -> tuple[tuple[int, str], tuple[int, str]]:
+        def compress(arr: NDArray[np.uint16]) -> tuple[int, str]:
+            non_zero_indices = np.nonzero(arr)[0]
+            compressed = arr[non_zero_indices[0]:(non_zero_indices[-1] + 1)] if non_zero_indices.size > 0 else np.empty(0, dtype=np.uint16)
+            return 25 * int(non_zero_indices[0]), base64.b64encode(compressed.tobytes()).decode("utf-8")
+
+        rated_distribution = np.zeros(200, dtype=np.uint16)
+        unrated_distribution = np.zeros(200, dtype=np.uint16)
+        for player in self._json["StandingsData"]:
+            (rated_distribution if player["IsRated"] else unrated_distribution)[player["OldRating"] // 25] += 1
+        return compress(rated_distribution), compress(unrated_distribution)
+
+
+    def _create_player_performances(self) -> PlayerPerformance:
         return PlayerPerformance(self._id, [player["UserScreenName"] for player in self._json["StandingsData"]], PlayerPerformancesDB() if uses_db else None)
 
     
@@ -120,9 +220,10 @@ class ContestJson:
             ],
             (-score, time)
         )
-    
+
 
     def _get_contest_stats_by_score(self, performances: PlayerPerformance, score: int) -> ContestStatsItemByScore | None:
+        # FIXME (returns all None. Probably start index should be reduced by 1)
         index = self._find_player_by_score_and_time(score, int(1e16))
         if index >= len(self._json["StandingsData"]):
             return None
@@ -189,35 +290,7 @@ class ContestJson:
     
 
     def get_contest_stats(self) -> ContestStats:
-        response = requests.get(f"https://atcoder.jp/contests/{self._id}?lang=en")
-        if response.status_code != 200:
-            response.raise_for_status()
-        
-        soup = BeautifulSoup(response.text, "html.parser")
-        
-        time_node = soup.select_one(".contest-duration time")
-        if time_node is None:
-            raise ValueError("[get_contest_stats]: No match results for date regex.")
-        # Somehow get different html than when accessing the page with browsers; Be cautious of the date format.
-        date = datetime.strptime(time_node.text, "%Y-%m-%d %H:%M:%S%z")
-
-        rating_regex = re.compile(r"Rated Range: (?P<min>\d+)?\s*-\s*(?P<max>\d+)?")
-        rating_regex_text_node = soup.find(string=rating_regex)
-        if rating_regex_text_node is None:
-            raise ValueError("[get_contest_stats]: No match results for rating regex.")
-        rating_regex_result = re.search(rating_regex, rating_regex_text_node.text)
-        if rating_regex_result is None:
-            raise ValueError("[get_contest_stats]: No match results for rating regex.")
-        
-        max_rating = int(rating_regex_result.group("max")) if rating_regex_result.group("max") is not None else "inf"
-
-        scores_table = next(
-            (table for table in soup.select("table") if table.find("th", string="Score") is not None), 
-            None
-        )
-        if scores_table is None:
-            raise ValueError("[get_contest_stats]: Point values table is not found.")
-        scores = [int(td.get_text()) for td in scores_table.select("tbody tr td:nth-child(2)")]
+        (date, max_rating, scores) = self._get_properties()
 
         sum_scores = sorted(set([
             sum(subset)
@@ -226,7 +299,9 @@ class ContestJson:
             )
         ]))
 
-        player_performances = self.create_player_performances()
+        rated_distribution, unrated_distribution = self._get_frequency_distribution()
+
+        player_performances = self._create_player_performances()
 
         stats_by_score = [
             (sum_score, self._get_contest_stats_by_score(player_performances, sum_score))
@@ -247,49 +322,11 @@ class ContestJson:
             "d": date,
             "m": max_rating,
             "s": scores,
+            "fr": rated_distribution,
+            "fu": unrated_distribution,
             "ss": stats_by_score,
             "sp": stats_by_performance
         }
-    
-    
-    def get_abilities_and_responses(self, easy_problem_indices: list[int]) -> tuple[list[float], list[list[int]], list[bool]]:
-        inner_problem_ids = [element["TaskScreenName"] for element in self._json["TaskInfo"]]
-        players = [
-            {
-                "rating": player["OldRating"],
-                "numContests": player["Competitions"],
-                "isRated": player["IsRated"],
-                "responses": [
-                    -1 if inner_problem_id not in player["TaskResults"]
-                    else 1 if player["TaskResults"][inner_problem_id]["SubmissionID"] > 0
-                    else 0
-                    for inner_problem_id in inner_problem_ids
-                ]
-            } for player in self._json["StandingsData"] if player["TotalResult"]["Count"] > 0
-        ]
-        if not players:
-            raise ValueError("No players.")
-        
-        abilities: list[float] = []
-        responses: list[list[int]] = [[] for _ in range(len(self._json["TaskInfo"]))]
-        is_target_of_easy_problems: list[bool] = []
-        for player in players:
-            if player["rating"] <= 0:
-                continue
-            # "numContests" includes this contest, so rated player's value must be reduced by 1.
-            num_contests = player["numContests"] - (1 if player["isRated"] else 0)
-            if num_contests <= 0:
-                # Ignore newbies because their raw rating are all 1200 regardless their skills.
-                # (and "num_contests" can be -1 for rated and deleted players)
-                continue
-            abilities.append(get_raw_rating(player["rating"], num_contests))
-            for problem_index in range(len(self._json["TaskInfo"])):
-                responses[problem_index].append(player["responses"][problem_index])
-            # Exclude players who have no submissions to easy problems in estimating difficulties of easy problems
-            is_target_of_easy_problems.append(any(
-                [player["responses"][easy_problem_index] != -1 for easy_problem_index in easy_problem_indices]
-            ))
-        return abilities, responses, is_target_of_easy_problems
 
 
 def get_new_contest_ids(existing_ids: list[str]) -> list[str]:
