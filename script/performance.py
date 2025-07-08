@@ -29,8 +29,8 @@ class PlayerPerformance:
         player_name = self._player_names[i]
 
         performance_in_db = self._db.get_performance(player_name, self._id) if self._db else None
-        if performance_in_db:
-            self._performances[i] = performance_in_db if performance_in_db > 0 else None
+        if performance_in_db != "not_found":
+            self._performances[i] = performance_in_db if performance_in_db != "deleted" else None
         else:
             # Get player's performances from AtCoder's user page
             response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
@@ -48,7 +48,10 @@ class PlayerPerformance:
                 if self._db:
                     self._db.set_performances(
                         player_name,
-                        [(contest_screen_name_to_contest_id(history["ContestScreenName"]), history["Performance"]) for history in histories]
+                        [(
+                            contest_screen_name_to_contest_id(history["ContestScreenName"]),
+                            history["Performance"] if history["IsRated"] else None
+                        ) for history in histories]
                     )
                 item = next((history for history in histories if history["ContestScreenName"] == self._id + ".contest.atcoder.jp"), None)
                 if item is None or not item["IsRated"]:

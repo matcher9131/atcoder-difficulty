@@ -17,7 +17,7 @@ from util.rating import get_raw_rating
 
 
 # Set this before run script
-uses_db = False
+uses_db = True
 
 
 class _TaskInfoItem(TypedDict):
