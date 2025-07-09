@@ -17,7 +17,6 @@ class PlayerPerformance:
         self._id = contest_id
         self._player_names = player_names
         self._db = db
-        print("Using PlayerPerformancesDB" if db else "Not using PlayerPerformancesDB")
         # None: Unrated or deleted user, -1: Not visited yet
         self._performances: list[int | None] = [-1] * len(player_names)
     
@@ -34,9 +33,6 @@ class PlayerPerformance:
         else:
             # Get player's performances from AtCoder's user page
             response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
-            # Debug
-            print(f"Getting data of user {player_name}")
-            # End debug
             sleep(2)
             if response.status_code != 200:
                 print(f"User {player_name} is not found")

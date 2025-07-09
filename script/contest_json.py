@@ -13,6 +13,7 @@ from typing import Literal, TypedDict, cast
 from contest_stats import ContestStats, ContestStatsItemByPerformance, ContestStatsItemByScore
 from performance import PlayerPerformance
 from performance_db import PlayerPerformancesDB
+from util.parsing import parse_start_or_raise
 from util.rating import get_raw_rating
 
 
@@ -113,7 +114,7 @@ class ContestJson:
         )
         if scores_table is None:
             raise ValueError("[get_contest_stats]: Point values table is not found.")
-        scores = [int(td.get_text()) for td in scores_table.select("tbody tr td:nth-child(2)")]
+        scores = [parse_start_or_raise(td.get_text()) for td in scores_table.select("tbody tr td:nth-child(2)")]
 
         # Store cache
         self._properties_cache = (date, max_rating, scores)
