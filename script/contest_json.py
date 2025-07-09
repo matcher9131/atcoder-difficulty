@@ -307,8 +307,9 @@ class ContestJson:
         rated_distribution, unrated_distribution = self._get_frequency_distribution()
 
         stats_by_score = [
-            (sum_score, self._get_contest_stats_by_score(sum_score))
+            (sum_score, score_stat)
             for sum_score in sum_scores
+            if (score_stat := self._get_contest_stats_by_score(sum_score)) is not None
         ]
 
         target_performances = (
@@ -317,8 +318,9 @@ class ContestJson:
             else [1600, 2000, 2400, 2800, 3200]                           # ARC
         )
         stats_by_performance = [
-            (performance, self._get_contest_stats_by_performance(performance))
+            (performance, performance_stat)
             for performance in target_performances
+            if (performance_stat := self._get_contest_stats_by_performance(performance)) is not None
         ]
 
         return {
