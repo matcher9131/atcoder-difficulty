@@ -8,6 +8,7 @@ from numpy.typing import NDArray
 import os
 import requests # type: ignore
 import re
+from time import sleep
 from typing import Literal, TypedDict, cast
 
 from contest_stats import ContestStats, ContestStatsItemByPerformance, ContestStatsItemByScore
@@ -74,6 +75,7 @@ class ContestJson:
         
         url = f"https://atcoder.jp/contests/{id}/standings/json"
         response = requests.get(url=url, cookies={ "REVEL_SESSION": session })
+        sleep(1)
         if response.status_code != 200:
             response.raise_for_status()
         if "application/json" not in response.headers.get("Content-Type", ""):
@@ -87,6 +89,7 @@ class ContestJson:
             return self._properties_cache
         
         response = requests.get(f"https://atcoder.jp/contests/{self._id}?lang=en")
+        sleep(1)
         if response.status_code != 200:
             response.raise_for_status()
         
@@ -338,6 +341,7 @@ def get_new_contest_ids(existing_ids: list[str]) -> list[str]:
     """Access contest archive page and get new contest ids"""
 
     response = requests.get("https://atcoder.jp/contests/archive")
+    sleep(1)
     soup = BeautifulSoup(response.text, "html.parser")
 
     result: list[str] = []
