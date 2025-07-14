@@ -6,7 +6,7 @@ from itertools import chain, combinations
 import numpy as np
 from numpy.typing import NDArray
 import os
-import requests # type: ignore
+import requests
 import re
 from time import sleep
 from typing import Literal, TypedDict, cast
@@ -16,6 +16,7 @@ from performance import PlayerPerformance
 from performance_db import PlayerPerformancesDB
 from util.parsing import parse_start_or_raise
 from util.rating import get_raw_rating
+from util.requests_extension import get_with_retry
 
 
 # Set this before run script
@@ -74,7 +75,7 @@ class ContestJson:
             raise ValueError("Session is none.")
         
         url = f"https://atcoder.jp/contests/{id}/standings/json"
-        response = requests.get(url=url, cookies={ "REVEL_SESSION": session })
+        response = get_with_retry(url=url, cookies={ "REVEL_SESSION": session })
         sleep(1)
         if response.status_code != 200:
             response.raise_for_status()
@@ -88,7 +89,7 @@ class ContestJson:
         if self._properties_cache is not None:
             return self._properties_cache
         
-        response = requests.get(f"https://atcoder.jp/contests/{self._id}?lang=en")
+        response = get_with_retry(f"https://atcoder.jp/contests/{self._id}?lang=en")
         sleep(1)
         if response.status_code != 200:
             response.raise_for_status()
