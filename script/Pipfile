@@ -12,6 +12,7 @@ dotenv = "*"
 pytest = "*"
 beautifulsoup4 = "*"
 scipy = "*"
+types-requests = "*"
 
 [dev-packages]
 
