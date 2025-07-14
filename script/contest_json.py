@@ -30,6 +30,7 @@ class _TaskInfoItem(TypedDict):
 
 class _TaskResult(TypedDict):
     SubmissionID: int
+    Score: int
 
 
 class _PlayerResult(TypedDict):
@@ -112,13 +113,29 @@ class ContestJson:
         
         max_rating = int(rating_regex_result.group("max")) if rating_regex_result.group("max") is not None else "inf"
 
+        scores: list[int] = []
         scores_table = next(
             (table for table in soup.select("table") if table.find("th", string="Score") is not None), 
             None
         )
-        if scores_table is None:
-            raise ValueError("[get_contest_stats]: Point values table is not found.")
-        scores = [parse_start_or_raise(td.get_text()) for td in scores_table.select("tbody tr td:nth-child(2)")]
+        if scores_table is not None:
+            try:
+                scores = [parse_start_or_raise(td.get_text()) for td in scores_table.select("tbody tr td:nth-child(2)")]
+            except ValueError:
+                scores = []
+        if not scores:
+            # No valid score table on the page, so try to get problem scores by json
+            problem_ids = [task_info_item["TaskScreenName"] for task_info_item in self._json["TaskInfo"]]
+            scores = [0] * len(problem_ids)
+            for i, problem_id in enumerate(problem_ids):
+                for player in self._json["StandingsData"]:
+                    if problem_id in player["TaskResults"]:
+                        score = player["TaskResults"][problem_id]["Score"] // 100
+                        if score > 0:
+                            scores[i] = score
+                            break
+            if (any(score <= 0 for score in scores)):
+                raise ValueError("[get_contest_stats]: Cannot get problem scores.")
 
         # Store cache
         self._properties_cache = (date, max_rating, scores)

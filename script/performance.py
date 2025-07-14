@@ -1,8 +1,8 @@
 from performance_db import PlayerPerformancesDB
-import requests # type: ignore
 from time import sleep
 
 from history_types import HistoryItem
+from util.requests_extension import get_with_retry
 
 
 def contest_screen_name_to_contest_id(screen_name: str) -> str:
@@ -32,7 +32,7 @@ class PlayerPerformance:
             self._performances[i] = performance_in_db if performance_in_db != "deleted" else None
         else:
             # Get player's performances from AtCoder's user page
-            response = requests.get(f"https://atcoder.jp/users/{player_name}/history/json")
+            response = get_with_retry(f"https://atcoder.jp/users/{player_name}/history/json")
             sleep(2)
             if response.status_code != 200:
                 print(f"User {player_name} is not found")
