@@ -103,15 +103,18 @@ class ContestJson:
         # Somehow get different html than when accessing the page with browsers; Be cautious of the date format.
         date = datetime.strptime(time_node.text, "%Y-%m-%d %H:%M:%S%z")
 
-        rating_regex = re.compile(r"Rated Range: (?P<min>\d+)?\s*-\s*(?P<max>\d+)?")
-        rating_regex_text_node = soup.find(string=rating_regex)
-        if rating_regex_text_node is None:
-            raise ValueError("[get_contest_stats]: No match results for rating regex.")
-        rating_regex_result = re.search(rating_regex, rating_regex_text_node.text)
-        if rating_regex_result is None:
-            raise ValueError("[get_contest_stats]: No match results for rating regex.")
-        
-        max_rating = int(rating_regex_result.group("max")) if rating_regex_result.group("max") is not None else "inf"
+        rating_all_text_node = soup.find(string="Rated Range: All")
+        if rating_all_text_node is not None:
+            max_rating = "inf"
+        else:
+            rating_regex = re.compile(r"Rated Range: (?P<min>\d+)?\s*-\s*(?P<max>\d+)?")
+            rating_regex_text_node = soup.find(string=rating_regex)
+            if rating_regex_text_node is None:
+                raise ValueError("[get_contest_stats]: No match results for rating regex.")
+            rating_regex_result = re.search(rating_regex, rating_regex_text_node.text)
+            if rating_regex_result is None:
+                raise ValueError("[get_contest_stats]: No match results for rating regex.")
+            max_rating = int(rating_regex_result.group("max")) if rating_regex_result.group("max") is not None else "inf"
 
         scores: list[int] = []
         scores_table = next(
@@ -196,8 +199,11 @@ class ContestJson:
     def _get_frequency_distribution(self) -> tuple[tuple[int, str], tuple[int, str]]:
         def compress(arr: NDArray[np.uint16]) -> tuple[int, str]:
             non_zero_indices = np.nonzero(arr)[0]
-            compressed = arr[non_zero_indices[0]:(non_zero_indices[-1] + 1)] if non_zero_indices.size > 0 else np.empty(0, dtype=np.uint16)
-            return 25 * int(non_zero_indices[0]), base64.b64encode(compressed.tobytes()).decode("utf-8")
+            if len(non_zero_indices) > 0:
+                compressed = arr[non_zero_indices[0]:(non_zero_indices[-1] + 1)]
+                return 25 * int(non_zero_indices[0]), base64.b64encode(compressed.tobytes()).decode("utf-8")
+            else:
+                return 0, ""
 
         rated_distribution = np.zeros(200, dtype=np.uint16)
         unrated_distribution = np.zeros(200, dtype=np.uint16)
