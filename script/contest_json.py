@@ -323,6 +323,19 @@ class ContestJson:
 
     def get_contest_stats(self) -> ContestStats:
         (date, max_rating, scores) = self._get_properties()
+        
+        rated_distribution, unrated_distribution = self._get_frequency_distribution()
+        if rated_distribution[1] == "":
+            # No stats about performances because there are no rated players
+            return {
+                "d": date,
+                "m": max_rating,
+                "s": scores,
+                "fr": rated_distribution,
+                "fu": unrated_distribution,
+                "ss": [],
+                "sp": []
+            }
 
         sum_scores = sorted(set([
             sum(subset)
@@ -330,9 +343,6 @@ class ContestJson:
                 combinations(scores, r) for r in range(len(scores) + 1)
             )
         ]))
-
-        rated_distribution, unrated_distribution = self._get_frequency_distribution()
-
         stats_by_score = [
             (sum_score, score_stat)
             for sum_score in sum_scores
