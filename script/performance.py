@@ -27,7 +27,7 @@ class PlayerPerformance:
         
         player_name = self._player_names[i]
 
-        performance_in_db = self._db.get_performance(player_name, self._id) if self._db else None
+        performance_in_db = self._db.get_performance(player_name, self._id) if self._db else "not_found"
         if performance_in_db != "not_found":
             self._performances[i] = performance_in_db if performance_in_db != "deleted" else None
         else:
