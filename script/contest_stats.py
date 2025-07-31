@@ -32,3 +32,19 @@ class ContestStats(TypedDict):
     ss: list[tuple[int, ContestStatsItemByScore]]
     # Stats by performance
     sp: list[tuple[int, ContestStatsItemByPerformance]]
+
+class NewContestStats(TypedDict):
+    # Date
+    d: datetime
+    # Max rating
+    m: int | Literal["inf"]
+    # Problem scores
+    s: list[int]
+    # Frequency distribution of rated players' rating ([0]: zero index bits compressed by base64, [1]: distribution of uint16[] compressed by base64)
+    fr: tuple[str, str]
+    # Frequency distribution of unrated players' rating ([0]: zero index bits compressed by base64, [1]: distribution of uint16[] compressed by base64)
+    fu: tuple[str, str]
+    # Stats by score
+    ss: list[tuple[int, ContestStatsItemByScore]]
+    # Stats by performance
+    sp: list[tuple[int, ContestStatsItemByPerformance]]
