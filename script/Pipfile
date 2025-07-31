@@ -13,6 +13,7 @@ pytest = "*"
 beautifulsoup4 = "*"
 scipy = "*"
 types-requests = "*"
+bitarray = "*"
 
 [dev-packages]
 
