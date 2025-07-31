@@ -1,13 +1,16 @@
-import base64
+from base64 import b64encode
 from bisect import bisect_left
+from bitarray import bitarray
+from bitarray.util import ba2base
 from bs4 import BeautifulSoup # type: ignore
 from datetime import datetime
 from itertools import chain, combinations
+from math import ceil
 import numpy as np
 from numpy.typing import NDArray
 import os
-import requests
 import re
+import requests
 from time import sleep
 from typing import Literal, TypedDict, cast
 
@@ -196,14 +199,17 @@ class ContestJson:
         ]
 
 
-    def _get_frequency_distribution(self) -> tuple[tuple[int, str], tuple[int, str]]:
-        def compress(arr: NDArray[np.uint16]) -> tuple[int, str]:
-            non_zero_indices = np.nonzero(arr)[0]
-            if len(non_zero_indices) > 0:
-                compressed = arr[non_zero_indices[0]:(non_zero_indices[-1] + 1)]
-                return 25 * int(non_zero_indices[0]), base64.b64encode(compressed.tobytes()).decode("utf-8")
-            else:
-                return 0, ""
+    def _get_frequency_distribution(self) -> tuple[tuple[str, str], tuple[str, str]]:
+        def compress(distribution: NDArray[np.uint16]) -> tuple[str, str]:
+            zero_indices = bitarray(int(ceil(len(distribution) / 6) * 6))
+            zero_indices.setall(0)
+            compressed_distribution: list[int] = []
+            for i, val in enumerate(distribution):
+                if val == 0:
+                    zero_indices[i] = 1
+                else:
+                    compressed_distribution.append(val)
+            return ba2base(64, zero_indices), b64encode(np.array(compressed_distribution, dtype=np.uint16).tobytes()).decode(encoding="utf-8")
 
         rated_distribution = np.zeros(200, dtype=np.uint16)
         unrated_distribution = np.zeros(200, dtype=np.uint16)
