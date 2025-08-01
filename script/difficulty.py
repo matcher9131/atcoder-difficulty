@@ -38,8 +38,8 @@ def estimate_problem_difficulty(abilities: list[float], responses: list[int]) ->
 def estimate_contest_difficulties(contest_id: str, contest_json: ContestJson, easy_problem_indices: list[int] = []) -> dict[str, Problem]:
     print(f"Estimating difficulties of {contest_id}")
     result: dict[str, Problem] = {}
-    abilities, responses, is_target_of_easy_problems = contest_json.get_abilities_and_responses(easy_problem_indices)
-    for problem_index, (problem_id, problem_title) in enumerate(contest_json.get_id_and_name_of_problems(contest_id)):
+    abilities, responses, is_target_of_easy_problems = contest_json.get_abilities_and_responses()
+    for problem_index, (problem_id, problem_title) in enumerate(contest_json.get_id_and_name_of_problems()):
         raw_difficulty_tuple = estimate_problem_difficulty(
             [ability for ability, is_target in zip(abilities, is_target_of_easy_problems) if is_target],
             [response for response, is_target in zip(responses[problem_index], is_target_of_easy_problems) if is_target]

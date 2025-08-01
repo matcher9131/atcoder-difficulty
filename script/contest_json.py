@@ -14,7 +14,7 @@ import requests
 from time import sleep
 from typing import Literal, TypedDict, cast
 
-from contest_stats import ContestStats, ContestStatsItemByPerformance, ContestStatsItemByScore
+from contest_stats import ContestStats, ContestStatsItemByPerformance, ContestStatsItemByScore, ContestSummary
 from performance import PlayerPerformance
 from performance_db import PlayerPerformancesDB
 from util.parsing import parse_start_or_raise
@@ -201,15 +201,16 @@ class ContestJson:
 
     def _get_frequency_distribution(self) -> tuple[tuple[str, str], tuple[str, str]]:
         def compress(distribution: NDArray[np.uint16]) -> tuple[str, str]:
-            zero_indices = bitarray(int(ceil(len(distribution) / 6) * 6))
+            bytes_buffer = list(distribution.tobytes())
+            zero_indices = bitarray(int(ceil(len(bytes_buffer) / 6) * 6))
             zero_indices.setall(0)
-            compressed_distribution: list[int] = []
-            for i, val in enumerate(distribution):
+            compressed_bytes: list[int] = []
+            for i, val in enumerate(bytes_buffer):
                 if val == 0:
                     zero_indices[i] = 1
                 else:
-                    compressed_distribution.append(val)
-            return ba2base(64, zero_indices), b64encode(np.array(compressed_distribution, dtype=np.uint16).tobytes()).decode(encoding="utf-8")
+                    compressed_bytes.append(val)
+            return ba2base(64, zero_indices), b64encode(np.array(compressed_bytes, dtype=np.uint8).tobytes()).decode(encoding="utf-8")
 
         rated_distribution = np.zeros(200, dtype=np.uint16)
         unrated_distribution = np.zeros(200, dtype=np.uint16)
@@ -327,15 +328,21 @@ class ContestJson:
                 }
     
 
+    def get_contest_summary(self) -> ContestSummary:
+        (date, max_rating, _) = self._get_properties()
+        return {
+            "d": date,
+            "m": max_rating
+        }
+    
+
     def get_contest_stats(self) -> ContestStats:
-        (date, max_rating, scores) = self._get_properties()
+        (_, max_rating, scores) = self._get_properties()
         
         rated_distribution, unrated_distribution = self._get_frequency_distribution()
         if rated_distribution[1] == "":
             # No stats about performances because there are no rated players
             return {
-                "d": date,
-                "m": max_rating,
                 "s": scores,
                 "fr": rated_distribution,
                 "fu": unrated_distribution,
@@ -367,8 +374,6 @@ class ContestJson:
         ]
 
         return {
-            "d": date,
-            "m": max_rating,
             "s": scores,
             "fr": rated_distribution,
             "fu": unrated_distribution,

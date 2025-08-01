@@ -20,7 +20,7 @@ distribution_step = 25
 def create_compressed_frequency_distributions(contest_id: str, contest_json: ContestJson, easy_problem_indices: list[int] = []) -> dict[str, str]:
     print(f"Getting frequency distribution of {contest_id}")
 
-    abilities, responses, is_target_of_easy_problems = contest_json.get_abilities_and_responses(easy_problem_indices)
+    abilities, responses, is_target_of_easy_problems = contest_json.get_abilities_and_responses()
     
     # apply low rating adjustment to make sure abilities are positive
     abilities = [adjust_low_rating(ability) for ability in abilities]
@@ -30,14 +30,14 @@ def create_compressed_frequency_distributions(contest_id: str, contest_json: Con
     # distribution_dict[problem_id][frequency_index][is_accepted] = frequency
     distribution_dict = {
         problem_id: [[0, 0] for _ in range(distribution_length)]
-            for problem_id, _ in contest_json.get_id_and_name_of_problems(contest_id)
+            for problem_id, _ in contest_json.get_id_and_name_of_problems()
     }
     for player_index in range(len(abilities)):
         frequency_index = int(abilities[player_index] / distribution_step)
         if frequency_index < 0:
             print(f"Invalid ability = {abilities[player_index]}")
             continue
-        for problem_index, (problem_id, _) in enumerate(contest_json.get_id_and_name_of_problems(contest_id)):
+        for problem_index, (problem_id, _) in enumerate(contest_json.get_id_and_name_of_problems()):
             if problem_index in easy_problem_indices and not is_target_of_easy_problems[player_index]:
                 continue
             distribution_dict[problem_id][frequency_index][0 if responses[problem_index][player_index] == 1 else 1] += 1
