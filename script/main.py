@@ -32,10 +32,10 @@ def run(contest_ids: list[str]):
             contest_stats = contest_json.get_contest_stats()
             contest_stats_json[contest_id] = contest_stats
 
-            difficulties = estimate_contest_difficulties(contest_id, contest_json, easy_problem_indices)
+            difficulties = estimate_contest_difficulties(contest_id, contest_json)
             problems_json |= difficulties
 
-            distributions = create_compressed_frequency_distributions(contest_id, contest_json, easy_problem_indices)
+            distributions = create_compressed_frequency_distributions(contest_id, contest_json)
             distribution_json |= distributions
         except Exception as e:
             print(f"Failed get contest {contest_id}, message: {str(e)}", file=sys.stderr)

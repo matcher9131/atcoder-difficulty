@@ -35,7 +35,7 @@ def estimate_problem_difficulty(abilities: list[float], responses: list[int]) ->
         return (float("nan"), float("nan"))
 
 
-def estimate_contest_difficulties(contest_id: str, contest_json: ContestJson, easy_problem_indices: list[int] = []) -> dict[str, Problem]:
+def estimate_contest_difficulties(contest_id: str, contest_json: ContestJson) -> dict[str, Problem]:
     print(f"Estimating difficulties of {contest_id}")
     result: dict[str, Problem] = {}
     abilities, responses, is_target_of_easy_problems = contest_json.get_abilities_and_responses()
@@ -43,7 +43,7 @@ def estimate_contest_difficulties(contest_id: str, contest_json: ContestJson, ea
         raw_difficulty_tuple = estimate_problem_difficulty(
             [ability for ability, is_target in zip(abilities, is_target_of_easy_problems) if is_target],
             [response for response, is_target in zip(responses[problem_index], is_target_of_easy_problems) if is_target]
-        ) if problem_index in easy_problem_indices else estimate_problem_difficulty(abilities, responses[problem_index])
+        ) if problem_index in contest_json.get_easy_problem_indices() else estimate_problem_difficulty(abilities, responses[problem_index])
         difficulty_tuple = None if is_nan_tuple(raw_difficulty_tuple) or raw_difficulty_tuple[0] <= 0 else (round(raw_difficulty_tuple[0], 3), int(round(raw_difficulty_tuple[1], 0)))
         result[problem_id] = { "n": problem_title, "d": difficulty_tuple }
     return result

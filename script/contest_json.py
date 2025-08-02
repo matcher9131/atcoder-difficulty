@@ -148,6 +148,11 @@ class ContestJson:
         return self._properties_cache
 
 
+    def get_easy_problem_indices(self) -> list[int]:
+        _, max_rating, _ = self._get_properties()
+        return [0, 1] if max_rating != "inf" and max_rating < 2000 else []
+
+
     def get_abilities_and_responses(self) -> tuple[list[float], list[list[int]], list[bool]]:
         inner_problem_ids = [element["TaskScreenName"] for element in self._json["TaskInfo"]]
         players = [
