@@ -23,7 +23,7 @@ from util.requests_extension import get_with_retry
 
 
 # Set this before run script
-uses_db = True
+uses_db = False
 
 
 class _TaskInfoItem(TypedDict):
