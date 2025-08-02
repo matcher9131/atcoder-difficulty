@@ -64,9 +64,9 @@ def load_all_contest_stats() -> dict[str, ContestStats]:
 
 def save_all_contest_stats(contest_stats: dict[str, ContestStats], contest_summaries: dict[str, ContestSummary]):
     key_value_pairs = sorted([(contest_id, stats) for contest_id, stats in contest_stats.items()], key=lambda t: contest_summaries[t[0]]["d"])
-    for i in range(0, len(key_value_pairs), 250):
+    for i in range(0, len(key_value_pairs), items_per_chunk):
         obj = { contest_id: stats for contest_id, stats in key_value_pairs[i:i+items_per_chunk] }
-        save_json(obj, f"{contest_stats_dir}/contest_stat{i}.json")
+        save_json(obj, f"{contest_stats_dir}/contest_stat{i // items_per_chunk}.json")
 
 
 def load_contest_summaries() -> dict[str, ContestSummary]:
