@@ -264,11 +264,11 @@ class ContestJson:
                 for i in range(len(self._json["StandingsData"]))
             ],
             (-score, time)
-        )
+        ) - 1
 
 
     def _get_contest_stats_by_score(self, score: int) -> ContestStatsItemByScore | None:
-        start_index = self._find_player_by_score_and_time(score, int(1e16)) - 1
+        start_index = self._find_player_by_score_and_time(score, int(1e16))
         for i in range(start_index, -1, -1):
             if self._get_score(i) != score:
                 # No rated player who gets the exact score
@@ -326,6 +326,8 @@ class ContestJson:
                 b = target_performance - larger_index_performance
                 rank = int((b * smaller_index_average_rank + a * larger_index_average_rank) / (a + b))
                 target_index = bisect_left([player["Rank"] for player in self._json["StandingsData"]], rank)
+                if target_index >= len(self._json["StandingsData"]):
+                    return None
                 return {
                     "r": self._get_rank(target_index),
                     "s": self._get_score(target_index),

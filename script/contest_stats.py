@@ -50,7 +50,7 @@ class ContestJson(TypedDict):
 
 
 items_per_chunk = 250
-contest_json_path = "../src/assets/contest.json"
+contest_json_path = "../src/assets/contests.json"
 contest_stats_dir = "../src/assets/contest_stats"
 def load_all_contest_stats() -> dict[str, ContestStats]:
     contest_json: ContestJson = load_json(contest_json_path)
@@ -63,10 +63,14 @@ def load_all_contest_stats() -> dict[str, ContestStats]:
 
 
 def save_all_contest_stats(contest_stats: dict[str, ContestStats], contest_summaries: dict[str, ContestSummary]):
-    key_value_pairs = sorted([(contest_id, stats) for contest_id, stats in contest_stats.items()], key=lambda t: contest_summaries[t[0]]["d"])
-    for i in range(0, len(key_value_pairs), items_per_chunk):
-        obj = { contest_id: stats for contest_id, stats in key_value_pairs[i:i+items_per_chunk] }
-        save_json(obj, f"{contest_stats_dir}/contest_stat{i // items_per_chunk}.json")
+    ids = sorted([contest_id for contest_id, _ in contest_summaries.items()], key=lambda id: contest_summaries[id]["d"])
+    id_chunks = [ids[i:i + items_per_chunk] for i in range(0, len(ids), items_per_chunk)]
+    for i in range(len(id_chunks)):
+        obj: dict[str, ContestStats] = {}
+        for id in id_chunks[i]:
+            if id in contest_stats:
+                obj[id] = contest_stats[id]
+        save_json(obj, f"{contest_stats_dir}/contest_stat{i}.json")
 
 
 def load_contest_summaries() -> dict[str, ContestSummary]:

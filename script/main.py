@@ -12,17 +12,18 @@ contests_json_path = "../src/assets/contests.json"
 problems_json_path = "../src/assets/problems.json"
 def run(contest_ids: list[str]):
     contest_summaries: dict[str, ContestSummary] = load_contest_summaries()
-    existing_ids = [id for id, _ in contest_summaries]
-
-    new_contest_ids = [id for id in contest_ids if id not in existing_ids] if contest_ids else get_new_contest_ids(existing_ids)
-    if len(new_contest_ids) == 0:
-        print("No new contests")
-        return
+    
+    if not contest_ids:
+        existing_ids = [id for id, _ in contest_summaries.items()]
+        contest_ids = get_new_contest_ids(existing_ids)
+        if len(contest_ids) == 0:
+            print("No new contests")
+            return
 
     problems_json: dict[str, Problem] = load_json(problems_json_path)
     distribution_json = load_all_distributions()
     contest_stats_json = load_all_contest_stats()
-    for contest_id in new_contest_ids:
+    for contest_id in contest_ids:
         try:
             contest_json = ContestJson.from_contest_id(contest_id)
 

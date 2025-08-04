@@ -50,6 +50,8 @@ class PlayerPerformance:
                         ) for history in histories]
                     )
                 item = next((history for history in histories if history["ContestScreenName"] == self._id + ".contest.atcoder.jp"), None)
+                if item is None:
+                    print(f"{player_name} participated in {self._id} but not found in history")
                 if item is None or not item["IsRated"]:
                     self._performances[i] = None
                 else:
