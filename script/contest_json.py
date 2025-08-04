@@ -344,6 +344,8 @@ class ContestJson:
     
 
     def get_contest_stats(self) -> ContestStats:
+        print(f"Getting stats of {self._id}")
+        
         (_, max_rating, scores) = self._get_properties()
         
         rated_distribution, unrated_distribution = self._get_frequency_distribution()
