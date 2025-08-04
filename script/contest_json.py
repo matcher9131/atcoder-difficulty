@@ -58,14 +58,14 @@ class ContestJson_Inner(TypedDict):
 
 
 class ContestJson:
-    def __init__(self, id: str, json: ContestJson_Inner) -> None:
+    def __init__(self, id: str, json: ContestJson_Inner, db: PlayerPerformancesDB | None = None) -> None:
         self._id = id
         self._json = json
         # Members for cache
         self._player_performances = PlayerPerformance(
             self._id,
             [player["UserScreenName"] for player in self._json["StandingsData"]],
-            PlayerPerformancesDB() if uses_db else None
+            db
         )
         self._properties_cache = cast(tuple[datetime, int | Literal["inf"], list[int]] | None, None)
 
