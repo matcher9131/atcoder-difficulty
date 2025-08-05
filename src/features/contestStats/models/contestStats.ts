@@ -21,17 +21,18 @@ const contestStatsChunkAtom = atomFamily((chunkIndex: number) =>
 export const contestStatsAtom = atomFamily((contestId: string) =>
     loadable(
         atom(async (get) => {
-            const contestDate = get(contestDateAtom(contestId));
+            if (contestId === "") return null;
 
+            const contestDate = get(contestDateAtom(contestId));
             let chunkIndex = 0;
             const dates = get(contestStatsDateLastOfChunkAtom);
             for (; chunkIndex < dates.length; ++chunkIndex) {
                 if (contestDate <= dates[chunkIndex]) break;
             }
+
             const contestStatsChunk = await get(contestStatsChunkAtom(chunkIndex));
             const contestStats = contestStatsChunk.get(contestId);
-            if (contestStats == null) throw new Error(`Invalid contestId: ${contestId}`);
-            return { id: contestId, ...contestStats };
+            return contestStats != null ? { id: contestId, ...contestStats } : null;
         }),
     ),
 );
