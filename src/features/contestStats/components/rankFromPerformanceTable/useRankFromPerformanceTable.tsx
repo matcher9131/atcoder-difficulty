@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import { type RankFromPerformanceTableProps } from "./RankFromPerformanceTable";
 import { contestStatsAtom } from "../../models/contestStats";
 import { selectedContestAtom } from "../../models/selectedContest";
-import { RankFromPerformanceTableRowContainer } from "../rankFromPerformanceTableRow/RankFromPerformanceTableRowContainer";
+import { RankFromPerformanceTableRowContainer } from "../rankFromPerformanceTableRow/";
 
 export const useRankFromPerformanceTable = (): RankFromPerformanceTableProps => {
     const contestId = useAtomValue(selectedContestAtom);
