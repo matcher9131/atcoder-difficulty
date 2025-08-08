@@ -2,9 +2,22 @@
     "blankTabContent": {
         "message": "レーティングとコンテスト回数を入力してください。"
     },
+    "contestHeaderCell": {
+        "showStatsButtonLabel": "統計を表示"
+    },
     "contestsTableHeader": {
         "contestLabel": "コンテスト",
         "problemLabel": "問題"
+    },
+    "contestStatsDialog": {
+        "errorMessage": "統計の読み込みに失敗しました。",
+        "performanceByScoreLabel": "スコア・パフォーマンス対応表",
+        "performanceLabel": "パフォーマンス",
+        "problemPatternsLabel": "問題パターン",
+        "rankByPerformanceLabel": "パフォーマンス・順位対応表",
+        "rankLabel": "順位",
+        "scoreLabel": "スコア",
+        "timeLabel": "時間"
     },
     "distributionGraph": {
         "xLabel": "レーティング",

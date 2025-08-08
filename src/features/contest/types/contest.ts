@@ -1,2 +1,5 @@
-// key: contestId, value: maxRating
-export type Contests = Readonly<Record<string, number | "inf">>;
+export type Contest = {
+    readonly id: string;
+    readonly d: Date;
+    readonly m: number | "inf";
+};
