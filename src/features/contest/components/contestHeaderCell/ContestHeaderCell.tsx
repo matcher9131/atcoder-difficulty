@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { cellClassNames } from "../../../../common/cellClassNames";
 
 export type ContestHeaderCellProps = {
@@ -17,6 +18,7 @@ export const ContestHeaderCell = ({
     onStatsButtonClick,
     statsIconHref,
 }: ContestHeaderCellProps): ReactNode => {
+    const { t } = useTranslation();
     return (
         <td className={clsx(cellClassNames, "gap-x-1")}>
             <span className={textColor}>◉</span>
@@ -29,7 +31,7 @@ export const ContestHeaderCell = ({
                     aria-label="Show graph"
                     className="h-6 w-6 fill-current cursor-pointer hover:invert-30 transition-all"
                 >
-                    <title>Show stats</title>
+                    <title>{t("contestHeaderCell.showStatsButtonLabel")}</title>
                     <use href={statsIconHref} />
                 </svg>
             </button>

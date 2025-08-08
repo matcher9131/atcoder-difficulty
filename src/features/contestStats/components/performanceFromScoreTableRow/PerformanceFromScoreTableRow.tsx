@@ -1,6 +1,6 @@
+import clsx from "clsx";
 import type { ReactNode } from "react";
 import { tableCellClassName } from "../../const";
-import clsx from "clsx";
 
 export type PerformanceFromScoreTableRowProps = {
     readonly score: number;
