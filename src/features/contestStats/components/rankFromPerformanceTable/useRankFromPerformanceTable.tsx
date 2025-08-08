@@ -7,8 +7,7 @@ import { RankFromPerformanceTableRowContainer } from "../rankFromPerformanceTabl
 export const useRankFromPerformanceTable = (): RankFromPerformanceTableProps => {
     const contestId = useAtomValue(selectedContestAtom);
     const contestStatsLoadable = useAtomValue(contestStatsAtom(contestId));
-    if (contestStatsLoadable.state !== "hasData") throw new Error(`Cannot get stats of ${contestId}.`);
-    const contestStats = contestStatsLoadable.data;
+    const contestStats = contestStatsLoadable.state === "hasData" ? contestStatsLoadable.data : null;
     const statsByPerformance = contestStats?.sp ?? [];
 
     const rows = statsByPerformance.map(([performance, stats]) => (

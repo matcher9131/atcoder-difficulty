@@ -7,8 +7,7 @@ import { PerformanceFromScoreTableRowContainer } from "../performanceFromScoreTa
 export const usePerformanceFromScoreTable = (): PerformanceFromScoreTableProps => {
     const contestId = useAtomValue(selectedContestAtom);
     const contestStatsLoadable = useAtomValue(contestStatsAtom(contestId));
-    if (contestStatsLoadable.state !== "hasData") throw new Error(`Cannot get stats of ${contestId}.`);
-    const contestStats = contestStatsLoadable.data;
+    const contestStats = contestStatsLoadable.state === "hasData" ? contestStatsLoadable.data : null;
     const statsByScore = contestStats?.ss ?? [];
 
     const rows = statsByScore.map(([score, stats]) => (

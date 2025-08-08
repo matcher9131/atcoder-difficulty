@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { tableCellClassName } from "../../const";
+import clsx from "clsx";
 
 export type PerformanceFromScoreTableRowProps = {
     readonly score: number;
@@ -15,14 +17,14 @@ export const PerformanceFromScoreTableRow = ({
 }: PerformanceFromScoreTableRowProps): ReactNode => {
     return (
         <tr className="contents">
-            <td>{score}</td>
-            <td>
+            <td className={tableCellClassName}>{score}</td>
+            <td className={clsx(tableCellClassName, "flex-col", "text-xs")}>
                 {patterns.map((pattern) => (
                     <div key={pattern}>{pattern}</div>
                 ))}
             </td>
-            <td>{rank}</td>
-            <td>{performance}</td>
+            <td className={tableCellClassName}>{rank}</td>
+            <td className={tableCellClassName}>{performance}</td>
         </tr>
     );
 };

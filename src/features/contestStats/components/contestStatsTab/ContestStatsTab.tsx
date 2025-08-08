@@ -12,9 +12,13 @@ export const ContestStatsTab = (): ReactNode => {
                 aria-label="Performance by Score"
                 defaultChecked
             />
-            <PerformanceFromScoreTableContainer />
+            <div className="tab-content bg-base-100 border-base-300 p-4 w-full text-center">
+                <PerformanceFromScoreTableContainer />
+            </div>
             <input type="radio" name="contest_stats_tab" className="tab" aria-label="Rank by Performance" />
-            <RankFromPerformanceTableContainer />
+            <div className="tab-content bg-base-100 border-base-300 p-4 w-full text-center">
+                <RankFromPerformanceTableContainer />
+            </div>
         </div>
     );
 };

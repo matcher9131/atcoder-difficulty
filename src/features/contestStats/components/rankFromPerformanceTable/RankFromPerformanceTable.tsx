@@ -6,7 +6,7 @@ export type RankFromPerformanceTableProps = {
 
 export const RankFromPerformanceTable = ({ rows }: RankFromPerformanceTableProps): ReactNode => {
     return (
-        <table className="w-full grid grid-cols-5">
+        <table className="w-full tab-content grid grid-cols-5">
             <thead className="contents">
                 <tr className="contents">
                     <th>Performance</th>
