@@ -28,7 +28,7 @@ export const ContestHeaderCell = ({
             <button onClick={onStatsButtonClick} className="hidden group-hover:block group-focus-within:block">
                 <svg
                     role="img"
-                    aria-label="Show graph"
+                    aria-label={t("contestHeaderCell.showStatsButtonLabel")}
                     className="h-6 w-6 fill-current cursor-pointer hover:invert-30 transition-all"
                 >
                     <title>{t("contestHeaderCell.showStatsButtonLabel")}</title>
