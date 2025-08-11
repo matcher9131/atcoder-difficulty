@@ -3,7 +3,7 @@ import { renderHook, act } from "@testing-library/react";
 import { useContestHeaderCell } from "./useContestHeaderCell";
 import { useAtom } from "jotai";
 import { contestMaxRatingAtom } from "../../dict/contests";
-import { getTextColor } from "./functions";
+import { getTextColor } from "../../functions/textColor";
 import { useOpenModalDialog } from "../../../dialog/hooks/useOpenModalDialog";
 
 // src/features/contest/components/contestHeaderCell/useContestHeaderCell.test.ts
