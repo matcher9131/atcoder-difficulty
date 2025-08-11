@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { renderHook, act, waitFor } from "@testing-library/react";
 import { useContestHeaderCell } from "./useContestHeaderCell";
 import { useAtom } from "jotai";
 import { contestMaxRatingAtom } from "../../dict/contests";
@@ -15,7 +15,7 @@ vi.mock("jotai", () => ({
 vi.mock("../../dict/contests", () => ({
     contestMaxRatingAtom: vi.fn(),
 }));
-vi.mock("./functions", () => ({
+vi.mock("../../functions/textColor", () => ({
     getTextColor: vi.fn(),
 }));
 vi.mock("../../../contestStats/models/selectedContest", () => ({
@@ -72,7 +72,7 @@ describe("useContestHeaderCell", () => {
         expect(openDialog).toHaveBeenCalled();
     });
 
-    it("handles openDialog rejection gracefully", () => {
+    it("handles openDialog rejection gracefully", async () => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
         (useOpenModalDialog as any).mockReturnValue({ openDialog: vi.fn(() => Promise.reject(new Error())) });
         const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
@@ -80,7 +80,9 @@ describe("useContestHeaderCell", () => {
         act(() => {
             result.current.onStatsButtonClick();
         });
-        expect(consoleError).toHaveBeenCalled();
+        await waitFor(() => {
+            expect(consoleError).toHaveBeenCalled();
+        });
         consoleError.mockRestore();
     });
 
