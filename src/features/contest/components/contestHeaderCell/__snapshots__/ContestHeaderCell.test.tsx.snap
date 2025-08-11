@@ -1,0 +1,39 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ContestHeaderCell > matches snapshot 1`] = `
+<div>
+  <td
+    class="flex px-3 py-auto h-18 items-center border-t-1 border-base-content/75 group gap-x-1"
+  >
+    <span
+      class="text-red-500"
+    >
+      ◉
+    </span>
+    <a
+      class="link link-hover link-primary truncate"
+      href="https://example.com"
+      rel="noreferrer"
+      target="_blank"
+    >
+      Sample Contest
+    </a>
+    <button
+      class="hidden group-hover:block group-focus-within:block"
+    >
+      <svg
+        aria-label="contestHeaderCell.showStatsButtonLabel"
+        class="h-6 w-6 fill-current cursor-pointer hover:invert-30 transition-all"
+        role="img"
+      >
+        <title>
+          contestHeaderCell.showStatsButtonLabel
+        </title>
+        <use
+          href="#icon-graph"
+        />
+      </svg>
+    </button>
+  </td>
+</div>
+`;
