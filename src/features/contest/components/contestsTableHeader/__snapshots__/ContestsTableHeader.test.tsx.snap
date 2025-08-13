@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ContestsTableHeader > matches snapshot 1`] = `
+<div>
+  <thead
+    class="contents"
+  >
+    <tr
+      class="contents"
+    >
+      <th
+        class="mock-header-cell-class"
+      >
+        Contest
+      </th>
+      <th
+        class="mock-header-cell-class"
+      >
+        Problem1
+      </th>
+      <th
+        class="mock-header-cell-class"
+      >
+        Problem2
+      </th>
+    </tr>
+  </thead>
+</div>
+`;
