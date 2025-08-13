@@ -12,7 +12,7 @@ import { useOpenModalDialog } from "../../../dialog/hooks/useOpenModalDialog";
 vi.mock("jotai", () => ({
     useAtom: vi.fn(),
 }));
-vi.mock("../../dict/contests", () => ({
+vi.mock("../../models/getter", () => ({
     contestMaxRatingAtom: vi.fn(),
 }));
 vi.mock("../../functions/textColor", () => ({

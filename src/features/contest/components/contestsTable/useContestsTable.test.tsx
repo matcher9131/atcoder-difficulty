@@ -11,7 +11,7 @@ import { itemsPerPageAtom } from "../../../pagination/model/itemsPerPage";
 vi.mock("jotai", () => ({
     useAtom: vi.fn(),
 }));
-vi.mock("../../dict/contests", () => ({
+vi.mock("../../models/getter", () => ({
     contestIdsByTypeAtom: vi.fn(),
 }));
 vi.mock("../../../pagination/model/paginations", () => ({
