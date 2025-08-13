@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { problemsAtom } from "../../problem/dict/problems";
+import { problemsAtom } from "../../problem/models/atom";
 import { rawRatingAtom } from "../../rating/models/rating";
 import { compareSolveProbability, irt2pl } from "./functions";
 import { inverseAdjustmentOfLowRating } from "../../rating/models/functions";

@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import { distributionAtom } from "../../models/distributions";
 import type { DistributionGraphProps } from "./DistributionGraph";
 import { selectedProblemAtom } from "../../models/selectedProblem";
-import { problemSelector } from "../../../problem/dict/problems";
+import { problemSelector } from "../../../problem/models/getter";
 import { irt2pl } from "../../../solveProbability/models/functions";
 import { inverseAdjustmentOfLowRating } from "../../../rating/models/functions";
 import { useCallback } from "react";

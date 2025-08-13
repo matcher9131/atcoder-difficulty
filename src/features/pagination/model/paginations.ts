@@ -2,7 +2,7 @@ import { atom, type Atom } from "jotai";
 import { contestIdsByTypeAtom } from "../../contest/models/getter";
 import type { PaginationKey } from "../types/paginationKey";
 import { solveProbabilitiesMiddleIndexAtom } from "../../solveProbability/models/solveProbabilities";
-import { numProblemsAtom } from "../../problem/dict/problems";
+import { numProblemsAtom } from "../../problem/models/getter";
 import { itemsPerPageAtom } from "./itemsPerPage";
 
 const abcPaginationValueAtom = atom(0);
