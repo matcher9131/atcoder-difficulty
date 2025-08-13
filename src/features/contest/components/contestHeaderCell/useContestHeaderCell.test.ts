@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useContestHeaderCell } from "./useContestHeaderCell";
 import { useAtom } from "jotai";
-import { contestMaxRatingAtom } from "../../dict/contests";
+import { contestMaxRatingAtom } from "../../models/contests";
 import { getTextColor } from "../../functions/textColor";
 import { useOpenModalDialog } from "../../../dialog/hooks/useOpenModalDialog";
 

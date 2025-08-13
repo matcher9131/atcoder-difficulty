@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { atomFamily, atomWithDefault, loadable } from "jotai/utils";
 import type { ContestStats } from "../types/contestStats";
-import { contestDateAtom, contestStatsDateLastOfChunkAtom } from "../../contest/dict/contests";
+import { contestDateAtom, contestStatsDateLastOfChunkAtom } from "../../contest/models/contests";
 
 const loadContestStatsChunk = async (chunkIndex: number): Promise<Record<string, Omit<ContestStats, "id">>> => {
     const filenameWithoutExtension = `contest_stat${chunkIndex.toString()}`;
