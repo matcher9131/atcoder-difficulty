@@ -1,5 +1,5 @@
 import { atom, type Atom } from "jotai";
-import { contestIdsByTypeAtom } from "../../contest/models/contests";
+import { contestIdsByTypeAtom } from "../../contest/models/getter";
 import type { PaginationKey } from "../types/paginationKey";
 import { solveProbabilitiesMiddleIndexAtom } from "../../solveProbability/models/solveProbabilities";
 import { numProblemsAtom } from "../../problem/dict/problems";

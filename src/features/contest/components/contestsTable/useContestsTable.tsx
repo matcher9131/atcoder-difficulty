@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import type { ContestType } from "../../types/contestType";
-import { contestIdsByTypeAtom } from "../../models/contests";
+import { contestIdsByTypeAtom } from "../../models/getter";
 import type { ContestsTableProps } from "./ContestsTable";
 import { ContestRowContainer } from "../contestRow";
 import { getGridColsClassName, getNumProblems } from "../../functions/numProblems";

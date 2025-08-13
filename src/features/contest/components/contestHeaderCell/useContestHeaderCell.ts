@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import type { ContestHeaderCellProps } from "./ContestHeaderCell";
-import { contestMaxRatingAtom } from "../../models/contests";
+import { contestMaxRatingAtom } from "../../models/getter";
 import { getTextColor } from "../../functions/textColor";
 import { selectedContestAtom } from "../../../contestStats/models/selectedContest";
 import { useOpenModalDialog } from "../../../dialog/hooks/useOpenModalDialog";

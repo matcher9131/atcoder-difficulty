@@ -1,32 +1,7 @@
 import { atom } from "jotai";
 import { atomFamily } from "jotai/utils";
 import type { ContestType } from "../types/contestType";
-import contestUrl from "../../../assets/contests.json?url";
-import { parseDateOrNull } from "../../../utils/date";
-import type { Contest } from "../types/contest";
-
-type ContestsJson = {
-    readonly body: Record<string, { readonly d: string; readonly m: number | "inf" }>;
-    readonly lastOfChunks: readonly string[];
-};
-
-const loadContests = async (): Promise<ContestsJson> => {
-    const response = await fetch(contestUrl);
-    if (!response.ok) throw new Error("Failed loading contests.");
-    return (await response.json()) as ContestsJson;
-};
-
-const contestsJsonAtom = atom(await loadContests());
-
-const contestsAtom = atom((get) =>
-    Object.entries(get(contestsJsonAtom).body)
-        .flatMap(([id, { d, m }]) => {
-            const date = parseDateOrNull(d);
-            if (date == null) return [];
-            return [{ id, d: date, m }];
-        })
-        .toSorted((x: Contest, y: Contest) => y.d.getTime() - x.d.getTime()),
-);
+import { contestsAtom, contestsJsonAtom } from "./atom";
 
 const contestAtom = atomFamily((contestId: string) =>
     atom((get) => get(contestsAtom).find((contest) => contest.id === contestId)),

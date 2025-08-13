@@ -4,7 +4,7 @@ import { useContestsTable } from "./useContestsTable";
 import { useAtom } from "jotai";
 import React from "react";
 import { getNumProblems, getGridColsClassName } from "../../functions/numProblems";
-import { contestIdsByTypeAtom } from "../../models/contests";
+import { contestIdsByTypeAtom } from "../../models/getter";
 import { paginationValueAtom } from "../../../pagination/model/paginations";
 import { itemsPerPageAtom } from "../../../pagination/model/itemsPerPage";
 
