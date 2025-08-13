@@ -1,11 +1,12 @@
 import { useAtom } from "jotai";
-import { getProblemIndex, toPercent } from "./functions";
 import type { ProblemCellProps } from "./ProblemCell";
 import { splitProblemId } from "../../functions/split";
 import { problemWithSolveProbabilityAtom } from "../../../solveProbability/models/solveProbabilities";
 import { getFillColor, getTextColor } from "../../../rating/functions/color";
 import { selectedProblemAtom } from "../../../distribution/models/selectedProblem";
 import { useOpenModalDialog } from "../../../dialog/hooks/useOpenModalDialog";
+import { toPercent } from "../../functions/toPercent";
+import { getProblemIndex } from "../../functions/problemIndex";
 
 export const useProblemCell = (
     problemId: string,
