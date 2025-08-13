@@ -18,7 +18,7 @@ vi.mock("./ContestsTable", () => ({
 }));
 
 describe("ContestsTableContainer", () => {
-    const dummyContestType = "abc" as any;
+    const dummyContestType = "abc";
 
     const mockProps = {
         contestsTableHeader: (
@@ -41,12 +41,14 @@ describe("ContestsTableContainer", () => {
     });
 
     it("calls useContestsTable with contestType", () => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
         (useContestsTable as any).mockReturnValue(mockProps);
         render(<ContestsTableContainer contestType={dummyContestType} />);
         expect(useContestsTable).toHaveBeenCalledWith(dummyContestType);
     });
 
     it("renders ContestsTable with props from useContestsTable", () => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
         (useContestsTable as any).mockReturnValue(mockProps);
         render(<ContestsTableContainer contestType={dummyContestType} />);
         expect(screen.getByTestId("contests-table-mock")).toBeInTheDocument();
@@ -54,6 +56,7 @@ describe("ContestsTableContainer", () => {
     });
 
     it("matches snapshot", () => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
         (useContestsTable as any).mockReturnValue(mockProps);
         const { container } = render(<ContestsTableContainer contestType={dummyContestType} />);
         expect(container).toMatchSnapshot();
