@@ -1,0 +1,22 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`useContestsTable > matches snapshot 1`] = `
+{
+  "current": {
+    "contestRows": [
+      <spy
+        contestId="c3"
+        numProblems={4}
+      />,
+      <spy
+        contestId="c4"
+        numProblems={4}
+      />,
+    ],
+    "contestsTableHeader": <spy
+      numProblems={4}
+    />,
+    "gridColsClassName": "grid-cols-4",
+  },
+}
+`;

@@ -1,4 +1,4 @@
-import type { ContestType } from "../../types/contestType";
+import type { ContestType } from "../types/contestType";
 
 export const getNumProblems = (contestType: ContestType): number => {
     switch (contestType) {
