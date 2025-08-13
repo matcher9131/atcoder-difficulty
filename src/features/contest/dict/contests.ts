@@ -10,13 +10,13 @@ type ContestsJson = {
     readonly lastOfChunks: readonly string[];
 };
 
-const loadContets = async (): Promise<ContestsJson> => {
+const loadContests = async (): Promise<ContestsJson> => {
     const response = await fetch(contestUrl);
     if (!response.ok) throw new Error("Failed loading contests.");
     return (await response.json()) as ContestsJson;
 };
 
-const contestsJsonAtom = atom(await loadContets());
+const contestsJsonAtom = atom(await loadContests());
 
 const contestsAtom = atom((get) =>
     Object.entries(get(contestsJsonAtom).body)
