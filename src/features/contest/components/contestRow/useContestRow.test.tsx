@@ -13,7 +13,7 @@ vi.mock("../contestHeaderCell", () => ({
         <div data-testid="header-cell">{contestId}</div>
     ),
 }));
-vi.mock("../../../problem/dict/problems", () => ({
+vi.mock("../../../problem/models/getter", () => ({
     contestProblemIdsAtom: (contestId: string) => contestId,
 }));
 vi.mock("../../../problem/components/problemCell", () => ({
