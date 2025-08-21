@@ -8,7 +8,7 @@ import {
     problemWithSolveProbabilityAtom,
     solveProbabilitiesMiddleIndexAtom,
     solveProbabilitiesSlicedAtom,
-} from "./solveProbabilities";
+} from "./getter";
 import type { ProblemSolveProbability } from "../types/problemSolveProbability";
 
 // src/features/solveProbability/models/solveProbabilities.test.ts

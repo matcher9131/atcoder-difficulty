@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useProblemCell } from "./useProblemCell";
 import { useAtom } from "jotai";
-import { problemWithSolveProbabilityAtom } from "../../../solveProbability/models/solveProbabilities";
+import { problemWithSolveProbabilityAtom } from "../../../solveProbability/models/getter";
 import { getFillColor, getTextColor } from "../../../rating/functions/color";
 import { useOpenModalDialog } from "../../../dialog/hooks/useOpenModalDialog";
 import { splitProblemId } from "../../functions/split";

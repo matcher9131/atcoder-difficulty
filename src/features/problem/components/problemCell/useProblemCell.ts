@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import type { ProblemCellProps } from "./ProblemCell";
 import { splitProblemId } from "../../functions/split";
-import { problemWithSolveProbabilityAtom } from "../../../solveProbability/models/solveProbabilities";
+import { problemWithSolveProbabilityAtom } from "../../../solveProbability/models/getter";
 import { getFillColor, getTextColor } from "../../../rating/functions/color";
 import { selectedProblemAtom } from "../../../distribution/models/selectedProblem";
 import { useOpenModalDialog } from "../../../dialog/hooks/useOpenModalDialog";

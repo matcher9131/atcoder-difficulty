@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { solveProbabilitiesSlicedAtom } from "../../models/solveProbabilities";
+import { solveProbabilitiesSlicedAtom } from "../../models/getter";
 import type { SolveProbabilityTableProps } from "./SolveProbabilityTable";
 import { SolveProbabilityRowContainer } from "../solveProbabilityRow";
 
