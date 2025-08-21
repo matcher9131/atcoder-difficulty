@@ -3,7 +3,7 @@ import { distributionAtom } from "../../models/distributions";
 import type { DistributionGraphProps } from "./DistributionGraph";
 import { selectedProblemAtom } from "../../models/selectedProblem";
 import { problemSelector } from "../../../problem/models/getter";
-import { irt2pl } from "../../../solveProbability/models/functions";
+import { irt2pl } from "../../../solveProbability/functions/compareSolveProbability";
 import { inverseAdjustmentOfLowRating } from "../../../rating/models/functions";
 import { useCallback } from "react";
 import { splitProblemId } from "../../../problem/functions/split";
