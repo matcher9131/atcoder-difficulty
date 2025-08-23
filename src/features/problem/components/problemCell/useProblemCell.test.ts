@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
-import { useProblemCell } from "./useProblemCell";
+import { act } from "@testing-library/react";
+import { renderHook } from "../../../../vitest/renderHook";
 import { useAtom } from "jotai";
 import { problemWithSolveProbabilityAtom } from "../../../solveProbability/models/getter";
 import { getFillColor, getTextColor } from "../../../rating/functions/color";
@@ -8,12 +8,17 @@ import { useOpenModalDialog } from "../../../dialog/hooks/useOpenModalDialog";
 import { splitProblemId } from "../../functions/split";
 import { toPercent } from "../../functions/toPercent";
 import { getProblemIndex } from "../../functions/problemIndex";
+import { useProblemCell } from "./useProblemCell";
 
 // Mocks
-vi.mock("jotai", () => ({
-    useAtom: vi.fn(),
-}));
-vi.mock("../../../solveProbability/models/solveProbabilities", () => ({
+vi.mock(import("jotai"), async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        useAtom: vi.fn(),
+    };
+});
+vi.mock("../../../solveProbability/models/getter", () => ({
     problemWithSolveProbabilityAtom: vi.fn(),
 }));
 vi.mock("../../../rating/functions/color", () => ({

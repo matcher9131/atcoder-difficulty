@@ -1,17 +1,22 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { act, waitFor } from "@testing-library/react";
 import { useContestHeaderCell } from "./useContestHeaderCell";
 import { useAtom } from "jotai";
 import { contestMaxRatingAtom } from "../../models/getter";
 import { getTextColor } from "../../functions/textColor";
 import { useOpenModalDialog } from "../../../dialog/hooks/useOpenModalDialog";
+import { renderHook } from "../../../../vitest/renderHook";
 
 // src/features/contest/components/contestHeaderCell/useContestHeaderCell.test.ts
 
 // Mocks
-vi.mock("jotai", () => ({
-    useAtom: vi.fn(),
-}));
+vi.mock(import("jotai"), async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        useAtom: vi.fn(),
+    };
+});
 vi.mock("../../models/getter", () => ({
     contestMaxRatingAtom: vi.fn(),
 }));
