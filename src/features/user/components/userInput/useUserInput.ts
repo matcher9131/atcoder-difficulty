@@ -3,7 +3,7 @@ import type { UserInputProps } from "./UserInput";
 import { useAtom } from "jotai";
 import { paginationValueAtom } from "../../../pagination/model/paginations";
 import { userNameAtom, userNameValidationMessageAtom, userNameValidationStateAtom } from "../../models/username";
-import { numContestsAtom, ratingAtom } from "../../../rating/models/rating";
+import { numContestsAtom, ratingAtom } from "../../../rating/models/atom";
 import { fetchUser } from "./functions";
 import { useTranslation } from "react-i18next";
 import { UserNotFoundError } from "../../types/fetchUserError";

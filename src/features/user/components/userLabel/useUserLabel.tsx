@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai";
 import type { UserLabelProps } from "./UserLabel";
-import { numContestsAtom, ratingAtom } from "../../../rating/models/rating";
+import { numContestsAtom, ratingAtom } from "../../../rating/models/atom";
 import { RatingWithIconContainer } from "../../../rating/components/ratingWithIcon";
 
 export const useUserLabel = (): UserLabelProps => {

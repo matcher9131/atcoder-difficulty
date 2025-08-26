@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createStore } from "jotai";
 import { atom } from "jotai";
 import { problemsAtom } from "../../problem/models/atom";
-import { rawRatingAtom } from "../../rating/models/rating";
+import { rawRatingAtom } from "../../rating/models/getter";
 import type { Problem } from "../../problem/types/problem";
 import {
     problemWithSolveProbabilityAtom,
@@ -16,7 +16,7 @@ import type { ProblemSolveProbability } from "../types/problemSolveProbability";
 vi.mock("../../problem/models/atom", () => ({
     problemsAtom: { read: vi.fn() },
 }));
-vi.mock("../../rating/models/rating", () => ({
+vi.mock("../../rating/models/getter", () => ({
     rawRatingAtom: { read: vi.fn() },
 }));
 vi.mock("../functions/compareSolveProbability", () => ({

@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import { problemsAtom } from "../../problem/models/atom";
-import { rawRatingAtom } from "../../rating/models/rating";
+import { rawRatingAtom } from "../../rating/models/getter";
 import { compareSolveProbability } from "../functions/compareSolveProbability";
 import { inverseAdjustmentOfLowRating } from "../../rating/functions/adjustment";
 import { lowerBound } from "../../../utils/array";
