@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import RatingWithIcon, { type RatingWithIconProps } from "./RatingWithIcon";
+import { RatingWithIcon, type RatingWithIconProps } from "./RatingWithIcon";
 
 // src/features/rating/components/ratingWithIcon/RatingWithIcon.test.tsx
 
