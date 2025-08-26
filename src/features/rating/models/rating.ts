@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { getRawRating } from "./functions";
+import { getRawRating } from "../functions/adjustment";
 
 export const ratingAtom = atom<number | null>(null);
 

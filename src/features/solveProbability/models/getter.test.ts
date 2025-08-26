@@ -24,7 +24,7 @@ vi.mock("../functions/compareSolveProbability", () => ({
         (a: ProblemSolveProbability, b: ProblemSolveProbability) => a.solveProbability - b.solveProbability,
     ),
 }));
-vi.mock("../../rating/models/functions", () => ({
+vi.mock("../../rating/functions/adjustment", () => ({
     inverseAdjustmentOfLowRating: vi.fn((x: number) => (x >= 400 ? x : 400 * (1 - Math.log(400 / x)))),
 }));
 vi.mock("../../../utils/array", () => ({

@@ -2,7 +2,7 @@ import { atom } from "jotai";
 import { problemsAtom } from "../../problem/models/atom";
 import { rawRatingAtom } from "../../rating/models/rating";
 import { compareSolveProbability } from "../functions/compareSolveProbability";
-import { inverseAdjustmentOfLowRating } from "../../rating/models/functions";
+import { inverseAdjustmentOfLowRating } from "../../rating/functions/adjustment";
 import { lowerBound } from "../../../utils/array";
 import { paginationValueAtom } from "../../pagination/model/paginations";
 import { itemsPerPageAtom } from "../../pagination/model/itemsPerPage";
