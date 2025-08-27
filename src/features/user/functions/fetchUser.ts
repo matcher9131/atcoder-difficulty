@@ -1,4 +1,4 @@
-import { UserNotFoundError } from "../../types/fetchUserError";
+import { UserNotFoundError } from "../types/fetchUserError";
 
 type UserData = {
     readonly rating: number;
