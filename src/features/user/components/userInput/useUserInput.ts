@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState, type RefObject } from "react";
 import type { UserInputProps } from "./UserInput";
 import { useAtom } from "jotai";
 import { paginationValueAtom } from "../../../pagination/model/paginations";
@@ -8,7 +8,7 @@ import { fetchUser } from "../../functions/fetchUser";
 import { useTranslation } from "react-i18next";
 import { UserNotFoundError } from "../../types/fetchUserError";
 
-export const useUserInput = (): Omit<UserInputProps, "classNames"> => {
+export const useUserInput = (inputRef: RefObject<HTMLInputElement | null>): Omit<UserInputProps, "classNames"> => {
     const { t } = useTranslation();
     const [, setSolveProbabilityPaginationValue] = useAtom(paginationValueAtom("solveProbability"));
 
@@ -17,7 +17,6 @@ export const useUserInput = (): Omit<UserInputProps, "classNames"> => {
     const [validationMessage, setValidationMessage] = useAtom(userNameValidationMessageAtom);
     const [, setRating] = useAtom(ratingAtom);
     const [, setNumContests] = useAtom(numContestsAtom);
-    const inputRef = useRef<HTMLInputElement>(null);
     const [buttonIsDisabled, setButtonIsDisabled] = useState(false);
 
     const handleClick = () => {
