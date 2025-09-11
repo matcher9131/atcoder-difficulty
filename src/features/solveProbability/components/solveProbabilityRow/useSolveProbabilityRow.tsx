@@ -3,7 +3,7 @@ import { ContestHeaderCellContainer } from "../../../contest/components/contestH
 import { ProblemCellContainer } from "../../../problem/components/problemCell";
 import { splitProblemId } from "../../../problem/functions/split";
 import type { ProblemSolveProbability } from "../../types/problemSolveProbability";
-import { toPercent } from "./functions";
+import { toPercent } from "../../functions/toPercent";
 import type { SolveProbabilityRowProps } from "./SolveProbabilityRow";
 import { selectedProblemAtom } from "../../../distribution/models/selectedProblem";
 import { useOpenModalDialog } from "../../../dialog/hooks/useOpenModalDialog";

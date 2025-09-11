@@ -1,0 +1,39 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SolveProbabilityRow > matches snapshot 1`] = `
+<div>
+  <tr
+    class="contents"
+  >
+    <td
+      data-testid="contest-header"
+    >
+      Contest
+    </td>
+    <td
+      data-testid="problem-cell"
+    >
+      Problem
+    </td>
+    <td
+      class="flex px-3 py-auto h-18 items-center border-t-1 border-base-content/75 group justify-end"
+    >
+      1234
+    </td>
+    <td
+      class="flex px-3 py-auto h-18 items-center border-t-1 border-base-content/75 group justify-end"
+    >
+      56%
+    </td>
+    <td
+      class="flex px-3 py-auto h-18 items-center border-t-1 border-base-content/75 group justify-center"
+    >
+      <button
+        class="btn"
+      >
+        solveProbabilityTableContent.showGraphButtonLabel
+      </button>
+    </td>
+  </tr>
+</div>
+`;

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useRatingWithIcon } from "./useRatingWithIcon";
-import RatingWithIcon from "./RatingWithIcon";
+import { RatingWithIcon } from "./RatingWithIcon";
 
 type RatingWithIconContainerProps = {
     readonly rating: number;

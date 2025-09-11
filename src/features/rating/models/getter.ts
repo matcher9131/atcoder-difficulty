@@ -1,9 +1,6 @@
 import { atom } from "jotai";
-import { getRawRating } from "./functions";
-
-export const ratingAtom = atom<number | null>(null);
-
-export const numContestsAtom = atom<number | null>(null);
+import { numContestsAtom, ratingAtom } from "./atom";
+import { getRawRating } from "../functions/adjustment";
 
 export const rawRatingAtom = atom((get) => {
     const rating = get(ratingAtom);

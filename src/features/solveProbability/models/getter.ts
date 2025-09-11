@@ -1,12 +1,13 @@
 import { atom } from "jotai";
-import { problemsAtom } from "../../problem/dict/problems";
-import { rawRatingAtom } from "../../rating/models/rating";
-import { compareSolveProbability, irt2pl } from "./functions";
-import { inverseAdjustmentOfLowRating } from "../../rating/models/functions";
+import { problemsAtom } from "../../problem/models/atom";
+import { rawRatingAtom } from "../../rating/models/getter";
+import { compareSolveProbability } from "../functions/compareSolveProbability";
+import { inverseAdjustmentOfLowRating } from "../../rating/functions/adjustment";
 import { lowerBound } from "../../../utils/array";
 import { paginationValueAtom } from "../../pagination/model/paginations";
 import { itemsPerPageAtom } from "../../pagination/model/itemsPerPage";
 import { atomFamily } from "jotai/utils";
+import { irt2pl } from "../../../utils/math";
 
 const problemsWithSolveProbabilityAtom = atom((get) => {
     const rating = get(rawRatingAtom);

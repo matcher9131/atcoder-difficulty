@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ContestRow > matches snapshot 1`] = `
+<div>
+  <table>
+    <tbody>
+      <tr
+        class="contents"
+      >
+        <td>
+          Header
+        </td>
+        <td>
+          Problem 1
+        </td>
+        <td>
+          Problem 2
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+`;

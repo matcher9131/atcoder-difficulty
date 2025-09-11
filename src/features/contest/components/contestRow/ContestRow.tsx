@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
+import type { ReactElement, ReactNode } from "react";
 
 export type ContestRowProps = {
-    readonly headerCell: ReactNode;
-    readonly problemCells: readonly ReactNode[];
+    readonly headerCell: ReactElement;
+    readonly problemCells: readonly ReactElement[];
 };
 
 export const ContestRow = ({ headerCell, problemCells }: ContestRowProps): ReactNode => {

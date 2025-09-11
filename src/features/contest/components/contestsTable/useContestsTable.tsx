@@ -1,9 +1,9 @@
 import { useAtom } from "jotai";
 import type { ContestType } from "../../types/contestType";
-import { contestIdsByTypeAtom } from "../../dict/contests";
+import { contestIdsByTypeAtom } from "../../models/getter";
 import type { ContestsTableProps } from "./ContestsTable";
 import { ContestRowContainer } from "../contestRow";
-import { getGridColsClassName, getNumProblems } from "./funcitons";
+import { getGridColsClassName, getNumProblems } from "../../functions/numProblems";
 import { paginationValueAtom } from "../../../pagination/model/paginations";
 import { ContestsTableHeader } from "../contestsTableHeader";
 import { itemsPerPageAtom } from "../../../pagination/model/itemsPerPage";

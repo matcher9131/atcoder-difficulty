@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import type { ContestRowProps } from "./ContestRow";
 import { ContestHeaderCellContainer } from "../contestHeaderCell";
-import { contestProblemIdsAtom } from "../../../problem/dict/problems";
+import { contestProblemIdsAtom } from "../../../problem/models/getter";
 import { ProblemCellContainer } from "../../../problem/components/problemCell";
 import { range } from "../../../../utils/array";
 import { BlankProblemCell } from "../../../problem/components/blankProblemCell";

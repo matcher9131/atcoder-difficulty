@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { ratingAtom } from "../../../rating/models/rating";
+import { ratingAtom } from "../../../rating/models/atom";
 import { BlankTabContent } from "../blankTabContent/BlankTabContent";
 import { SolveProbabilityTabContentContainer } from "../solveProbabilityTabContent";
 import type { ProblemsTabProps } from "./ProblemsTab";

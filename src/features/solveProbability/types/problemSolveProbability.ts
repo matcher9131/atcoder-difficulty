@@ -1,5 +1,7 @@
 import type { Problem } from "../../problem/types/problem";
 
-export type ProblemSolveProbability = Problem & {
+export type SolveProbability = {
     readonly solveProbability: number;
 };
+
+export type ProblemSolveProbability = Problem & SolveProbability;

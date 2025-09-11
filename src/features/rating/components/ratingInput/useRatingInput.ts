@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { numContestsAtom, ratingAtom } from "../../models/rating";
+import { numContestsAtom, ratingAtom } from "../../models/atom";
 import { useEffect, useRef, type ChangeEvent } from "react";
 import { parseIntOrNull } from "../../../../utils/number";
 import type { RatingInputProps } from "./RatingInput";

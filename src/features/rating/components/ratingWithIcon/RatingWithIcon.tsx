@@ -9,7 +9,7 @@ export type RatingWithIconProps = {
     readonly rating: number;
 };
 
-const RatingWithIcon = ({ iconHref, iconFillColor, textColor, rating }: RatingWithIconProps): ReactNode => {
+export const RatingWithIcon = ({ iconHref, iconFillColor, textColor, rating }: RatingWithIconProps): ReactNode => {
     const { t } = useTranslation();
     return (
         <>
@@ -24,5 +24,3 @@ const RatingWithIcon = ({ iconHref, iconFillColor, textColor, rating }: RatingWi
         </>
     );
 };
-
-export default RatingWithIcon;

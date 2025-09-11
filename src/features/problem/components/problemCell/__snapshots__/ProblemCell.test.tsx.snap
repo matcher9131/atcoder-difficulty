@@ -1,0 +1,58 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProblemCell > matches snapshot 1`] = `
+<div>
+  <td
+    class="flex px-3 py-auto h-18 items-center border-t-1 border-base-content/75 group"
+    tabindex="0"
+  >
+    <span
+      class="relative"
+    >
+      <svg
+        aria-label="problemCell.difficultyIconLabel"
+        class="w-6 h-4 fill-red-500"
+        role="img"
+      >
+        <use
+          href="#icon-difficulty"
+        />
+      </svg>
+      <div
+        class="absolute -top-4 w-6 text-center text-[.7em]"
+      >
+        1234
+      </div>
+      <div
+        class="absolute top-4 w-6 text-center text-[.7em]"
+      >
+        56%
+      </div>
+    </span>
+    <a
+      class="w-full text-left truncate text-blue-700 link link-hover hover:brightness-75"
+      href="https://atcoder.jp/problems/abc123_a"
+      rel="noreferrer"
+      target="_blank"
+    >
+      A - Sample Problem
+    </a>
+    <button
+      class="hidden group-hover:block group-focus-within:block"
+    >
+      <svg
+        aria-label="Show graph"
+        class="h-6 w-6 fill-current cursor-pointer hover:invert-30 transition-all"
+        role="img"
+      >
+        <title>
+          problemCell.graphButtonIconTitle
+        </title>
+        <use
+          href="#icon-graph"
+        />
+      </svg>
+    </button>
+  </td>
+</div>
+`;

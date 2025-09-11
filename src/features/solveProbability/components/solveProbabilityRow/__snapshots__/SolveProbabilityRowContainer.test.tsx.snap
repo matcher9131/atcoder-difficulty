@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SolveProbabilityRowContainer > matches snapshot 1`] = `
+<div>
+  <tr
+    data-testid="mock-row"
+  />
+</div>
+`;
