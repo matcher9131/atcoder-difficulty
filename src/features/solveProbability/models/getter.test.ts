@@ -11,8 +11,6 @@ import {
 } from "./getter";
 import type { ProblemSolveProbability } from "../types/problemSolveProbability";
 
-// src/features/solveProbability/models/solveProbabilities.test.ts
-
 vi.mock("../../problem/models/atom", () => ({
     problemsAtom: { read: vi.fn() },
 }));
