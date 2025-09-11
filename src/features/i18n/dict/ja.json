@@ -1,6 +1,6 @@
 {
     "blankTabContent": {
-        "message": "レーティングとコンテスト回数を入力してください。"
+        "message": "ユーザー名を入力してください。"
     },
     "contestHeaderCell": {
         "showStatsButtonLabel": "統計を表示"
