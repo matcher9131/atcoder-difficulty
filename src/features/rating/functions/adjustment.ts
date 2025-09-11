@@ -11,5 +11,5 @@ export const inverseAdjustmentOfLowRating = (x: number): number => {
 };
 
 export const getRawRating = (rating: number, numContest: number): number => {
-    return inverseAdjustmentOfLowRating(rating) - adjustmentByNumContest(numContest);
+    return inverseAdjustmentOfLowRating(rating) + adjustmentByNumContest(numContest);
 };
