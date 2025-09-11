@@ -1,6 +1,6 @@
 {
     "blankTabContent": {
-        "message": "Input \"Rating\" and \"Num of matches\" first!"
+        "message": "Input \"User name\" first!"
     },
     "contestHeaderCell": {
         "showStatsButtonLabel": "Show stats"
