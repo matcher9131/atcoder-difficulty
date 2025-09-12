@@ -26,12 +26,13 @@ export const useUserInput = (inputRef: RefObject<HTMLInputElement | null>): Omit
         const newUserName = input.value;
         if (newUserName === userName) return;
 
+        setValidationState("none");
+        setValidationMessage("");
+
         setSolveProbabilityPaginationValue(0);
         if (newUserName === "") {
             setRating(null);
             setNumContests(null);
-            setValidationState("none");
-            setValidationMessage("");
             return;
         }
 
