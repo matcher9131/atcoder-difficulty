@@ -66,7 +66,7 @@ export const ProblemCell = ({
                 <button onClick={onGraphButtonClick} className="hidden group-hover:block group-focus-within:block">
                     <svg
                         role="img"
-                        aria-label="Show graph"
+                        aria-label={t("problemCell.graphButtonIconTitle")}
                         className="h-6 w-6 fill-current cursor-pointer hover:invert-30 transition-all"
                     >
                         <title>{t("problemCell.graphButtonIconTitle")}</title>
