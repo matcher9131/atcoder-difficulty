@@ -63,7 +63,7 @@ export const ProblemCell = ({
                 {problemIndex != null ? `${problemIndex} - ${displayName}` : displayName}
             </a>
             {graphButtonIsEnabled && (
-                <button onClick={onGraphButtonClick} className="hidden group-hover:block group-focus-within:block">
+                <button onClick={onGraphButtonClick}>
                     <svg
                         role="img"
                         aria-label={t("problemCell.graphButtonIconTitle")}
