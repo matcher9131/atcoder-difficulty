@@ -25,7 +25,7 @@ export const ContestHeaderCell = ({
             <a href={linkHref} target="_blank" rel="noreferrer" className="link link-hover link-primary truncate">
                 {displayName}
             </a>
-            <button onClick={onStatsButtonClick} className="hidden group-hover:block group-focus-within:block">
+            <button onClick={onStatsButtonClick}>
                 <svg
                     role="img"
                     aria-label={t("contestHeaderCell.showStatsButtonLabel")}
