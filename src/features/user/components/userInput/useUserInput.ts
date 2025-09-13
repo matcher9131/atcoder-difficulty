@@ -28,8 +28,9 @@ export const useUserInput = (inputRef: RefObject<HTMLInputElement | null>): Omit
 
         setValidationState("none");
         setValidationMessage("");
-
         setSolveProbabilityPaginationValue(0);
+        setUserName(newUserName);
+
         if (newUserName === "") {
             setRating(null);
             setNumContests(null);
@@ -37,7 +38,6 @@ export const useUserInput = (inputRef: RefObject<HTMLInputElement | null>): Omit
         }
 
         setButtonIsDisabled(true);
-        setUserName(newUserName);
         fetchUser(newUserName)
             .then(({ rating, numContests }) => {
                 setRating(rating);
