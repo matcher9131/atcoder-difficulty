@@ -1,7 +1,7 @@
 import { type ChartData, type ChartOptions } from "chart.js";
 import { type ReactNode } from "react";
 import { Chart } from "react-chartjs-2";
-import { chartAreaBackgroundPlugin } from "./plugin";
+import { chartAreaBackgroundPlugin } from "../../../../chartjs/plugin";
 
 const plugins = [chartAreaBackgroundPlugin];
 
