@@ -5,6 +5,7 @@ import { LoadingIndicator } from "./features/suspense/components/loadingIndicato
 import { MainPage } from "./features/page/components/mainPage/MainPage";
 import { ErrorBoundary } from "react-error-boundary";
 import { MainPageError } from "./features/page/components/mainPageError/MainPageError";
+import "./chartjs/setup";
 
 const App = () => {
     useAtom(selectedLanguageEffect);

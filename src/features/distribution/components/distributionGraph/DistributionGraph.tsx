@@ -1,34 +1,7 @@
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    BarElement,
-    LineElement,
-    BarController,
-    LineController,
-    Tooltip,
-    type ChartData,
-    type ChartOptions,
-    Title,
-    Legend,
-} from "chart.js";
+import { type ChartData, type ChartOptions } from "chart.js";
 import { type ReactNode } from "react";
 import { Chart } from "react-chartjs-2";
 import { chartAreaBackgroundPlugin } from "./plugin";
-
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    BarElement,
-    LineElement,
-    BarController,
-    LineController,
-    Title,
-    Legend,
-    Tooltip,
-);
 
 const plugins = [chartAreaBackgroundPlugin];
 
