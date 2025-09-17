@@ -23,8 +23,7 @@ export const ContestStatsTab = ({
                 type="radio"
                 name="contest_stats_tab"
                 className="tab"
-                aria-label={t("contestStatsDialog.performanceByScoreLabel")}
-                defaultChecked
+                aria-label={t("contestStatsDialog.tabLabels.performanceByScore")}
             />
             <div className="tab-content bg-base-100 border-base-300 p-4 w-full text-center">
                 <PerformanceFromScoreTableContainer statsByScore={statsByScore} problemScores={problemScores} />
@@ -33,7 +32,7 @@ export const ContestStatsTab = ({
                 type="radio"
                 name="contest_stats_tab"
                 className="tab"
-                aria-label={t("contestStatsDialog.rankByPerformanceLabel")}
+                aria-label={t("contestStatsDialog.tabLabels.rankByPerformance")}
             />
             <div className="tab-content bg-base-100 border-base-300 p-4 w-full text-center">
                 <RankFromPerformanceTableContainer

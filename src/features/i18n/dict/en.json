@@ -11,13 +11,17 @@
     },
     "contestStatsDialog": {
         "errorMessage": "Failed loading stats.",
-        "performanceByScoreLabel": "Performance by Score",
-        "performanceLabel": "Performance",
-        "problemPatternsLabel": "Task Patterns",
-        "rankByPerformanceLabel": "Rank by Performance",
-        "rankLabel": "Rank",
-        "scoreLabel": "Score",
-        "timeLabel": "Time"
+        "tabLabels": {
+            "performanceByScore": "Performance by Score",
+            "rankByPerformance": "Rank by Performance"
+        },
+        "tableHeaderLabels": {
+            "performance": "Performance",
+            "problemPatterns": "Task Patterns",
+            "rank": "Rank",
+            "score": "Score",
+            "time": "Time"
+        }
     },
     "distributionGraph": {
         "xLabel": "Rating",
