@@ -3,8 +3,8 @@ import { ModalDialog, useModalDialog } from "../../../dialog/components/modalDia
 import { RemoveScroll } from "react-remove-scroll";
 import { ErrorBoundary } from "react-error-boundary";
 import { LoadingIndicator } from "../../../suspense/components/loadingIndicator";
-import { ContestStatsTab } from "../contestStatsTab";
 import { ContestStatsError } from "../contestStatsError";
+import { ContestStatsTabContainer } from "../contestStatsTab/ContestStatsTabContainer";
 
 const logError =
     (logId: string) =>
@@ -36,7 +36,7 @@ export const ContestStatsDialog = (): ReactNode => {
                     onError={import.meta.env.DEV ? logError("ContestStatsDialog") : undefined}
                 >
                     <Suspense fallback={<LoadingIndicator />}>
-                        <ContestStatsTab />
+                        <ContestStatsTabContainer />
                     </Suspense>
                 </ErrorBoundary>
             </RemoveScroll>
