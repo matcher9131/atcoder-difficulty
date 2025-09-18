@@ -1,21 +1,17 @@
-import { base64ToUint8Array } from "../../../utils/buffer";
+export const decodeContestDistribution = (encodedZeroIndices: string, encodedNonZeroBytes: string): number[] => {
+    const zeroIndicesBitArray = Uint8Array.from(atob(encodedZeroIndices), (ch) => ch.charCodeAt(0));
+    const nonZeroBytes = Uint8Array.from(atob(encodedNonZeroBytes), (ch) => ch.charCodeAt(0));
+    const res = new Uint8Array(encodedZeroIndices.length * 6);
 
-export const decodeContestDistribution = (encodedZeroIndices: string, encodedNonZeroTerms: string): number[] => {
-    const zeroIndices = base64ToUint8Array(encodedZeroIndices);
-    const nonZeroTerms = new Uint16Array(base64ToUint8Array(encodedNonZeroTerms).buffer);
-
-    const res: number[] = [];
-    let zeroIndex = 0,
-        nonZeroIndex = 0;
-    while (zeroIndex < zeroIndices.length || nonZeroIndex < nonZeroTerms.length) {
-        if (zeroIndex < zeroIndices.length && zeroIndices[zeroIndex] == res.length) {
-            res.push(0);
-            ++zeroIndex;
-        } else if (nonZeroIndex < nonZeroTerms.length) {
-            res.push(nonZeroTerms[nonZeroIndex]);
+    let nonZeroIndex = 0;
+    for (let i = 0; i < res.length; ++i) {
+        if (zeroIndicesBitArray[i >> 3] & (1 << (7 - (i % 8)))) {
+            res[i] = 0;
+        } else {
+            res[i] = nonZeroBytes[nonZeroIndex];
             ++nonZeroIndex;
         }
     }
 
-    return res;
+    return Array.from(new Uint16Array(res.buffer));
 };
