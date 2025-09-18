@@ -2,6 +2,15 @@
     "blankTabContent": {
         "message": "ユーザー名を入力してください。"
     },
+    "contestDistributionGraph": {
+        "xLabel": "レーティング",
+        "yLabels": {
+            "axisLabel": "参加者数",
+            "ratedDatasetLabel": "Rated参加者",
+            "unratedDatasetLabel": "Unrated参加者"
+        },
+        "usesLogarithmicScaleLabel": "対数目盛"
+    },
     "contestHeaderCell": {
         "showStatsButtonLabel": "統計を表示"
     },

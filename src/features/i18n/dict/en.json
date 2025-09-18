@@ -2,6 +2,15 @@
     "blankTabContent": {
         "message": "Input \"User name\" first!"
     },
+    "contestDistributionGraph": {
+        "xLabel": "Rating",
+        "yLabels": {
+            "axisLabel": "Number of participants",
+            "ratedDatasetLabel": "Rated participants",
+            "unratedDatasetLabel": "Unrated participants"
+        },
+        "usesLogarithmicScaleLabel": "Logarithmic scale"
+    },
     "contestHeaderCell": {
         "showStatsButtonLabel": "Show stats"
     },
