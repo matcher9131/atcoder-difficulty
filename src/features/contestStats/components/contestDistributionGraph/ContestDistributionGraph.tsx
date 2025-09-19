@@ -22,8 +22,8 @@ export const ContestDistributionGraph = ({
     const { t } = useTranslation();
 
     return (
-        <>
-            <Chart type="bar" data={data} options={options} plugins={plugins} />;
+        <div className="w-full h-full">
+            <Chart type="bar" data={data} options={options} plugins={plugins} />
             <label className="label">
                 <input
                     type="checkbox"
@@ -33,6 +33,6 @@ export const ContestDistributionGraph = ({
                 />
                 {t("contestDistributionGraph.usesLogarithmicScaleLabel")}
             </label>
-        </>
+        </div>
     );
 };

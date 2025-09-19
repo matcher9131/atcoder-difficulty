@@ -20,9 +20,12 @@ export const useContestDistributionGraph = (
         y: val,
     }));
     const xMin = 0;
-    const xMax = Math.max(ratedDistribution.length, unratedDistribution.length) * 25;
+    const xMax =
+        Math.max(ratedDistribution.length, unratedDistribution.length) * 25 <= 3200
+            ? 3200
+            : Math.ceil((Math.max(ratedDistribution.length, unratedDistribution.length) * 25) / 100) * 100;
     const yMin = 0;
-    // TODO: 適切なyMaxの設定（固定しないとアニメーションがおかしくなる？）
+    // TODO: 要調整
     const yMax = Math.max(...ratedDistribution, ...unratedDistribution);
 
     const [usesLogarithmicScale, setUsesLogarithmicScale] = useAtom(usesLogarithmicScaleAtom);
@@ -30,6 +33,7 @@ export const useContestDistributionGraph = (
         setUsesLogarithmicScale(e.target.checked);
     };
 
+    // TODO: バーを横並びではなく縦に積みたい
     return {
         data: {
             datasets: [
@@ -37,14 +41,14 @@ export const useContestDistributionGraph = (
                     label: t("contestDistributionGraph.yLabels.ratedDatasetLabel"),
                     data: ratedDistributionData,
                     type: "bar",
-                    barPercentage: 1.8,
+                    barPercentage: 1,
                     backgroundColor: "rgba(104, 96, 251, 0.7)",
                 },
                 {
                     label: t("contestDistributionGraph.yLabels.unratedDatasetLabel"),
                     data: unratedDistributionData,
                     type: "bar",
-                    barPercentage: 1.8,
+                    barPercentage: 1,
                     backgroundColor: "rgba(241, 54, 152, 0.8)",
                 },
             ],

@@ -8,7 +8,7 @@ export type RankFromPerformanceTableProps = {
 export const RankFromPerformanceTable = ({ rows }: RankFromPerformanceTableProps): ReactNode => {
     const { t } = useTranslation();
     return (
-        <table className="w-full tab-content grid grid-cols-5">
+        <table className="w-full h-full p-2 overflow-y-auto grid grid-cols-5">
             <thead className="contents">
                 <tr className="contents">
                     <th>{t("contestStatsDialog.tableHeaderLabels.performance")}</th>

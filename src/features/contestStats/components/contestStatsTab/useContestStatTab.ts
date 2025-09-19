@@ -1,10 +1,13 @@
 import { useAtomValue } from "jotai";
 import { selectedContestAtom } from "../../models/selectedContest";
 import { contestStatsAtom } from "../../models/contestStats";
-import type { ContestStatsTabProps } from "./ContestStatsTab";
+import type { ContestStatsTabId, ContestStatsTabProps } from "./ContestStatsTab";
 import { decodeContestDistribution } from "../../functions/decode";
+import { useState, type ChangeEvent } from "react";
 
 export const useContestStatsTab = (): ContestStatsTabProps | "loading" | "hasError" => {
+    const [selectedTabId, setSelectedTabId] = useState<ContestStatsTabId>("distribution");
+
     const contestId = useAtomValue(selectedContestAtom);
     const contestStatsLoadable = useAtomValue(contestStatsAtom(contestId));
     if (contestStatsLoadable.state !== "hasData") return contestStatsLoadable.state;
@@ -14,6 +17,10 @@ export const useContestStatsTab = (): ContestStatsTabProps | "loading" | "hasErr
     const ratedDistribution = decodeContestDistribution(contestStats.fr[0], contestStats.fr[1]);
     const unratedDistribution = decodeContestDistribution(contestStats.fu[0], contestStats.fu[1]);
 
+    const handleSelectedTabChange = (e: ChangeEvent<HTMLInputElement>): void => {
+        setSelectedTabId(e.target.value as ContestStatsTabId);
+    };
+
     return {
         contestId,
         ratedDistribution,
@@ -21,5 +28,7 @@ export const useContestStatsTab = (): ContestStatsTabProps | "loading" | "hasErr
         statsByScore: contestStats.ss,
         statsByPerformance: contestStats.sp,
         problemScores: contestStats.s,
+        selectedTabId,
+        onSelectedTabChanged: handleSelectedTabChange,
     };
 };
