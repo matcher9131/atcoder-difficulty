@@ -2,9 +2,14 @@ import { useTranslation } from "react-i18next";
 import type { ContestDistributionGraphProps } from "./ContestDistributionGraph";
 import { useAtom } from "jotai";
 import { usesLogarithmicScaleAtom } from "../../models/usesLogarithmicScale";
-import type { ChangeEvent } from "react";
+import { useCallback, type ChangeEvent } from "react";
 import { range } from "../../../../utils/array";
 import { roundToOneDigit } from "../../../../utils/number";
+import type { TooltipItem } from "chart.js";
+
+const classToDisplay = (median: number): string => {
+    return `${(median - 12.5).toString()} - ${(median + 12.5).toString()}`;
+};
 
 export const useContestDistributionGraph = (
     contestId: string,
@@ -45,6 +50,19 @@ export const useContestDistributionGraph = (
         setUsesLogarithmicScale(e.target.checked);
     };
 
+    // For custom tooltip
+    const tooltipCallbackTitle = useCallback((tooltipItems: TooltipItem<"bar">[]) => {
+        const tooltipItem = tooltipItems[0];
+        return `${t("distributionGraph.xLabel")}: ${classToDisplay(tooltipItem.parsed.x)}`;
+    }, []);
+    const tooltipCallbackLabel = useCallback((tooltipItem: TooltipItem<"bar">) => {
+        return `${tooltipItem.dataset.label ?? ""}: ${tooltipItem.parsed.y.toString()}`;
+    }, []);
+    const tooltipCallbackFooter = useCallback((tooltipItems: TooltipItem<"bar">[]) => {
+        const sum = tooltipItems.reduce((acc, tooltipItem) => acc + tooltipItem.parsed.y, 0);
+        return `${t("contestDistributionGraph.sumLabel")}: ${sum.toFixed(0)}`;
+    }, []);
+
     return {
         data: {
             datasets: [
@@ -65,6 +83,10 @@ export const useContestDistributionGraph = (
             ],
         },
         options: {
+            interaction: {
+                intersect: false,
+                mode: "index",
+            },
             maintainAspectRatio: false,
             plugins: {
                 legend: {
@@ -77,13 +99,14 @@ export const useContestDistributionGraph = (
                         size: 20,
                     },
                 },
-                // tooltip: {
-                //     enabled: true,
-                //     callbacks: {
-                //         title: tooltipCallbackTitle,
-                //         label: tooltipCallbackLabel,
-                //     },
-                // },
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        title: tooltipCallbackTitle,
+                        label: tooltipCallbackLabel,
+                        footer: tooltipCallbackFooter,
+                    },
+                },
             },
             scales: {
                 x: {

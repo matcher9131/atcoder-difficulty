@@ -9,6 +9,7 @@
             "ratedDatasetLabel": "Rated参加者",
             "unratedDatasetLabel": "Unrated参加者"
         },
+        "sumLabel": "合計",
         "usesLogarithmicScaleLabel": "対数目盛"
     },
     "contestHeaderCell": {

@@ -9,6 +9,7 @@
             "ratedDatasetLabel": "Rated participants",
             "unratedDatasetLabel": "Unrated participants"
         },
+        "sumLabel": "Sum",
         "usesLogarithmicScaleLabel": "Logarithmic scale"
     },
     "contestHeaderCell": {
