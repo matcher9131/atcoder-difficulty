@@ -3,6 +3,8 @@ import type { ContestDistributionGraphProps } from "./ContestDistributionGraph";
 import { useAtom } from "jotai";
 import { usesLogarithmicScaleAtom } from "../../models/usesLogarithmicScale";
 import type { ChangeEvent } from "react";
+import { range } from "../../../../utils/array";
+import { roundToOneDigit } from "../../../../utils/number";
 
 export const useContestDistributionGraph = (
     contestId: string,
@@ -11,29 +13,38 @@ export const useContestDistributionGraph = (
 ): ContestDistributionGraphProps => {
     const { t } = useTranslation();
 
-    const ratedDistributionData = ratedDistribution.map((val, i) => ({
-        x: 12.5 + i * 25,
-        y: val,
-    }));
-    const unratedDistributionData = unratedDistribution.map((val, i) => ({
-        x: 12.5 + i * 25,
-        y: val,
-    }));
+    const dataLength = Math.max(ratedDistribution.length, unratedDistribution.length);
+    const ratedDistributionData: Array<{ readonly x: number; readonly y: number }> = [];
+    const unratedDistributionData: Array<{ readonly x: number; readonly y: number }> = [];
+    for (let i = 0; i < dataLength; ++i) {
+        ratedDistributionData.push({
+            x: 12.5 + i * 25,
+            y: i < ratedDistribution.length ? ratedDistribution[i] : 0,
+        });
+        unratedDistributionData.push({
+            x: 12.5 + i * 25,
+            y: i < unratedDistribution.length ? unratedDistribution[i] : 0,
+        });
+    }
+
     const xMin = 0;
     const xMax =
         Math.max(ratedDistribution.length, unratedDistribution.length) * 25 <= 3200
             ? 3200
             : Math.ceil((Math.max(ratedDistribution.length, unratedDistribution.length) * 25) / 100) * 100;
     const yMin = 0;
-    // TODO: 要調整
-    const yMax = Math.max(...ratedDistribution, ...unratedDistribution);
+    const rawYMax = range(0, dataLength).reduce(
+        (acc, _, i) => Math.max(acc, ratedDistributionData[i].y + unratedDistributionData[i].y),
+        0,
+    );
+    const yStep = roundToOneDigit(rawYMax / 10);
+    const yMax = Math.ceil(rawYMax / yStep) * yStep;
 
     const [usesLogarithmicScale, setUsesLogarithmicScale] = useAtom(usesLogarithmicScaleAtom);
     const handleUsesLogarithmicScaleChange = (e: ChangeEvent<HTMLInputElement>): void => {
         setUsesLogarithmicScale(e.target.checked);
     };
 
-    // TODO: バーを横並びではなく縦に積みたい
     return {
         data: {
             datasets: [
@@ -93,13 +104,13 @@ export const useContestDistributionGraph = (
                             size: 16,
                         },
                     },
+                    stacked: true,
                 },
                 y: {
                     min: yMin,
                     max: yMax,
                     ticks: {
-                        // TODO: 要調整
-                        stepSize: 100,
+                        stepSize: yStep,
                     },
                     title: {
                         display: true,
@@ -108,6 +119,7 @@ export const useContestDistributionGraph = (
                             size: 16,
                         },
                     },
+                    stacked: true,
                 },
             },
         },
