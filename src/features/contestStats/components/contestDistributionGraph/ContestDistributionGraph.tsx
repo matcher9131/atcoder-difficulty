@@ -22,9 +22,11 @@ export const ContestDistributionGraph = ({
     const { t } = useTranslation();
 
     return (
-        <div className="w-full h-full">
-            <Chart type="bar" data={data} options={options} plugins={plugins} />
-            <label className="label">
+        <div className="w-full h-full flex flex-col">
+            <div className="flex-1">
+                <Chart type="bar" data={data} options={options} plugins={plugins} />
+            </div>
+            <label className="label flex-none">
                 <input
                     type="checkbox"
                     checked={usesLogarithmicScale}
