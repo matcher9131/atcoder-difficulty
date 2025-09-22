@@ -31,7 +31,7 @@ export const ContestDistributionGraph = ({
                     type="checkbox"
                     checked={usesLogarithmicScale}
                     onChange={onUsesLogarithmicScaleChanged}
-                    className="checkbox"
+                    className="checkbox checkbox-primary"
                 />
                 {t("contestDistributionGraph.usesLogarithmicScaleLabel")}
             </label>
