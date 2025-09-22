@@ -2,6 +2,16 @@
     "blankTabContent": {
         "message": "ユーザー名を入力してください。"
     },
+    "contestDistributionGraph": {
+        "xLabel": "レーティング",
+        "yLabels": {
+            "axisLabel": "参加者数",
+            "ratedDatasetLabel": "Rated参加者",
+            "unratedDatasetLabel": "Unrated参加者"
+        },
+        "sumLabel": "合計",
+        "usesLogarithmicScaleLabel": "対数目盛"
+    },
     "contestHeaderCell": {
         "showStatsButtonLabel": "統計を表示"
     },
@@ -11,13 +21,18 @@
     },
     "contestStatsDialog": {
         "errorMessage": "統計の読み込みに失敗しました。",
-        "performanceByScoreLabel": "スコア・パフォーマンス対応表",
-        "performanceLabel": "パフォーマンス",
-        "problemPatternsLabel": "問題パターン",
-        "rankByPerformanceLabel": "パフォーマンス・順位対応表",
-        "rankLabel": "順位",
-        "scoreLabel": "スコア",
-        "timeLabel": "時間"
+        "tabLabels": {
+            "distribution": "参加者のレーティング",
+            "performanceByScore": "スコア・パフォーマンス対応表",
+            "rankByPerformance": "パフォーマンス・順位対応表"
+        },
+        "tableHeaderLabels": {
+            "performance": "パフォーマンス",
+            "problemPatterns": "問題パターン",
+            "rank": "順位",
+            "score": "スコア",
+            "time": "時間"
+        }
     },
     "distributionGraph": {
         "xLabel": "レーティング",

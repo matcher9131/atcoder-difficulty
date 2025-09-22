@@ -1,21 +1,17 @@
-import { useAtomValue } from "jotai";
 import { type PerformanceFromScoreTableProps } from "./PerformanceFromScoreTable";
-import { selectedContestAtom } from "../../models/selectedContest";
-import { contestStatsAtom } from "../../models/contestStats";
 import { PerformanceFromScoreTableRowContainer } from "../performanceFromScoreTableRow";
+import type { StatsByScore } from "../../types/statsByScore";
 
-export const usePerformanceFromScoreTable = (): PerformanceFromScoreTableProps => {
-    const contestId = useAtomValue(selectedContestAtom);
-    const contestStatsLoadable = useAtomValue(contestStatsAtom(contestId));
-    const contestStats = contestStatsLoadable.state === "hasData" ? contestStatsLoadable.data : null;
-    const statsByScore = contestStats?.ss ?? [];
-
+export const usePerformanceFromScoreTable = (
+    statsByScore: ReadonlyArray<[number, StatsByScore]>,
+    problemScores: readonly number[],
+): PerformanceFromScoreTableProps => {
     const rows = statsByScore.map(([score, stats]) => (
         <PerformanceFromScoreTableRowContainer
             key={score}
             score={score}
             statsByScore={stats}
-            problemScores={contestStats?.s ?? []}
+            problemScores={problemScores}
         />
     ));
 

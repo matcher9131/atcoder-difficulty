@@ -2,6 +2,16 @@
     "blankTabContent": {
         "message": "Input \"User name\" first!"
     },
+    "contestDistributionGraph": {
+        "xLabel": "Rating",
+        "yLabels": {
+            "axisLabel": "Number of participants",
+            "ratedDatasetLabel": "Rated participants",
+            "unratedDatasetLabel": "Unrated participants"
+        },
+        "sumLabel": "Sum",
+        "usesLogarithmicScaleLabel": "Logarithmic scale"
+    },
     "contestHeaderCell": {
         "showStatsButtonLabel": "Show stats"
     },
@@ -11,13 +21,18 @@
     },
     "contestStatsDialog": {
         "errorMessage": "Failed loading stats.",
-        "performanceByScoreLabel": "Performance by Score",
-        "performanceLabel": "Performance",
-        "problemPatternsLabel": "Task Patterns",
-        "rankByPerformanceLabel": "Rank by Performance",
-        "rankLabel": "Rank",
-        "scoreLabel": "Score",
-        "timeLabel": "Time"
+        "tabLabels": {
+            "distribution": "Rating of Participants",
+            "performanceByScore": "Performance by Score",
+            "rankByPerformance": "Rank by Performance"
+        },
+        "tableHeaderLabels": {
+            "performance": "Performance",
+            "problemPatterns": "Task Patterns",
+            "rank": "Rank",
+            "score": "Score",
+            "time": "Time"
+        }
     },
     "distributionGraph": {
         "xLabel": "Rating",

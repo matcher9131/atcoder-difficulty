@@ -8,13 +8,13 @@ export type PerformanceFromScoreTableProps = {
 export const PerformanceFromScoreTable = ({ rows }: PerformanceFromScoreTableProps): ReactNode => {
     const { t } = useTranslation();
     return (
-        <table className="w-full grid grid-cols-4">
+        <table className="w-full h-full p-2 overflow-y-auto grid grid-cols-4">
             <thead className="contents">
                 <tr className="contents">
-                    <th>{t("contestStatsDialog.scoreLabel")}</th>
-                    <th>{t("contestStatsDialog.problemPatternsLabel")}</th>
-                    <th>{t("contestStatsDialog.rankLabel")}</th>
-                    <th>{t("contestStatsDialog.performanceLabel")}</th>
+                    <th>{t("contestStatsDialog.tableHeaderLabels.score")}</th>
+                    <th>{t("contestStatsDialog.tableHeaderLabels.problemPatterns")}</th>
+                    <th>{t("contestStatsDialog.tableHeaderLabels.rank")}</th>
+                    <th>{t("contestStatsDialog.tableHeaderLabels.performance")}</th>
                 </tr>
             </thead>
             <tbody className="contents">{rows}</tbody>
