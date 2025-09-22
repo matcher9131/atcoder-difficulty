@@ -22,6 +22,7 @@
     "contestStatsDialog": {
         "errorMessage": "統計の読み込みに失敗しました。",
         "tabLabels": {
+            "distribution": "参加者のレーティング",
             "performanceByScore": "スコア・パフォーマンス対応表",
             "rankByPerformance": "パフォーマンス・順位対応表"
         },
