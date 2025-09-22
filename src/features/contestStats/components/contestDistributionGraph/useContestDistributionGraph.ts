@@ -91,7 +91,7 @@ export const useContestDistributionGraph = (
                 },
                 title: {
                     display: true,
-                    text: contestId,
+                    text: contestId.toUpperCase(),
                     font: {
                         size: 20,
                     },
