@@ -3,13 +3,15 @@ import type { ContestDistributionGraphProps } from "./ContestDistributionGraph";
 import { useAtom } from "jotai";
 import { usesLogarithmicScaleAtom } from "../../models/usesLogarithmicScale";
 import { useCallback, type ChangeEvent } from "react";
-import { range } from "../../../../utils/array";
-import { roundToOneDigit } from "../../../../utils/number";
 import type { TooltipItem } from "chart.js";
+import { createGraphDataLinear, createGraphDataLog } from "./createGraphData";
+import { classToDisplay } from "../../functions/classToDisplay";
 
-const classToDisplay = (median: number): string => {
-    return `${(median - 12.5).toString()} - ${(median + 12.5).toString()}`;
+const invert = (x: number): number => {
+    if (x < 1) return 0;
+    return Math.round(Math.pow(2, x - 1));
 };
+const pass = (x: number): number => x;
 
 export const useContestDistributionGraph = (
     contestId: string,
@@ -18,50 +20,45 @@ export const useContestDistributionGraph = (
 ): ContestDistributionGraphProps => {
     const { t } = useTranslation();
 
-    const dataLength = Math.max(ratedDistribution.length, unratedDistribution.length);
-    const ratedDistributionData: Array<{ readonly x: number; readonly y: number }> = [];
-    const unratedDistributionData: Array<{ readonly x: number; readonly y: number }> = [];
-    for (let i = 0; i < dataLength; ++i) {
-        ratedDistributionData.push({
-            x: 12.5 + i * 25,
-            y: i < ratedDistribution.length ? ratedDistribution[i] : 0,
-        });
-        unratedDistributionData.push({
-            x: 12.5 + i * 25,
-            y: i < unratedDistribution.length ? unratedDistribution[i] : 0,
-        });
-    }
-
-    const xMin = 0;
-    const xMax =
-        Math.max(ratedDistribution.length, unratedDistribution.length) * 25 <= 3200
-            ? 3200
-            : Math.ceil((Math.max(ratedDistribution.length, unratedDistribution.length) * 25) / 100) * 100;
-    const yMin = 0;
-    const rawYMax = range(0, dataLength).reduce(
-        (acc, _, i) => Math.max(acc, ratedDistributionData[i].y + unratedDistributionData[i].y),
-        0,
-    );
-    const yStep = roundToOneDigit(rawYMax / 10);
-    const yMax = Math.ceil(rawYMax / yStep) * yStep;
-
     const [usesLogarithmicScale, setUsesLogarithmicScale] = useAtom(usesLogarithmicScaleAtom);
     const handleUsesLogarithmicScaleChange = (e: ChangeEvent<HTMLInputElement>): void => {
         setUsesLogarithmicScale(e.target.checked);
     };
 
+    const { ratedDistributionData, unratedDistributionData, xMin, xMax, yMin, yMax, yStep } = usesLogarithmicScale
+        ? createGraphDataLog(ratedDistribution, unratedDistribution)
+        : createGraphDataLinear(ratedDistribution, unratedDistribution);
+
+    const toOriginalY = usesLogarithmicScale ? invert : pass;
+
     // For custom tooltip
-    const tooltipCallbackTitle = useCallback((tooltipItems: TooltipItem<"bar">[]) => {
-        const tooltipItem = tooltipItems[0];
-        return `${t("distributionGraph.xLabel")}: ${classToDisplay(tooltipItem.parsed.x)}`;
-    }, []);
-    const tooltipCallbackLabel = useCallback((tooltipItem: TooltipItem<"bar">) => {
-        return `${tooltipItem.dataset.label ?? ""}: ${tooltipItem.parsed.y.toString()}`;
-    }, []);
-    const tooltipCallbackFooter = useCallback((tooltipItems: TooltipItem<"bar">[]) => {
-        const sum = tooltipItems.reduce((acc, tooltipItem) => acc + tooltipItem.parsed.y, 0);
-        return `${t("contestDistributionGraph.sumLabel")}: ${sum.toFixed(0)}`;
-    }, []);
+    const tooltipCallbackTitle = useCallback(
+        (tooltipItems: TooltipItem<"bar">[]) => {
+            const tooltipItem = tooltipItems[0];
+            return `${t("distributionGraph.xLabel")}: ${classToDisplay(tooltipItem.parsed.x)}`;
+        },
+        [usesLogarithmicScale],
+    );
+    const tooltipCallbackLabel = useCallback(
+        (tooltipItem: TooltipItem<"bar">) => {
+            return `${tooltipItem.dataset.label ?? ""}: ${toOriginalY(tooltipItem.parsed.y).toFixed(0)}`;
+        },
+        [usesLogarithmicScale],
+    );
+    const tooltipCallbackFooter = useCallback(
+        (tooltipItems: TooltipItem<"bar">[]) => {
+            const sum = tooltipItems.reduce((acc, tooltipItem) => acc + toOriginalY(tooltipItem.parsed.y), 0);
+            return `${t("contestDistributionGraph.sumLabel")}: ${sum.toFixed(0)}`;
+        },
+        [usesLogarithmicScale],
+    );
+    const yTicksCallback = useCallback(
+        (val: string | number) => {
+            if (typeof val === "string") throw new Error("Invalid type of y-ticks");
+            return toOriginalY(val);
+        },
+        [usesLogarithmicScale],
+    );
 
     return {
         data: {
@@ -127,12 +124,13 @@ export const useContestDistributionGraph = (
                             size: 16,
                         },
                     },
-                    stacked: true,
+                    stacked: !usesLogarithmicScale,
                 },
                 y: {
                     min: yMin,
                     max: yMax,
                     ticks: {
+                        callback: yTicksCallback,
                         stepSize: yStep,
                     },
                     title: {
@@ -142,7 +140,7 @@ export const useContestDistributionGraph = (
                             size: 16,
                         },
                     },
-                    stacked: true,
+                    stacked: !usesLogarithmicScale,
                 },
             },
         },
