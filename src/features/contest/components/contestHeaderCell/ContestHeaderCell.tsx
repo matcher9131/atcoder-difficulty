@@ -21,8 +21,12 @@ export const ContestHeaderCell = ({
     const { t } = useTranslation();
     return (
         <td className={clsx(cellClassNames, "gap-x-1")}>
-            <span className={textColor}>◉</span>
-            <a href={linkHref} target="_blank" rel="noreferrer" className="link link-hover link-primary truncate">
+            <a
+                href={linkHref}
+                target="_blank"
+                rel="noreferrer"
+                className={clsx("link link-hover truncate flex-1 text-left", textColor)}
+            >
                 {displayName}
             </a>
             <button onClick={onStatsButtonClick}>
