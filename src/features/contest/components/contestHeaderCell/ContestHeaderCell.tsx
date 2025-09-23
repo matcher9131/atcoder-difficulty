@@ -20,7 +20,7 @@ export const ContestHeaderCell = ({
 }: ContestHeaderCellProps): ReactNode => {
     const { t } = useTranslation();
     return (
-        <td className={clsx(cellClassNames, "gap-x-1")}>
+        <td className={clsx(cellClassNames, "gap-x-1", "sticky", "left-0", "bg-base-100", "z-1")}>
             <a
                 href={linkHref}
                 target="_blank"
