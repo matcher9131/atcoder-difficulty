@@ -13,9 +13,11 @@ export const ContestsTable = ({
     contestRows,
 }: ContestsTableProps): ReactElement => {
     return (
-        <table className={clsx("w-full", "grid", gridColsClassName)}>
-            {contestsTableHeader}
-            <tbody className="contents">{contestRows}</tbody>
-        </table>
+        <div className="w-full overflow-x-auto">
+            <table className={clsx("grid", gridColsClassName)}>
+                {contestsTableHeader}
+                <tbody className="contents">{contestRows}</tbody>
+            </table>
+        </div>
     );
 };
