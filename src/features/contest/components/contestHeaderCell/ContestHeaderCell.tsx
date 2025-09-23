@@ -20,9 +20,13 @@ export const ContestHeaderCell = ({
 }: ContestHeaderCellProps): ReactNode => {
     const { t } = useTranslation();
     return (
-        <td className={clsx(cellClassNames, "gap-x-1")}>
-            <span className={textColor}>◉</span>
-            <a href={linkHref} target="_blank" rel="noreferrer" className="link link-hover link-primary truncate">
+        <td className={clsx(cellClassNames, "gap-x-1", "sticky", "left-0", "bg-base-100", "z-1")}>
+            <a
+                href={linkHref}
+                target="_blank"
+                rel="noreferrer"
+                className={clsx("link link-hover truncate flex-1 text-left", textColor)}
+            >
                 {displayName}
             </a>
             <button onClick={onStatsButtonClick}>
