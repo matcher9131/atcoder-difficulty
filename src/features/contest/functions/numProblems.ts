@@ -16,11 +16,11 @@ export const getNumProblems = (contestType: ContestType): number => {
 export const getGridColsClassName = (contestType: ContestType): string => {
     switch (contestType) {
         case "abc":
-            return "grid-cols-9";
+            return "w-[112.5%] grid-cols-9";
         case "arc":
-            return "grid-cols-8";
+            return "w-[114%] grid-cols-8";
         case "agc":
-            return "grid-cols-11";
+            return "w-[157%] grid-cols-11";
         default:
             throw new Error(`Unknown value: ${(contestType as { type: "__invalid__" }).type}`);
     }
