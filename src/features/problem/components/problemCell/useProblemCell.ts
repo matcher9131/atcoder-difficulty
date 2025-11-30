@@ -18,14 +18,12 @@ export const useProblemCell = (
     if (problem == null) throw new Error(`Invalid problemId = ${problemId}`);
     const [, difficulty] = problem.d ?? [null];
     const level = difficulty != null ? (difficulty >= 3200 ? 4 : (Math.floor(difficulty / 100) % 4) + 1) : 0;
-    const iconHref =
-        (import.meta.env.PROD ? "/atcoder-difficulty" : "") +
-        `/resources/up_arrow_${level.toString()}.svg#up_arrow_${level.toString()}`;
+    const iconHref = `/resources/up_arrow_${level.toString()}.svg#up_arrow_${level.toString()}`;
     const fillColor = difficulty != null ? getFillColor(difficulty) : "";
     const textColor = difficulty != null ? getTextColor(difficulty) : "";
     const [problemIdContest, problemIdProblem] = splitProblemId(problemId);
     const linkHref = `https://atcoder.jp/contests/${problemIdContest}/tasks/${problemIdProblem}`;
-    const graphIconHref = (import.meta.env.PROD ? "/atcoder-difficulty" : "") + "/resources/chart.svg#chart";
+    const graphIconHref = "/resources/chart.svg#chart";
     const [, setSelectedProblem] = useAtom(selectedProblemAtom);
     const { openDialog } = useOpenModalDialog("distribution");
     const handleGraphButtonClick = () => {

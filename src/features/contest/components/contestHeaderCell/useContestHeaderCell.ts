@@ -16,6 +16,6 @@ export const useContestHeaderCell = (contestId: string): ContestHeaderCellProps 
         setSelectedContest(contestId);
         openDialog().catch(console.error);
     };
-    const statsIconHref = (import.meta.env.PROD ? "/atcoder-difficulty" : "") + "/resources/chart.svg#chart";
+    const statsIconHref = "/resources/chart.svg#chart";
     return { textColor, displayName, linkHref, onStatsButtonClick: handleStatsButtonClick, statsIconHref };
 };
